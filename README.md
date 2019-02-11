@@ -11,7 +11,7 @@ Before starting with `sip3-ansible` make sure that you have installed:
 
 ## 2. Playbooks
 
-SIP3 is a multi-components project. That's why `sip3-ansbile` suggests you different playbooks with different component configuration according to your VoIP network size, infrastructure requirements and other needs:
+SIP3 is a multi-components project. That's why `sip3-ansbile` suggests you different playbooks with various component configurations according to your VoIP network size, infrastructure requirements and other needs:
 
 * [Trial](playbooks/trial) - Showcase version of SIP3. Run it as a monolitic application with just a few commands. Keep in mind that this version has restrictions in terms of performance and available features.
 
