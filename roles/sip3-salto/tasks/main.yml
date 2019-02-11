@@ -1,0 +1,31 @@
+- name: Copy sip3-salto configuration (application.yml)
+  template:
+    src: templates/application.yml.j2
+    dest: /opt/sip3/salto.yml
+    mode: 0777
+  when: state == 'started'
+
+- name: Copy sip3-salto configuration (hosts.yml)
+  template:
+    src: templates/hosts.yml.j2
+    dest: /opt/sip3/hosts.yml
+    mode: 0777
+  when: state == 'started'
+
+- name: Install/Uninstall 'sip/sip3-salto:{{version}}' container
+  docker_container:
+    name: sip3-salto
+    image: "sip3/sip3-salto:{{version}}"
+    networks:
+      - name: sip3
+        aliases:
+          - sip3-salto
+    ports: 15060:15060
+    volumes:
+      - "/var/log/sip3:/var/log/sip3-salto"
+      - "/opt/sip3:/opt/sip3"
+    env:
+      JAVA_OPTS: "-Xms128m -Xmx256m"
+      CONFIG_FILE: "/opt/sip3/salto.yml"
+    restart: yes
+    state: "{{state}}"

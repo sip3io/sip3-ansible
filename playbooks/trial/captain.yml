@@ -1,0 +1,8 @@
+- hosts: 127.0.0.1
+  become_user: root
+  become: yes
+  vars:
+    version: trial
+  roles:
+    - { role: ../../roles/host-file-system, tags: host-file-system }
+    - { role: ../../roles/sip3-captain, tags: sip3-captain }

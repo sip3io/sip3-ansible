@@ -1,0 +1,11 @@
+- name: Create/Delete '/opt/sip3' directory
+  file:
+    path: /opt/sip3
+    mode: 0777
+    state: "{{state}}"
+
+- name: Create/Delete '/var/log/sip3' directory
+  file:
+    path: /var/log/sip3
+    mode: 0777
+    state: "{{state}}"

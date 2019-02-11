@@ -1,0 +1,10 @@
+- name: Install/Uninstall 'influxdb' container
+  docker_container:
+    name: sip3-influxdb
+    image: "influxdb"
+    networks:
+      - name: sip3
+        aliases:
+          - sip3-influxdb
+    restart: yes
+    state: "{{state}}"

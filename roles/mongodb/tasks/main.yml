@@ -1,0 +1,10 @@
+- name: Install/Uninstall 'mongo' container
+  docker_container:
+    name: sip3-mongodb
+    image: "mongo"
+    networks:
+      - name: sip3
+        aliases:
+          - sip3-mongodb
+    restart: yes
+    state: "{{state}}"

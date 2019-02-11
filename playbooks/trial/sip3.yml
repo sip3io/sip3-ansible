@@ -1,0 +1,12 @@
+- hosts: 127.0.0.1
+  become_user: root
+  become: yes
+  vars:
+    version: trial
+  roles:
+    - { role: ../../roles/host-file-system, tags: host-file-system }
+    - { role: ../../roles/docker-network, tags: docker-network }
+    - { role: ../../roles/influxdb, tags: influxdb }
+    - { role: ../../roles/mongodb, tags: mongodb }
+    - { role: ../../roles/sip3-salto, tags: sip3-salto }
+    - { role: ../../roles/sip3-twig, tags: sip3-twig }
