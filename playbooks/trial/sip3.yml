@@ -6,6 +6,7 @@
   roles:
     - { role: ../../roles/host-file-system, tags: host-file-system }
     - { role: ../../roles/docker-network, tags: docker-network }
+    - { role: ../../roles/grafana, tags: grafana }
     - { role: ../../roles/influxdb, tags: influxdb }
     - { role: ../../roles/mongodb, tags: mongodb }
     - { role: ../../roles/sip3-salto, tags: sip3-salto }

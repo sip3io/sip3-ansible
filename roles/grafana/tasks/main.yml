@@ -1,0 +1,10 @@
+- name: Install/Uninstall 'sip3/sip3-grafana:{{version}}' container
+  docker_container:
+    name: sip3-grafana
+    image: "sip3/sip3-grafana:{{version}}"
+    networks:
+      - name: sip3
+        aliases:
+          - sip3-grafana
+    restart: yes
+    state: "{{state}}"
