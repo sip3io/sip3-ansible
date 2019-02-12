@@ -1,7 +1,11 @@
 #! Application
 captain:
-  uri: udp://127.0.0.1:15060
+  # Use the property below to configure SIP3 Salto URI
+  uri: udp://127.0.0.1:15060  
   pcap:
-#    folder: /path-to-folder-with-pcap-files
+    # Use the property below if you want SIP3 Capatain to listen to specific folder with `.pcap` files 
+    # folder: /path-to-folder-with-pcap-files
+    # Use the property below if you want SIP3 Captain to listen on specific network interface
     network: eth0
+    # Use the property below if you want to configure BPF filters to filter only SIP traffic (recommended)
     bpfFilter: tcp or udp
