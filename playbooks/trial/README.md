@@ -8,7 +8,7 @@ _Note: Keep in mind that this version has restrictions in terms of performance a
 
 This playbook aims to simplify SIP3 deployment. That's why `sip3.yml` deploys SIP3 backend components as monolitic application. 
 
-Configuration is simple too - just describe hosts in your network and also hosts connected as trunk as it's shown here: [`hosts.yml`](../../roles/sip3-salto/templates/hosts.yml)
+Configuration is simple too - just describe hosts in your network and also hosts connected as trunk as it's shown here: [`hosts.yml`](../../roles/sip3-salto/templates/hosts.yml.j2)
 
 To install SIP3 backend components use this command:
 ```
