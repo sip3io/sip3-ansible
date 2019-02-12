@@ -11,3 +11,4 @@
     - { role: ../../roles/mongodb, tags: mongodb }
     - { role: ../../roles/sip3-salto, tags: sip3-salto }
     - { role: ../../roles/sip3-twig, tags: sip3-twig }
+    - { role: ../../roles/sip3-hoof, tags: sip3-hoof }
