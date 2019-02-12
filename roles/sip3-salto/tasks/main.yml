@@ -27,5 +27,6 @@
     env:
       JAVA_OPTS: "-Xms128m -Xmx256m"
       CONFIG_FILE: "/opt/sip3/salto.yml"
+      HOSTS_CONFIG_FILE: "/opt/sip3/hosts.yml"
     restart: yes
     state: "{{state}}"
