@@ -19,7 +19,7 @@ To uninstall SIP3 backend components use the same command, but with `extra-vars`
 ansible-playbook -K playbooks/trial/sip3.yml --extra-vars "state=absent"
 ```
 
-_Note: To verify that SIP3 installed properly open: http://localhost. Now just start sending data from SIP3 Captain._
+_Note: To verify that SIP3 installed properly open: http://localhost. The only one thing left... Just start sending data from SIP3 Captain to see `Technical Dashboard` charts and SIP sessions in `Advanced Search`!_
 
 ## 2. SIP3 captain (captain.yml)
 
