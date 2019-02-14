@@ -23,7 +23,7 @@ _Note: To verify that SIP3 installed properly open: http://localhost. The only o
 
 ## 2. SIP3 captain (captain.yml)
 
-After you will finish with SIP3 backend components it's time to deploy SIP3 captain. SIP3 captain is responsible for capturing and filtering raw SIP traffic. You can use it as an agent (just deploy it on the node with SIP traffic) or as a folder listener (deploy captain separatly and make it listen to the `.pcap` files folder).
+After you will finish with SIP3 backend components it's time to deploy SIP3 captain. SIP3 captain is responsible for capturing and filtering raw SIP traffic. Use SIP3 Captain as an agent - just deploy it on the node with SIP traffic.
 
 Configuration is a bit more complicated, but still simple enough. Check it here: [`roles/sip3-captain/templates/application.yml.j2`](https://github.com/sip3io/sip3-ansible/blob/master/roles/sip3-captain/templates/application.yml.j2)
 
