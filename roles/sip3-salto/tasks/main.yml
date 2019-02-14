@@ -20,7 +20,8 @@
       - name: sip3
         aliases:
           - sip3-salto
-    ports: 15060:15060
+    ports:
+      - 15060:15060/udp
     volumes:
       - "/var/log/sip3:/var/log/sip3-salto"
       - "/opt/sip3:/opt/sip3"
