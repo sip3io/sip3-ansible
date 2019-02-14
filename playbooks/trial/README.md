@@ -14,11 +14,12 @@ To install SIP3 backend components use this command:
 ```
 ansible-playbook -K playbooks/trial/sip3.yml
 ```
-
 To uninstall SIP3 backend components use the same command, but with `extra-vars`:
 ```
 ansible-playbook -K playbooks/trial/sip3.yml --extra-vars "state=absent"
 ```
+
+_Note: To verify that SIP3 installed properly open: http://localhost. Now just start sending data from SIP3 Captain._
 
 ## 2. SIP3 captain (captain.yml)
 
