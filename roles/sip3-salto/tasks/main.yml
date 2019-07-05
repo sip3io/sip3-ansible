@@ -1,14 +1,14 @@
 - name: Copy sip3-salto configuration (application.yml)
   template:
     src: templates/application.yml.j2
-    dest: /opt/sip3/salto.yml
+    dest: "{{root}}/opt/sip3/salto.yml"
     mode: 0777
   when: state == 'started'
 
 - name: Copy sip3-salto configuration (hosts.yml)
   template:
     src: templates/hosts.yml.j2
-    dest: /opt/sip3/hosts.yml
+    dest: "{{root}}/opt/sip3/hosts.yml"
     mode: 0777
   when: state == 'started'
 
@@ -23,8 +23,8 @@
     ports:
       - 15060:15060/udp
     volumes:
-      - "/var/log/sip3:/var/log/sip3-salto"
-      - "/opt/sip3:/opt/sip3"
+      - "{{root}}/log/sip3:/var/log/sip3-salto"
+      - "{{root}}/opt/sip3:/opt/sip3"
     env:
       JAVA_OPTS: "-Xms128m -Xmx256m"
       CONFIG_FILE: "/opt/sip3/salto.yml"
