@@ -1,7 +1,7 @@
 - name: Copy sip3-captain configuration (application.yml)
   template:
     src: templates/application.yml.j2
-    dest: /opt/sip3/captain.yml
+    dest: "{{root}}/opt/sip3/captain.yml"
     mode: 0777
   when: state == 'started'
 
@@ -11,8 +11,8 @@
     image: "sip3/sip3-captain:{{version}}"
     network_mode: "host"
     volumes:
-      - "/var/log/sip3:/var/log/sip3-captain"
-      - "/opt/sip3:/opt/sip3"
+      - "{{root}}/log/sip3:/var/log/sip3-captain"
+      - "{{root}}/opt/sip3:/opt/sip3"
     env:
       JAVA_OPTS: "-Xms128m -Xmx256m"
       CONFIG_FILE: "/opt/sip3/captain.yml"

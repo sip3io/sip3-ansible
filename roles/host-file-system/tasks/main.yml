@@ -1,11 +1,28 @@
-- name: Create/Delete '/opt/sip3' directory
+- name: Create/Delete project root directory ~/sip3
   file:
-    path: /opt/sip3
+    path: ~/sip3
     mode: 0777
     state: "{{state}}"
 
-- name: Create/Delete '/var/log/sip3' directory
+- name: Get project fullpath root dirictory
+  find:
+    path: "~"
+    file_type: directory
+    patterns: sip3
+  register: find_result
+
+- name: Set sip3 project root directory variable
+  set_fact:
+    root: '{{find_result.files[0].path}}'
+
+- name: Create/Delete '{{root}}/opt/sip3' directory
   file:
-    path: /var/log/sip3
+    path: "{{root}}/opt/sip3"
+    mode: 0777
+    state: "{{state}}"
+
+- name: Create/Delete '{{root}}/log/sip3' directory
+  file:
+    path: "{{root}}/log/sip3"
     mode: 0777
     state: "{{state}}"
