@@ -1,2 +1,3 @@
 version: latest
 state: started
+port: 80

@@ -1,10 +1,16 @@
-#! Application
-captain:
-  # Use the property below if you want to configure SIP3 Salto URI
-  uri: udp://127.0.0.1:15060  
-  pcap:
-    # Use the property below if you want SIP3 Captain to listen on specific network interface
-    network: eth0
-    # Use the property below if you want to configure BPF filters to filter only SIP traffic (recommended)
-    # If you have IP-in-IP encapsulation use `bpfFilter: ip`
-    bpfFilter: tcp or udp
+#! Pcap (libpcap, WinPcap, Npcap)
+pcap:
+  # Use the property below if you want SIP3 Captain to listen on specific network interface
+  dev: eth0
+  # Use the property below if you want to configure BPF filters to filter only SIP traffic (recommended)
+  bpf-filter: udp or tcp
+
+#! Sender
+sender:
+  #  Use the property below if you want to configure SIP3 Salto URI
+  uri: udp://127.0.0.1:15060
+
+#! Metrics
+metrics:
+  logging:
+    step: 1000
