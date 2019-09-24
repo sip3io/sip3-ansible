@@ -8,7 +8,7 @@
   find:
     path: "~"
     file_type: directory
-    patterns: sip3
+    patterns: "{{directory}}"
   register: find_result
 
 - name: Set 'sip3-ansible' {{root}} variable
