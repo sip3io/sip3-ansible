@@ -39,7 +39,7 @@ To uninstall SIP3 captain run the same command but with `state=absent` variable:
 ansible-playbook -K playbooks/trial/sip3-captain.yml --extra-vars "state=absent"
 ```
 
-## 3. Metrics
+## 3. SIP3 Metrics
 
 We supply Grafana together with the trial version of SIP3. Just open http://localhost/grafana and use default creadentials(`admin/admin`). After that you will see `Calls Statistic` dashboard and will be able to create custom dashboards on your own. Explore what metrics are available out-of-the-box and ask in our community channels. 
 
