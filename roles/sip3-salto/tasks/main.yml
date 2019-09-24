@@ -23,7 +23,7 @@
     ports:
       - 15060:15060/udp
     volumes:
-      - "{{root}}/log/sip3-salto:/var/log/sip3-salto"
+      - "{{root}}/log/sip3:/var/log/sip3-salto"
       - "{{root}}/opt/sip3:/opt/sip3"
     env:
       JAVA_OPTS: "-Xms128m -Xmx256m"

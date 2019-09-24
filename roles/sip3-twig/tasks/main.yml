@@ -14,7 +14,7 @@
         aliases:
           - sip3-twig
     volumes:
-      - "{{root}}/log/sip3-twig:/var/log/sip3-twig"
+      - "{{root}}/log/sip3:/var/log/sip3-twig"
       - "{{root}}/opt/sip3:/opt/sip3"
     env:
       JAVA_OPTS: "-Xms128m -Xmx256m"

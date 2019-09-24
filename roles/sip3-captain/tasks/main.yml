@@ -11,7 +11,7 @@
     image: "sip3/sip3-captain:{{version}}"
     network_mode: "host"
     volumes:
-      - "{{root}}/log/sip3-captain:/var/log/sip3-captain"
+      - "{{root}}/log/sip3:/var/log/sip3-captain"
       - "{{root}}/opt/sip3:/opt/sip3"
     env:
       JAVA_OPTS: "-Xms128m -Xmx256m"
