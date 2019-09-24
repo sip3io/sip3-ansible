@@ -2,14 +2,13 @@
 server:
   uri: udp://0.0.0.0:15060
 
-#! InfluxDB
-influxdb:
-  enabled: true
-  uri: http://sip3-influxdb:8086
-  db: sip3
-
 #! MongoDB
 mongo:
-  enabled: true
   uri: mongodb://sip3-mongodb:27017
   db: sip3
+
+#! Metrics
+metrics:
+  influxdb:
+    uri: http://sip3-influxdb:8086
+    db: sip3

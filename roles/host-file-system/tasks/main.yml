@@ -1,19 +1,25 @@
-- name: Create/Delete '~/sip3' directory
+- name: Create/Delete '{{directory}}' directory
   file:
-    path: ~/sip3
+    path: "~/{{directory}}"
     mode: 0777
-    state: "{{state}}"
+    state: directory
 
 - name: Retrieve 'sip3-ansible' root directory
   find:
     path: "~"
     file_type: directory
-    patterns: sip3
+    patterns: "{{directory}}"
   register: find_result
 
 - name: Set 'sip3-ansible' {{root}} variable
   set_fact:
     root: '{{find_result.files[0].path}}'
+
+- name: Create/Delete '{{root}}' directory
+  file:
+    path: "{{root}}"
+    mode: 0777
+    state: "{{state}}"
 
 - name: Create/Delete '{{root}}/opt/sip3' directory
   file:

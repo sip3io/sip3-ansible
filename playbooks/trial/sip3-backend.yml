@@ -1,6 +1,7 @@
 - hosts: 127.0.0.1
   vars:
-    version: trial
+    version: ce-20190921
+    directory: sip3-backend
   roles:
     - { role: ../../roles/host-file-system, tags: host-file-system }
     - { role: ../../roles/docker-network, tags: docker-network }
@@ -10,4 +11,3 @@
     - { role: ../../roles/sip3-salto, tags: sip3-salto }
     - { role: ../../roles/sip3-twig, tags: sip3-twig }
     - { role: ../../roles/sip3-hoof, tags: sip3-hoof }
-    - { role: ../../roles/freeswitch, tags: freeswitch }

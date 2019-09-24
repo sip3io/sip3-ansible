@@ -7,6 +7,6 @@
         aliases:
           - sip3-hoof
     ports:
-      - 80:80
+      - "{{port}}:80"
     restart: yes
     state: "{{state}}"
