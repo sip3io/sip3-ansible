@@ -1,7 +1,7 @@
 - hosts: 127.0.0.1
   vars:
     version: ce-20190921
-    root: ~/sip3-backend
+    root: sip3-backend
   roles:
     - { role: ../../roles/host-file-system, tags: host-file-system }
     - { role: ../../roles/docker-network, tags: docker-network }

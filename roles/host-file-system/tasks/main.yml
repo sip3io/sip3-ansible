@@ -1,3 +1,9 @@
+- name: Create/Delete '{{root}}' directory
+  file:
+    path: "~/{{root}}"
+    mode: 0777
+    state: "{{state}}"
+
 - name: Create/Delete '{{root}}/opt/sip3' directory
   file:
     path: "{{root}}/opt/sip3"
