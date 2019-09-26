@@ -4,4 +4,5 @@
     directory: sip3-captain
   roles:
     - { role: ../../roles/host-file-system, tags: host-file-system }
+    - { role: ../../roles/pip, tags: pip }
     - { role: ../../roles/sip3-captain, tags: sip3-captain }

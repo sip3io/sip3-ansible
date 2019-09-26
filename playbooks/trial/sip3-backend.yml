@@ -4,6 +4,7 @@
     directory: sip3-backend
   roles:
     - { role: ../../roles/host-file-system, tags: host-file-system }
+    - { role: ../../roles/pip, tags: pip }
     - { role: ../../roles/docker-network, tags: docker-network }
     - { role: ../../roles/grafana, tags: grafana }
     - { role: ../../roles/influxdb, tags: influxdb }
