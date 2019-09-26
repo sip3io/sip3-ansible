@@ -1,2 +1,0 @@
-- name: Install pip
-  yum: name=python-pip state=latest
