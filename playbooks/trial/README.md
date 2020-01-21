@@ -45,7 +45,7 @@ We supply Grafana together with the trial version of SIP3. Just open http://loca
 
 ![Calls Statistic](img/dashboard.png)
  
-_Note: You are be able to create custom dashboards on your own. Explore what metrics are available out-of-the-box and ask in our community channels._
+_Note: Now you are able to create custom dashboards on your own. Explore what metrics are available out-of-the-box or ask in our community channels._
 
 ## 4. Support
 
