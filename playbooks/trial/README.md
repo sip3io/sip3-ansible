@@ -39,7 +39,12 @@ ansible-playbook -K playbooks/trial/sip3-captain.yml --extra-vars "state=absent"
 
 ## 3. SIP3 User-Defined Functions
 
-Use [`roles/sip3-salto/templates/udf/sip_message_udf.groovy.j2`](https://github.com/sip3io/sip3-ansible/blob/master/roles/sip3-salto/templates/udf/sip_message_udf.groovy.j2) template to write your first SIP3 User-Defined Function in Groovy. It may help to add custom attributes to `Advanced Search` or modify calls correlation logic. Read more about how to write SIP3 UDFs [here](https://github.com/sip3io/sip3-documentation/blob/master/modules/ROOT/pages/features/UserDefinedFunctions.adoc).
+Use [`roles/sip3-salto/templates/udf/sip_message_udf.groovy.j2`](https://github.com/sip3io/sip3-ansible/blob/master/roles/sip3-salto/templates/udf/sip_message_udf.groovy.j2) template to write your very first SIP3 User-Defined Function.
+
+You can start from adding custom `Boolean` or `String` criteria to `Advanced Search`, like `robocall` on the picture below:
+![Robocall Attribute](img/robocall.png)
+
+Read more about how to write and use SIP3 UDFs [here](https://github.com/sip3io/sip3-documentation/blob/master/modules/ROOT/pages/features/UserDefinedFunctions.adoc).
 
 ## 4. SIP3 Metrics
 
