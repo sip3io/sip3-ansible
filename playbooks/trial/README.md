@@ -48,12 +48,27 @@ Read more about how to write and use SIP3 UDFs [here](https://github.com/sip3io/
 
 ## 4. SIP3 Metrics
 
-We supply Grafana together with the trial version of SIP3. Just open http://localhost/grafana and use default creadentials(`admin/admin`). After that you will see `Calls Statistic` dashboard:
+We supply Grafana together with the trial version of SIP3. Just open http://localhost/grafana and use default creadentials(`admin/admin`). After that you will see `Calls Statistic` dashboard, like it shown on the picture below:
 
 ![Calls Statistic](img/dashboard.png)
  
 _Note: Now you are able to create custom dashboards on your own. Explore what metrics are available out-of-the-box or ask in our community channels._
 
-## 4. Support
+## 5. SIP3 HostMap
+
+At the moment there is no way to configure HostMap automatically. This will be fixed as soon as SIP3 team will push `sip3-twig-ce` code to github.
+
+As a workaround you can describe your hosts using direct injection to Mongo:
+
+```
+# docker exec -it sip3-mongodb mongo
+# use sip3
+# db.hosts.insert({"name" : "SoftSwitch", "sip": ["209.253.93.85", "10.10.0.1"]})
+```
+
+Hosts described in Mongo will be automarically provisioned within SIP3. That will help you to correlate calls passing through B2BUA node which has 2 diffenrent network interfaces for incoming and outgoing traffic, like it's shown on the picture below: 
+![Call Flow](img/call_flow.png)
+
+## 6. Support
 
 If you face any problems installing the trial version of SIP3, just leave us a message in our community [Slack](https://join.slack.com/t/sip3-community/shared_invite/enQtNzcwMzUxODA2MTkyLTcxODE2MzYyZDgzOWJjNDQ5MzJkOTU3MDY3NDNmZjQ2Zjg2ZjA2MzY4ZmM0YmFkZGI3ZjZiMDgwM2Y1YmU1Mzk) and [Telegram](https://t.me/sip3io), or send us an [email](mailto:support@sip3.io). We will be happy to help you.
