@@ -8,6 +8,7 @@ Before starting with `sip3-ansible`, make sure you have installed:
 
 * [Ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html)
 * [Docker](https://docs.docker.com/install/)
+* [pip](https://pip.pypa.io/en/stable/installing/)
 
 ## 2. Playbooks
 
