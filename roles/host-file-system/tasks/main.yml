@@ -27,6 +27,12 @@
     mode: 0777
     state: "{{state}}"
 
+- name: Create/Delete '{{root}}/opt/sip3/udf' directory
+  file:
+    path: "{{root}}/opt/sip3/udf"
+    mode: 0777
+    state: "{{state}}"
+
 - name: Create/Delete '{{root}}/log/sip3' directory
   file:
     path: "{{root}}/log/sip3"

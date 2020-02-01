@@ -7,8 +7,16 @@ mongo:
   uri: mongodb://sip3-mongodb:27017
   db: sip3
 
+#! Application
+sip:
+  message:
+    x-correlation-header: X-Call-ID
+
 #! Metrics
 metrics:
+  logging:
+    step: 1000
   influxdb:
     uri: http://sip3-influxdb:8086
     db: sip3
+    step: 1000

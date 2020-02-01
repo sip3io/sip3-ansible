@@ -5,10 +5,10 @@
     mode: 0777
   when: state == 'started'
 
-- name: Copy sip3-salto configuration (hosts.yml)
+- name: Copy sip3-salto configuration (sip_message_udf.groovy)
   template:
-    src: templates/hosts.yml.j2
-    dest: "{{root}}/opt/sip3/hosts.yml"
+    src: templates/udf/sip_message_udf.groovy.j2
+    dest: "{{root}}/opt/sip3/udf/sip_message_udf.groovy"
     mode: 0777
   when: state == 'started'
 
@@ -28,6 +28,6 @@
     env:
       JAVA_OPTS: "-Xms128m -Xmx256m"
       CONFIG_FILE: "/opt/sip3/salto.yml"
-      HOSTS_FILE: "/opt/sip3/hosts.yml"
+      UDF_FOLDER: "/opt/sip3/udf"
     restart: yes
     state: "{{state}}"
