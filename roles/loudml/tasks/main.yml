@@ -1,0 +1,13 @@
+- name: Install/Uninstall 'loudml/community:1.5.0' container
+  docker_container:
+    name: sip3-loudml
+    image: "loudml/community:1.5.0"
+    volumes:
+      - "{{loudmldir}}/settings/loudml.yml:/etc/loudml/config.yml:ro"
+      - "{{loudmldir}}/loudml:/var/lib/loudml"
+    networks:
+      - name: sip3
+        aliases:
+          - sip3-loudml
+    restart: yes
+    state: "{{state}}"

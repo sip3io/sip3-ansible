@@ -1,0 +1,18 @@
+---
+datasources:
+  - name: influx
+    type: influxdb
+    addr: sip3-influxdb:8086
+    database: sip3
+    measurement: loudml
+#  - name: kapacitor
+#    type: influxdb
+#    addr: kapacitor:9092
+#    database: from_loudml
+#    measurement: loudml
+
+storage:
+  path: /var/lib/loudml
+
+server:
+  listen: 0.0.0.0:8077

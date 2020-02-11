@@ -2,6 +2,7 @@
   vars:
     version: ce-20200201
     directory: sip3-backend
+    loudmldir: ../../plugins/loudml
   roles:
     - { role: ../../roles/host-file-system, tags: host-file-system }
     - { role: ../../roles/docker-network, tags: docker-network }
@@ -10,4 +11,6 @@
     - { role: ../../roles/mongodb, tags: mongodb }
     - { role: ../../roles/sip3-salto, tags: sip3-salto }
     - { role: ../../roles/sip3-twig, tags: sip3-twig }
+    - { role: ../../roles/loudml, tags: loudml }
+    - { role: ../../roles/chronograf, tags: chronograf }
     - { role: ../../roles/sip3-hoof, tags: sip3-hoof }

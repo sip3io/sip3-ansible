@@ -2,6 +2,8 @@
   docker_container:
     name: sip3-hoof
     image: "sip3/sip3-hoof:{{version}}"
+    volumes:
+      - "{{loudmldir}}/settings/sip3-hoof.conf:/etc/nginx/conf.d/sip3-hoof.conf:ro"
     networks:
       - name: sip3
         aliases:

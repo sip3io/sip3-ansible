@@ -1,0 +1,21 @@
+- name: Create the required Chronograf image from local file
+  docker_image:
+    name: chronograf-lml1.5.0
+    load_path: "{{loudmldir}}/settings/chronograf"
+
+- name: Install/Uninstall 'loudml/chronograf' container
+  docker_container:
+    name: sip3-chronograf
+    image: "loudml/chronograf"
+    volumes:
+      - "{{loudmldir}}/chronograf:/var/lib/chronograf"
+    networks:
+      - name: sip3
+        aliases:
+          - sip3-chronograf
+    env:
+      BASE_PATH: "/chronograf"
+      LOUDML_URL: "http://sip3-loudml:8077"
+      INFLUXDB_URL: "http://sip3-influxdb:8086"
+    restart: yes
+    state: "{{state}}"
