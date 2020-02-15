@@ -66,7 +66,7 @@ As a workaround you can describe your hosts using direct injection to Mongo:
 # db.hosts.insert({"name" : "SoftSwitch", "sip": ["209.253.93.85", "10.10.0.1"]})
 ```
 
-Hosts described in Mongo will be automarically provisioned within SIP3. That will help you to correlate calls passing through B2BUA node which has 2 diffenrent network interfaces for incoming and outgoing traffic, like it's shown on the picture below: 
+Hosts described in Mongo will be automarically provisioned within SIP3. That will help you to correlate calls passing through a B2BUA node which has 2 diffenrent network interfaces for incoming and outgoing traffic, like it's shown on the picture below: 
 ![Call Flow](img/call_flow.png)
 
 ## 6. Support
