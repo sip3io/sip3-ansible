@@ -17,7 +17,9 @@ To uninstall SIP3 backend components run the same command but with `state=absent
 ansible-playbook -K playbooks/trial/sip3-backend.yml --extra-vars "state=absent"
 ```
 
-_Note: To verify that SIP3 has been installed properly open: http://localhost_
+_Note: To verify that SIP3 has been installed properly open: http://localhost and http://localhost/grafana (use default creadentials: `admin/admin`)_
+
+_Note: This version of SIP3 shipped together with Grafana which we recommend to use as a main monitoring tool. To make it simple SIP3 UI re-uses Grafana Authorization API, so just use Grafana console to manage your users._
 
 Now you are the one step away from seeing SIP3 in action.
 
@@ -48,7 +50,7 @@ Read more about how to write and use SIP3 UDFs [here](https://github.com/sip3io/
 
 ## 4. SIP3 Metrics
 
-We supply Grafana together with the trial version of SIP3. Just open http://localhost/grafana and use default creadentials(`admin/admin`). After that you will see `Calls Statistic` dashboard, like it shown on the picture below:
+As mentioned above this version of SIP3 shipped together with Grafana. Just open http://localhost/grafana (use default creadentials: `admin/admin`). After that you will see `Technical Dashboard`, like it shown on the picture below:
 
 ![Calls Statistic](img/dashboard.png)
  

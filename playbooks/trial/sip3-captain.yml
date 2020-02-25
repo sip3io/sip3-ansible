@@ -1,6 +1,6 @@
 - hosts: 127.0.0.1
   vars:
-    version: ce-20200201
+    version: ce-20200225
     directory: sip3-captain
   roles:
     - { role: ../../roles/host-file-system, tags: host-file-system }
