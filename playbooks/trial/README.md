@@ -8,7 +8,7 @@ _Note: Keep in mind that this version has restrictions in terms of performance a
 
 This playbook aims to simplify the SIP3 deployment. `sip3-backend.yml` deploys the SIP3 backend components as monolithic application. 
 
-To install SIP3 backend components run the following command (use `port` variable if you want to change default binding):
+To install or update SIP3 backend components run the following command (use `port` variable if you want to change default binding):
 ```
 ansible-playbook -K playbooks/trial/sip3-backend.yml --extra-vars "port=80"
 ```
@@ -29,7 +29,7 @@ Once you have finished installing the SIP3 backend components, it's time to depl
 
 Configuration of the SIP3 captain is simple enough. Check it out here: [`roles/sip3-captain/templates/application.yml.j2`](https://github.com/sip3io/sip3-ansible/blob/master/roles/sip3-captain/templates/application.yml.j2)
 
-To install SIP3 captain run the following command:
+To install or update SIP3 captain run the following command:
 ```
 ansible-playbook -K playbooks/trial/sip3-captain.yml
 ```
