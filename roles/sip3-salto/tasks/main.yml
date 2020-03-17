@@ -22,6 +22,7 @@
           - sip3-salto
     ports:
       - 15060:15060/udp
+      - 15090:15090/udp
     volumes:
       - "{{root}}/log/sip3:/var/log/sip3-salto"
       - "{{root}}/opt/sip3:/opt/sip3"
