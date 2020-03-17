@@ -11,6 +11,7 @@ sender:
   uri: udp://127.0.0.1:15060
 
 #! ManagementSocket
+#  Uncomment and configure properties below if you want SIP3 Salto to share SDP information with SIP3 Captain (Required for MOS and R-Factor calculations)
 #management:
 #  schema: udp
 #  local-host: 127.0.0.1:15090
@@ -18,7 +19,8 @@ sender:
 
 #! RTCP
 rtcp:
-  enabled: true
+  #  Use the property below if you want SIP3 Captain to handle RTCP (Make sure that you didn't exclude RTCP in `pcap.bpf-filter`)
+  enabled: false
 
 #! Metrics
 metrics:
