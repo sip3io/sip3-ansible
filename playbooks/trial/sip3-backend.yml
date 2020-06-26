@@ -1,6 +1,6 @@
 - hosts: 127.0.0.1
   vars:
-    version: ce-20200225
+    version: ce-2020.1.1
     directory: sip3-backend
   roles:
     - { role: ../../roles/host-file-system, tags: host-file-system }

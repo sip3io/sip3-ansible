@@ -5,6 +5,13 @@
     mode: 0777
   when: state == 'started'
 
+- name: Copy sip3-salto configuration (logback.xml)
+  template:
+    src: templates/logback.xml.j2
+    dest: "{{root}}/opt/sip3/salto.xml"
+    mode: 0777
+  when: state == 'started'
+
 - name: Copy sip3-salto configuration (sip_message_udf.groovy)
   template:
     src: templates/udf/sip_message_udf.groovy.j2
@@ -29,6 +36,7 @@
     env:
       JAVA_OPTS: "-Xms128m -Xmx256m"
       CONFIG_FILE: "/opt/sip3/salto.yml"
+      LOGBACK_FILE: "/opt/sip3/salto.xml"
       UDF_FOLDER: "/opt/sip3/udf"
     restart: yes
     state: "{{state}}"

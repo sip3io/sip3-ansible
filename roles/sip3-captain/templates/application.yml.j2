@@ -5,6 +5,11 @@ pcap:
   # Use the property below if you want to configure BPF filters to filter only SIP traffic (recommended)
   bpf-filter: udp or tcp
 
+#! Encoder
+encoder:
+  # To avoid problems with MTU while sending UDP packets SIP3 Captain will compress all the packets with payload bigger then `min-size-to-compress`
+  min-size-to-compress: 1500
+
 #! Sender
 sender:
   #  Use the property below if you want to configure `sip3-salto` URI
@@ -19,7 +24,7 @@ sender:
 
 #! RTCP
 rtcp:
-  #  Use the property below if you want SIP3 Captain to handle RTCP (Make sure that you didn't exclude RTCP in `pcap.bpf-filter`)
+  #  Use the property below if you want SIP3 Captain to handle RTCP packets (Make sure that you haven't excluded RTCP in `pcap.bpf-filter`)
   enabled: false
 
 #! Metrics
