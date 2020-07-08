@@ -9,7 +9,7 @@ management:
 #! Application
 sip:
   message:
-    exclusions: [MESSAGE, SUBSCRIBE, NOTIFY, OPTIONS]
+    exclusions: [MESSAGE, SUBSCRIBE, NOTIFY, OPTIONS, REGISTER]
     x-correlation-header: X-Call-ID
 
 #! Metrics
@@ -25,6 +25,7 @@ metrics:
 mongo:
   uri: mongodb://sip3-mongodb:27017
   db: sip3
+  bulk-size: 1
   collections:
     - prefix: attributes
       indexes:
@@ -36,16 +37,6 @@ mongo:
         hashed: [call_id, x_call_id]
       max-collections: 7
     - prefix: sip_call_raw
-      indexes:
-        ascending: [created_at]
-        hashed: [call_id]
-      max-collections: 7
-    - prefix: sip_register_index
-      indexes:
-        ascending: [created_at, terminated_at, src_addr, src_host, dst_addr, dst_host, caller, callee, state]
-        hashed: [call_id]
-      max-collections: 7
-    - prefix: sip_register_raw
       indexes:
         ascending: [created_at]
         hashed: [call_id]
