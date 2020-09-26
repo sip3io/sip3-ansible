@@ -1,0 +1,13 @@
+#!/bin/sh
+. /etc/sip3-salto/environment.conf
+
+$JAVA_HOME/bin/java \
+ $JAVA_OPTS \
+ -jar /opt/sip3-salto/sip3-salto.jar \
+ -Dconfig.location=/etc/sip3-salto/application.yml \
+ -Dlogback.configurationFile=/etc/sip3-salto/logback.xml \
+ -Dcodecs.location=/etc/sip3-salto/codecs.yml \
+ $UDF_OPTS \
+ -Dvertx.cacheDirBase=/tmp/sip3-salto \
+ $VERTX_OPTS \
+2>&1 >>/var/log/sip3-salto/default.log

@@ -1,0 +1,9 @@
+#!/bin/sh
+. /etc/sip3-twig/environment.conf
+
+$JAVA_HOME/bin/java \
+ $JAVA_OPTS \
+ -jar /opt/sip3-twig/sip3-twig.jar \
+ --spring.config.location=/etc/sip3-twig/application.yml \
+ --logging.config=/etc/sip3-twig/logback.xml \
+2>&1 >>/var/log/sip3-twig/default.log

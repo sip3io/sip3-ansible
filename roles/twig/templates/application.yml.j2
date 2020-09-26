@@ -1,0 +1,59 @@
+#! Server
+server:
+  port: {{ twig.server.port | default('8080') }}
+  servlet:
+    context-path: {{ twig.server.servlet.context_path | default('/api') }}
+    session:
+       timeout: {{ twig.server.servlet.session.timeout | default('180m') }}
+
+#! Application
+time-suffix: {{ twig.time_suffix | default('yyyyMMdd') }}
+
+session:
+  default-limit: {{ twig.session.default_limit | default('50') }}
+  use-x-correlation-header: {{ twig.session.use_x_correlation_header | default('true') }}
+  call:
+    max-legs: {{ twig.session.call.max_legs | default('10') }}
+    aggregation-timeout: {{ twig.session.call.aggregation_timeout | default('60000') }}
+    termination-timeout: {{ twig.session.call.termination_timeout | default('5000') }}
+    show-retransmits: {{ twig.session.call.show_retransmits | default('false') }}
+  register:
+    max-legs: {{ twig.session.register.max_legs | default('10') }}
+    aggregation-timeout: {{ twig.session.register.aggregation_timeout | default('10000') }}
+    duration-timeout: {{ twig.session.register.duration_timeout | default('900000') }}
+  media:
+    block-count: {{ twig.session.media.block_count | default('28') }}
+    termination-timeout: {{ twig.session.media.termination_timeout | default('120000') }}
+
+#! Security
+security:
+  enabled: true
+  grafana:
+    url: http://{{ hoof.address | default(address | default('127.0.0.1')) }}/grafana/api/user
+
+#! MongoDB
+# TODO: change mongo to mongodb
+mongo:
+  {% if twig.mongodb.uri is defined -%}
+  uri: {{ twig.mongodb.uri }}
+  {% else -%}
+  uri: mongodb://{{ mongodb.address | default(address | default('127.0.0.1')) }}:{{ mongodb.port | default('27017') }}
+  {% endif -%}
+  db: {{ mongodb.db | default( twig.mongodb.db | default('sip3')) }}
+  max-execution-time: {{ twig.mongodb.max_execution_time | default('10000') }}
+  batch-size: {{ twig.mongodb.batch_size | default('128') }}
+
+#! Spring Jackson
+spring:
+  jackson:
+    property-naming-strategy: SNAKE_CASE
+  cache:
+    cache-names: listCollectionNames, listAttributes
+    caffeine:
+      spec: expireAfterWrite=1m
+  data:
+    mongodb:
+      uri: ${mongo.uri}
+      database: ${mongo.db}
+
+

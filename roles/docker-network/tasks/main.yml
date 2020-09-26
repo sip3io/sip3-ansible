@@ -1,4 +1,0 @@
-- name: Create/Delete `sip3` docker network
-  docker_network:
-    name: sip3
-    state: "{{state}}"

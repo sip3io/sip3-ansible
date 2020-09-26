@@ -1,0 +1,15 @@
+state: started
+features:
+  - call
+edition: ce
+salto:
+  webhook:
+    body: |
+      {
+        "text": ":fire: Sip3 Salto :fire:",
+        "attachments": [
+          {
+            "text": "{message}"
+          }
+        ]
+      }

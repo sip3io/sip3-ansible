@@ -1,0 +1,18 @@
+{
+  "metricsOptions": {
+    "enabled": "{{ vertx.enabled | default('false') }}",
+    "jvmMetricsEnabled": "{{ vertx.jvmMetricsEnabled | default('false') }}",
+    "labels": ["EB_ADDRESS", "EB_FAILURE", "EB_SIDE", "LOCAL", "REMOTE", "POOL_TYPE", "POOL_NAME", "CLASS_NAME"],
+    "influxDbOptions": {
+      "enabled": true,
+      {% if captain.metrics.influxdb.uri is defined -%}
+      "uri": "{{ captain.metrics.influxdb.uri }}"
+      {% else -%}
+      "uri": "http://{{ influxdb.address | default(address | default('127.0.0.1')) }}:{{ influxdb.port | default('8086') }}"
+      {% endif -%}
+      "db": "{{ captain.metrics.influxdb.db | default('sip3') }}"
+      "step" : "{{ vertx.step | default('5') }}",
+      "retention-duration": "{{ vertx.retention_duration | default('7d') }}"
+    }
+  }
+}

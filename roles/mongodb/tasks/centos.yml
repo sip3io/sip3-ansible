@@ -1,0 +1,100 @@
+- name: "Installing"
+  block:
+    - name: Disable SELinux
+      selinux:
+        state: disabled
+
+    - name: "Add MongoDB repository"
+      yum_repository:
+        name: mongodb-org-{{ mongodb.version }}
+        description: "MongoDB Repository"
+        baseurl: https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/{{ mongodb.version }}/x86_64/
+        gpgcheck: no
+        proxy: "{{ proxy | default('_none_') }}"
+
+    - name: "Install the latest version of MongoDB"
+      yum:
+        name:  "{{ packages }}"
+      vars:
+        packages:
+          - mongodb-org-server
+          - mongodb-org-shell
+
+    - name: "Creates directory {{ mongodb.path | default('/data/db') }} for MongoDB"
+      file:
+        path: "{{ mongodb.path | default('/data/db') }}"
+        state: directory
+        mode: 0755
+        group: mongod
+        owner: mongod
+
+    - name: "Create MongoDB config"
+      template:
+        src: templates/mongod.conf.j2
+        dest: /etc/mongod.conf
+
+    - name: "Start service MongoDB"
+      systemd:
+        name: mongod
+        state: started
+        daemon_reload: yes
+        enabled: yes
+
+    - name: "Flush hostmap"
+      shell: mongo --host "{{ mongodb.address | default(address | default('127.0.0.1')) }}" "{{ mongodb.db | default(address | default('sip3')) }}" --port {{ mongodb.port | default('27017') }} --eval 'db.hosts.drop()'
+
+    - name: "Insert hostmap into MongoDB"
+      shell: mongo --host "{{ mongodb.address | default(address | default('127.0.0.1')) }}" "{{ mongodb.db | default(address | default('sip3')) }}" --port {{ mongodb.port | default('27017') }} --eval "db.hosts.insert({{ item }})"
+      loop: "{{ hostmap }}"
+
+    - name: "Create index for hostmap"
+      shell: "mongo --host \"{{ mongodb.address | default(address | default('127.0.0.1')) }}\" \"{{ mongodb.db | default(address | default('sip3')) }}\" --port {{ mongodb.port | default('27017') }} --eval 'db.hosts.createIndex({ name: 1 })'"
+  when: state == "started"
+
+- name: "Uninstalling"
+  block:
+    - name: "Stop MongoDB"
+      systemd:
+        name: mongod
+        state: stopped
+        enabled: no
+
+    - name: "Uninstall MongoDB"
+      yum:
+        name: "{{ packages }}"
+      vars:
+        packages:
+          - mongodb-org-server
+          - mongodb-org-shell
+        autoremove: yes
+        state: absent
+
+    - name: "Purge project files"
+      block:
+        - name: "Collecting project files"
+          stat:
+            path: "{{item}}"
+          register: folder_stats
+          with_items:
+            - "/etc/mongod.conf"
+            - "{{ mongodb.path | default('/data/db') }}/"
+            - "/var/log/mongodb"
+            - "/etc/yum.repos.d/mongodb-org-{{ mongodb.version }}.repo"
+        - name: "Delete project files"
+          file:
+            path: "{{ item.item }}"
+            force: true
+            state: absent
+          when: item.stat.exists == true and item.stat.isdir == false
+          with_items:
+            - "{{folder_stats.results}}"
+        - name: "Delete project folders"
+          file:
+            path: "{{ item.item }}"
+            force: true
+            state: absent
+          when: item.stat.exists == true and item.stat.isdir == true
+          with_items:
+            - "{{folder_stats.results}}"
+      ignore_errors: yes
+  when: state == "absent"

@@ -1,0 +1,16 @@
+[Unit]
+Description=SIP3 Salto
+Documentation=https://www.sip3.io/docs
+After=network-online.target
+
+[Service]
+WorkingDirectory=/opt/sip3-salto
+ExecStart=/opt/sip3-salto/sip3-salto
+User=sip3
+Type=simple
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+Alias=sip3-salto.service

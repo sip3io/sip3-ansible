@@ -1,10 +1,14 @@
-- name: Install/Uninstall 'influxdb' container
-  docker_container:
-    name: sip3-influxdb
-    image: "influxdb"
-    networks:
-      - name: sip3
-        aliases:
-          - sip3-influxdb
-    restart: yes
-    state: "{{state}}"
+- name: "Install Statistics Storage for CentOS"
+  include: centos.yml
+  when:
+    - platform == "centos"
+
+#- name: "Install Statistics Storage for Docker"
+#  include: docker.yml
+#  when:
+#    - platform == "docker"
+#
+#- name: "Install Statistics Storage for Debian"
+#  include: debian.yml
+#  when:
+#    - platform == "debian"

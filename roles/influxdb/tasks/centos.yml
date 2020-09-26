@@ -1,0 +1,81 @@
+- name: "Installing"
+  block:
+    - name: Disable SELinux
+      selinux:
+        state: disabled
+
+    - name: "Add InfluxDB repository"
+      yum_repository:
+        name: influxdb
+        description: InfluxDB Repository
+        baseurl: https://repos.influxdata.com/rhel/$releasever/$basearch/stable
+        gpgcheck: no
+        proxy: "{{ proxy | default('_none_') }}"
+
+    - name: "Install the latest version of InfluxDB"
+      yum:
+        name: influxdb
+
+    - name: "Creates directory {{ influxdb.path | default('/var/lib/influxdb') }} for InfluxDB"
+      file:
+        path: "{{ influxdb.path | default('/var/lib/influxdb') }}"
+        state: directory
+        mode: 0755
+        group: influxdb
+        owner: influxdb
+
+    - name: "Create InfluxDB config"
+      template:
+        src: templates/influxdb.conf.j2
+        dest: /etc/influxdb/influxdb.conf
+
+    - name: "Start service InfluxDB"
+      systemd:
+        name: influxdb
+        state: started
+        daemon_reload: yes
+        enabled: yes
+  when: state == "started"
+
+- name: "Uninstalling"
+  block:
+    - name: Stop InfluxDB
+      systemd:
+        name: influxdb
+        state: stopped
+        enabled: no
+
+    - name: "Uninstall InfluxDB"
+      yum:
+        name: influxdb
+        autoremove: yes
+        state: absent
+
+    - name: "Purge project files"
+      block:
+        - name: "Collecting project files"
+          stat:
+            path: "{{item}}"
+          register: folder_stats
+          with_items:
+            - "/etc/influxdb"
+            - "{{ influxdb.path | default('/var/lib/influxdb') }}"
+            - "/etc/yum.repos.d/influxdb.repo"
+        - name: "Delete project files"
+          file:
+            path: "{{ item.item }}"
+            force: true
+            state: absent
+          when: item.stat.exists == true and item.stat.isdir == false
+          with_items:
+            - "{{folder_stats.results}}"
+        - name: "Delete project folders"
+          file:
+            path: "{{ item.item }}"
+            force: true
+            state: absent
+          when: item.stat.exists == true and item.stat.isdir == true
+          with_items:
+            - "{{folder_stats.results}}"
+      ignore_errors: yes
+  when: state == "absent"

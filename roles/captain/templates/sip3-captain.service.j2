@@ -1,0 +1,16 @@
+[Unit]
+Description=SIP3 Captain
+Documentation=https://www.sip3.io/docs
+After=network-online.target
+
+[Service]
+WorkingDirectory=/opt/sip3-captain
+ExecStart=/opt/sip3-captain/sip3-captain
+User=root
+Type=simple
+Restart=on-failure
+RestartSec=10
+
+[Install]
+WantedBy=multi-user.target
+Alias=sip3-captain.service

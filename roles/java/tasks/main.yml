@@ -1,4 +1,4 @@
-- name: "Install Storage for CentOS"
+- name: "Install Java for CentOS"
   include: centos.yml
   when:
     - platform == "centos"

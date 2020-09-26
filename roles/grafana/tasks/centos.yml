@@ -1,0 +1,95 @@
+- name: "Installing"
+  block:
+    - name: Disable SELinux
+      selinux:
+        state: disabled
+
+    - name: "Add Grafana repository"
+      yum_repository:
+        name: grafana
+        description: Grafana Repository
+        baseurl: https://packages.grafana.com/oss/rpm
+        gpgcheck: no
+        proxy: "{{ proxy | default('_none_') }}"
+
+    - name: "Install NGINX and Grafana"
+      yum:
+        name:  "{{ packages }}"
+      vars:
+        packages:
+          - grafana
+
+    - name: "Create Grafana Datasource for SIP3 application"
+      template:
+        src: templates/sip3-datasource.yml.j2
+        dest: /etc/grafana/provisioning/datasources/sip3-datasource.yml
+
+    - name: "Create Grafana Dashboard for SIP3 application"
+      template:
+        src: templates/sip3-dashboard.yml.j2
+        dest: /etc/grafana/provisioning/dashboards/sip3-dashboard.yml
+
+    - name: "Copy Technical Dashboard to Grafana"
+      template:
+        src: templates/sip3-technical_dashboard.json.j2
+        dest: /etc/grafana/provisioning/dashboards/sip3-technical_dashboard.json
+
+    - name: "Create Grafana config for SIP3 application"
+      template:
+        src: templates/grafana.ini.j2
+        dest: /etc/grafana/grafana.ini
+
+    - name: "Start Grafana"
+      systemd:
+        name: grafana-server
+        daemon_reload: yes
+        state: restarted
+        enabled: yes
+  when: state == "started"
+
+- name: "Uninstalling"
+  block:
+    - name: "Stop Grafana"
+      systemd:
+        name: grafana-server
+        enabled: no
+        state: stopped
+
+    - name: "Uninstall Grafana"
+      yum:
+        name:  "{{ packages }}"
+      vars:
+        packages:
+          - grafana
+        autoremove: yes
+        state: absent
+
+    - name: "Purge project files"
+      block:
+        - name: "Checking project files"
+          stat:
+            path: "{{item}}"
+          register: folder_stats
+          with_items:
+            - "/etc/grafana/provisioning/datasources/sip3-datasource.yml"
+            - "/etc/grafana/provisioning/dashboards/sip3-technical_dashboard.json"
+            - "/etc/grafana/provisioning/dashboards/sip3-dashboard.yml"
+            - "/etc/yum.repos.d/grafana.repo"
+        - name: "Delete project files"
+          file:
+            path: "{{ item.item }}"
+            force: true
+            state: absent
+          when: item.stat.exists == true and item.stat.isdir == false
+          with_items:
+            - "{{folder_stats.results}}"
+        - name: "Delete project folders"
+          file:
+            path: "{{ item.item }}"
+            force: true
+            state: absent
+          when: item.stat.exists == true and item.stat.isdir == true
+          with_items:
+            - "{{folder_stats.results}}"
+      ignore_errors: yes
+  when: state == "absent"

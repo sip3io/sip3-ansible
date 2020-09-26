@@ -1,0 +1,31 @@
+- name: "Installing"
+  block:
+    - name: "Add CentOS repository"
+      yum_repository:
+        name: centos-updates
+        description: "CentOS-$releasever - Updates"
+        mirrorlist: http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=updates&infra=$infra
+        gpgcheck: no
+        proxy: "{{ proxy | default('_none_') }}"
+      when: add_system_repo == "yes"
+
+    - name: "Install the {{ java.version }} version of OpenJDK"
+      yum:
+        name: java-{{ java.version }}-openjdk
+  when: state == "started"
+
+#
+#- name: "Uninstalling"
+#  block:
+#    - name: "Uninstall Java"
+#      yum:
+#        name: java-{{ java_version }}-openjdk
+#        autoremove: yes
+#        state: absent
+#    - name: "Delete CentOS repository"
+#      file:
+#        path: /etc/yum.repos.d/centos-updates.repo
+#        force: true
+#        state: absent
+#      when: add_system_repo is defined
+#  when: state == "absent"

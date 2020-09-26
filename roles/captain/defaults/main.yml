@@ -1,0 +1,5 @@
+state: started
+add_system_repo: yes
+edition: ce
+features:
+  - call

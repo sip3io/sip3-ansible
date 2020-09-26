@@ -1,0 +1,200 @@
+#
+#    Copyright 2018-2020 SIP3.IO, Inc.
+#
+#    Licensed under the Apache License, Version 2.0 (the "License");
+#    you may not use this file except in compliance with the License.
+#    You may obtain a copy of the License at
+#
+#    http://www.apache.org/licenses/LICENSE-2.0
+#
+#    Unless required by applicable law or agreed to in writing, software
+#    distributed under the License is distributed on an "AS IS" BASIS,
+#    WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#    See the License for the specific language governing permissions and
+#    limitations under the License.
+#
+
+# Before run the playbook, please check inventory file
+# You should setup properties for correct installation
+#
+# To run playbook, please use:
+# ansible-playbook -i inventories/inventory.yml playbooks/sip3.yml
+#
+# Also you can set groups which will be use: sip3, storage, frontend, agent, backend
+# E.g.
+# ansible-playbook -i inventories/inventory.yml playbooks/sip3.yml -t storage
+#
+# tag sip3: will manipulate with sip3 components, such as SIP3 Captain, Salto, Twig, Hoof (include NGINX and Grafana)
+# tag storage: will manipulate only with components MongoDB and InfluxDB
+# tag frontend: will manipulate only with components SIP3 Hoof and NGINX and Grafana
+# tag agent: will manipulate only with SIP3 Captain component
+# tag backend: will manipulate with components, such as SIP3 Salto, Twig, Hoof (include NGINX and Grafana)
+#
+# Also you set exclusion host.
+# For example, you need run playbook without captain
+# ansible-playbook -i inventories/inventory.yml playbooks/sip3.yml --limit 'all:!captain'
+
+all:
+
+  ###
+  # Section which define hosts where will be install SIP3 applications
+  hosts:
+    mongodb:
+    influxdb:
+    salto:
+    captain:
+    twig:
+    grafana:
+    hoof:
+
+  ###
+  # Commons variables of SIP3 applications
+  vars:
+    # Username for ssh access. Auth should be done via ssh identity_file (private and public keys) or set option -K for ansible-playbook
+    ansible_user: root
+    # Management ip address for SSH access
+    ansible_host: 127.0.0.1
+    # SSH port for management access to hosts
+    ansible_port: 22
+    # Properties ansible_user, ansible_host and ansible_port can be individual for each hosts,
+    # in this case you should copy these properties to each hosts variable section below.
+    # ansible_user should have privileged access for create directory, install packages. We recommend use root.
+    # ip address of MongoDB for internal communication with Salto and Twig
+    #
+    # Use property ansible_become for privilege escalation. If you don't use root in ansible_user property,
+    # you should use ansible_become
+    ansible_become: true
+
+    # Common ip address for all hosts. If you want separate for each one, you can define it in group or host variable
+    address: 127.0.0.1
+    # Needs use proxy, you can set property 'proxy'
+    # E.g.
+    # proxy: http://127.0.0.1:3128
+
+    # Needs add Operating system repositories for installation
+    add_system_repo: no
+    # Installation platform. E.g. centos, docker, debian etc
+    platform: centos
+    # SIP3 version release
+    version: 2020.1.1
+    # Community or Enterprise version edition
+    edition: ce
+    # Account for EE downloading
+    support:
+      username: foo
+      password: bar
+    # SIP3 features
+    features:
+      - call
+      - register
+      - rtcp
+      - udf
+    # Settings for Java
+    java:
+      version: 1.8.0
+      xms: 512M
+      xmx: 1024M
+      gc: G1
+      other: -XX:+PrintGCDetails
+    # Vert.X metrics
+    vertx:
+      enabled: true
+      retantion_duration: 5d
+
+    # Persistence storage properties
+    mongodb:
+      version: 4.2
+      # If you want to use for MongoDB exclusive ip address, you can set here. Otherwise will be use variable 'address'
+      address: 127.0.0.1
+      port: 27017
+      path: /var/lib/mongodb
+      db: sip3
+
+    # Properties for metrics storage
+    influxdb:
+      # If you want to use for InfluxDB exclusive ip address, you can set here. Otherwise will be use variable 'address'
+      address: 127.0.0.1
+      port: 8086
+      path: /var/lib/influxdb
+      db: sip3
+
+    # Properties of NGINX for UI
+    nginx:
+      # Hostname of UI for access via browser
+      server_name: _
+      listen_port: 80
+      # Reconfigure /etc/nginx/nginx.conf for use :80 for SIP3 Hoof
+      # Will recommend set to 'yes' if you use scratch install of NGINX
+      reconfigure: yes
+
+    # Properties of Grafana for represent metric graphs
+    grafana:
+      datasources:
+        database: sip3
+
+    # Properties for SIP3 Salto application
+    salto:
+      # You can set properties of SIP3 Salto application as it defined in configuration
+      # metrics:
+      #  influxdb:
+      #    uri: http://127.0.0.1:8086
+      # Salto ip address on which the Captain stream is listen. Otherwise will be use variable 'address'
+      address: 127.0.0.1
+      port: 15060
+      collections:
+        sip_index_index:
+          max_collections: 30
+        sip_index_raw:
+          max_collections: 30
+        sip_register_index:
+          max_collections: 10
+        sip_register_raw:
+          max_collections: 10
+        attributes:
+          max_collections: 30
+      attributes:
+        record_ip_addresses: true
+      udf:
+        - name: "sip_udf_function.groovy"
+          body: |
+            package udf
+            vertx.eventBus().localConsumer("sip_message_udf", { event ->
+                event.reply(true)
+            })
+
+    # Properties for SIP3 Twig application
+    twig:
+      server:
+        port: 8080
+
+    # Properties for SIP3 Captain application
+    captain:
+      pcap:
+        # Ethernet interface where Captain will be sniff.
+        dev: eth0
+        # Libpcap filter string. For more information about semantic you can find in pcap-filter(7)
+        bpf_filter: tcp and udp
+      rtcp:
+        enabled: false
+
+    # Configuration properties for running SIP3 Hoof
+    hoof:
+      # Nothing...
+
+    # Structure of hosts map for correlation legs in flow diagram
+    hostmap:
+      # Host name as it will show in the call flow
+      - name: "node-1"
+        sip:
+          - 127.0.0.1/32
+          - 127.0.0.2/32
+        media:
+          - 127.0.0.3/32
+          - 127.0.0.4/32
+      - name: "node-2"
+        sip:
+          - 127.0.1.1/32
+          - 127.0.1.2/32
+        media:
+          - 127.0.1.3/32
+          - 127.0.1.4/32

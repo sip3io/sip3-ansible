@@ -1,14 +1,14 @@
-- name: "Install Storage for CentOS"
+- name: "Install Captain for CentOS"
   include: centos.yml
   when:
     - platform == "centos"
 
-#- name: "Install Storage for Docker"
+#- name: "Install Captain for Docker"
 #  include: docker.yml
 #  when:
 #    - platform == "docker"
 #
-#- name: "Install Storage for Debian"
+#- name: "Install Captain for Debian"
 #  include: debian.yml
 #  when:
 #    - platform == "debian"

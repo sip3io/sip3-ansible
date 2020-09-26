@@ -1,0 +1,67 @@
+# Before run the playbook, please check inventory file
+# You should setup properties for correct installation
+#
+# To run playbook, please use:
+# ansible-playbook -i inventories/inventory.yml playbooks/sip3.yml
+#
+# Also you can set groups which will be use: sip3, storage, frontend, agent, backend
+# E.g.
+# ansible-playbook -i inventories/inventory.yml playbooks/sip3.yml -t storage
+#
+# tag sip3: will manipulate with sip3 components, such as SIP3 Captain, Salto, Twig, Hoof (include NGINX and Grafana)
+# tag storage: will manipulate only with components MongoDB and InfluxDB
+# tag frontend: will manipulate only with components SIP3 Hoof and NGINX and Grafana
+# tag agent: will manipulate only with SIP3 Captain component
+# tag backend: will manipulate with components, such as SIP3 Salto, Twig, Hoof (include NGINX and Grafana)
+#
+# Also you set exclusion host.
+# For example, you need run playbook without captain
+# ansible-playbook -i inventories/inventory.yml playbooks/sip3.yml --limit 'all:!captain'
+
+- name: "Deploy MongoDB"
+  hosts: mongodb
+  roles:
+    - role: ../roles/mongodb
+      tags: mongodb, storage
+
+- name: "Deploy InfluxDB"
+  hosts: influxdb
+  roles:
+    - role: ../roles/influxdb
+      tags: influxdb, storage
+
+- name: "Install OpenJDK"
+  hosts: captain,salto,twig
+  roles:
+    - role: ../roles/java
+      tags: backend, sip3, salto, twig, agent, captain
+
+- name: "Install SIP3 Salto"
+  hosts: salto
+  roles:
+    - role: ../roles/salto
+      tags: backend, sip3, salto
+
+- name: "Install SIP3 Twig"
+  hosts: twig
+  roles:
+    - role: ../roles/twig
+      tags: backend, sip3, twig
+
+- name: "Install SIP3 Hoof"
+  hosts: hoof
+  roles:
+    - role: ../roles/hoof
+      tags: frontend, sip3, hoof
+
+- name: "Install Grafana"
+  hosts: grafana
+  roles:
+    - role: ../roles/grafana
+      tags: frontend, sip3, grafana
+
+- name: "Install SIP3 Captain"
+  hosts: captain
+  roles:
+    - role: ../roles/captain
+      tags: agent, sip3, captain
