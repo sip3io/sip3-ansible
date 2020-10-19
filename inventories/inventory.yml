@@ -173,7 +173,7 @@ all:
         # Ethernet interface where Captain will be sniff.
         dev: eth0
         # Libpcap filter string. For more information about semantic you can find in pcap-filter(7)
-        bpf_filter: tcp and udp
+        bpf_filter: tcp or udp
       rtcp:
         enabled: false
 
