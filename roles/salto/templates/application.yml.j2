@@ -186,7 +186,7 @@ sip:
     duration-timeout: {{ salto.sip.register.duration_timeout | default('900000') }}
     transaction-exclusions: {{ salto.sip.register.transaction_exclusions | default('[]') }}
   {% endif -%}
-{% if "rtp" in features or "rtcp" in features -%}
-rtp-r:
-  cumulative-metrics: {{ salto.rtp_r.cumulative_metrics | default('true') }}
-{% endif -%}
+  {% if "rtp" in features or "rtcp" in features -%}
+  rtp-r:
+    cumulative-metrics: {{ salto.rtp_r.cumulative_metrics | default('true') }}
+  {% endif -%}
