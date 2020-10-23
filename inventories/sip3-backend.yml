@@ -1,0 +1,34 @@
+all:
+  hosts:
+    backend:
+
+  vars:
+    ansible_host: 26.03.19.23
+    ansible_user: root
+    ansible_port: 22
+    ansible_become: true
+
+    platform: centos
+    edition: ce
+    version: 2020.1.1
+
+    features:
+      - call
+      - register
+      - rtcp
+
+    mongodb:
+      version: 4.2
+      path: /var/lib/mongodb
+      db: sip3
+    influxdb:
+      path: /var/lib/influxdb
+      db: sip3
+    grafana:
+      datasources:
+        database: sip3
+    salto:
+      server:
+        uri: udp://0.0.0.0:15060
+      management:
+        uri: udp://0.0.0.0:15090

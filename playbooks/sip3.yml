@@ -4,14 +4,13 @@
 # To run playbook, please use:
 # ansible-playbook -i inventories/inventory.yml playbooks/sip3.yml
 #
-# Also you can set groups which will be use: sip3, storage, frontend, agent, backend
+# Also you can set groups which will be use: sip3, storage, frontend, backend
 # E.g.
 # ansible-playbook -i inventories/inventory.yml playbooks/sip3.yml -t storage
 #
 # tag sip3: will manipulate with sip3 components, such as SIP3 Captain, Salto, Twig, Hoof (include NGINX and Grafana)
 # tag storage: will manipulate only with components MongoDB and InfluxDB
 # tag frontend: will manipulate only with components SIP3 Hoof and NGINX and Grafana
-# tag agent: will manipulate only with SIP3 Captain component
 # tag backend: will manipulate with components, such as SIP3 Salto, Twig, Hoof (include NGINX and Grafana)
 #
 # Also you set exclusion host.
@@ -19,49 +18,49 @@
 # ansible-playbook -i inventories/inventory.yml playbooks/sip3.yml --limit 'all:!captain'
 
 - name: "Deploy MongoDB"
-  hosts: mongodb
+  hosts: mongodb, backend
   roles:
     - role: ../roles/mongodb
-      tags: mongodb, storage
+      tags: storage
 
 - name: "Deploy InfluxDB"
-  hosts: influxdb
+  hosts: influxdb, backend
   roles:
     - role: ../roles/influxdb
-      tags: influxdb, storage
+      tags: storage
 
 - name: "Install OpenJDK"
-  hosts: captain,salto,twig
+  hosts: captain, salto, twig, backend
   roles:
     - role: ../roles/java
-      tags: backend, sip3, salto, twig, agent, captain
+      tags: backend, sip3, salto, twig, captain
 
 - name: "Install SIP3 Salto"
-  hosts: salto
+  hosts: salto, backend
   roles:
     - role: ../roles/salto
       tags: backend, sip3, salto
 
 - name: "Install SIP3 Twig"
-  hosts: twig
+  hosts: twig, backend
   roles:
     - role: ../roles/twig
       tags: backend, sip3, twig
 
 - name: "Install SIP3 Hoof"
-  hosts: hoof
+  hosts: hoof, backend
   roles:
     - role: ../roles/hoof
       tags: frontend, sip3, hoof
 
 - name: "Install Grafana"
-  hosts: grafana
+  hosts: grafana, backend
   roles:
     - role: ../roles/grafana
-      tags: frontend, sip3, grafana
+      tags: frontend, grafana
 
 - name: "Install SIP3 Captain"
   hosts: captain
   roles:
     - role: ../roles/captain
-      tags: agent, sip3, captain
+      tags: sip3, captain
