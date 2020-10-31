@@ -13,14 +13,11 @@
 
     {% if "webhook" in features -%}
     <appender name="WEBHOOK" class="io.sip3.logback.WebhookAppender">
-        <filter class="io.sip3.logback.filters.ErrorRateLimitFilter">
-        <maxSize>{{ salto.webhook.size | default('100') }}</maxSize>
-        <periodInSeconds>{{ salto.webhook.period | default('1800') }}</periodInSeconds>
-        </filter>
         <url>{{ salto.webhook.url | default('https://hooks.slack.com/services/') }}</url>
         <json>
            {{ salto.webhook.body | default('{"text": ":fire: Salto :fire:", "attachments": [{"text": "{message}"}]}') }}
         </json>
+        <interval>60</interval>
         <encoder>
             <pattern>%d{dd-MM-yyyy HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
         </encoder>

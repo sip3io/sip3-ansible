@@ -18,7 +18,7 @@ pcap:
   {% else -%}
   dir: {{ captain.pcap.dir | default('/tmp/sip3-captain') }}
   {% endif -%}
-  bpf-filter: "{{ captain.pcap.bpf_filter | default('tcp and udp') }}"
+  bpf-filter: "{{ captain.pcap.bpf_filter | default('tcp or udp') }}"
   timeout-millis: {{ captain.pcap.timeout_millis | default('10') }}
 {% endif %}
 
@@ -90,8 +90,8 @@ sender:
 {% if "rtp" in features or "rtcp" in features -%}
 #! Management socket
 management:
-  {% if captain.sender.uri is defined -%}
-  uri: {{ captain.sender.uri }}
+  {% if captain.management.uri is defined -%}
+  uri: {{ captain.management.uri }}
   {% else -%}
   uri: udp://{{ salto.address | default(address | default('127.0.0.1')) }}:{{ salto.management.port | default('15090')}}
   {% endif -%}

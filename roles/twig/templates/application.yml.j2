@@ -17,7 +17,6 @@ session:
     max-legs: {{ twig.session.call.max_legs | default('10') }}
     aggregation-timeout: {{ twig.session.call.aggregation_timeout | default('60000') }}
     termination-timeout: {{ twig.session.call.termination_timeout | default('5000') }}
-    show-retransmits: {{ twig.session.call.show_retransmits | default('false') }}
   register:
     max-legs: {{ twig.session.register.max_legs | default('10') }}
     aggregation-timeout: {{ twig.session.register.aggregation_timeout | default('10000') }}

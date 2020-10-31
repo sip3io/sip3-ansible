@@ -75,7 +75,7 @@ all:
     # Installation platform. E.g. centos, docker, debian etc
     platform: centos
     # SIP3 version release
-    version: 2020.1.1
+    version: 2020.2.1
     # Community or Enterprise version edition
     edition: ce
     # Account for EE downloading
