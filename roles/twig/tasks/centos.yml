@@ -102,7 +102,7 @@
         - proxy is undefined
         - edition != "ce"
 
-    - name: "Start SIP Twig"
+    - name: "Start SIP3 Twig"
       systemd:
         name: sip3-twig
         daemon_reload: yes
