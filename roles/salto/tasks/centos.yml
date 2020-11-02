@@ -76,7 +76,7 @@
 
     - name: "Create SIP3 Salto UDF function template"
       template:
-        src: templates/sip3_udf_message.groovy.j2
+        src: templates/sip3_message_udf.groovy.j2
         dest: /opt/sip3-salto/udf/sip3_udf_message.groovy
       when:
         - '"udf" in features'
