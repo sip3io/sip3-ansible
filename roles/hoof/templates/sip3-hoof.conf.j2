@@ -1,6 +1,6 @@
 server {
-    listen       {{ nginx.listen_port | default('80') }} default_server;
-    server_name  {{ nginx.server_name | default(address | default('_')) }};
+    listen       {{ hoof.port | default('80') }} default_server;
+    server_name  {{ hoof.server_name | default(address | default('_')) }};
 
     access_log  /var/log/nginx/sip3-hoof.access.log  main;
 

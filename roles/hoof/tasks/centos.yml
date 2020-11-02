@@ -19,7 +19,7 @@
         mirrorlist: http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=updates&infra=$infra
         gpgcheck: no
         proxy: "{{ proxy | default('_none_') }}"
-      when: add_system_repo == "yes"
+      when: add_system_repo == true
 
     - name: "Check and install tar and unzip"
       yum:
@@ -28,7 +28,6 @@
         packages:
           - tar
           - unzip
-        state: latest
 
     - name: "Install NGINX"
       yum:
@@ -63,12 +62,7 @@
       template:
         src: templates/nginx.conf.j2
         dest: /etc/nginx/nginx.conf
-      when: nginx.reconfigure == "yes"
-
-    - name: "Delete NGINX default config file /etc/nginx/conf.d/default.conf"
-      file:
-        path: /etc/nginx/conf.d/default.conf
-        state: absent
+      when: hoof.reconfigure == true
 
     - name: "Download SIP3 Hoof via proxy version: {{ version | default('latest') }}"
       block:

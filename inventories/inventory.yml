@@ -20,15 +20,14 @@
 # To run playbook, please use:
 # ansible-playbook -i inventories/inventory.yml playbooks/sip3.yml
 #
-# Also you can set groups which will be use: sip3, storage, frontend, agent, backend
+# Also you can set tags which will be use: sip3, storage, frontend, backend
 # E.g.
 # ansible-playbook -i inventories/inventory.yml playbooks/sip3.yml -t storage
 #
-# tag sip3: will manipulate with sip3 components, such as SIP3 Captain, Salto, Twig, Hoof (include NGINX and Grafana)
+# tag sip3: will manipulate with sip3 components, such as SIP3 Captain, Salto, Twig, Hoof
 # tag storage: will manipulate only with components MongoDB and InfluxDB
-# tag frontend: will manipulate only with components SIP3 Hoof and NGINX and Grafana
-# tag agent: will manipulate only with SIP3 Captain component
-# tag backend: will manipulate with components, such as SIP3 Salto, Twig, Hoof (include NGINX and Grafana)
+# tag frontend: will manipulate only with components SIP3 Hoof and Grafana
+# tag backend: will manipulate with components, such as SIP3 Salto, Twig
 #
 # Also you set exclusion host.
 # For example, you need run playbook without captain
@@ -99,7 +98,7 @@ all:
     # Vert.X metrics
     vertx:
       enabled: true
-      retantion_duration: 5d
+      retention_duration: 5d
 
     # Persistence storage properties
     mongodb:
