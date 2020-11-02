@@ -1,3 +1,4 @@
+*.j2 linguist-vendored=false
 *.groovy.j2 linguist-language=Groovy
 *.xml.j2 linguist-language=XML
 *.yml.j2 linguist-language=YAML

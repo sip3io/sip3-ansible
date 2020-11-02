@@ -98,7 +98,7 @@ all:
     # Vert.X metrics
     vertx:
       enabled: true
-      retantion_duration: 5d
+      retention_duration: 5d
 
     # Persistence storage properties
     mongodb:
