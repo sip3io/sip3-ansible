@@ -1,0 +1,41 @@
+all:
+  hosts:
+    backend:
+      ansible_host: 192.168.215.15
+  vars:
+    ansible_user: ansible
+    ansible_port: 22
+    ansible_become: true
+
+    platform: debian
+    edition: ce
+    version: 2020.2.1
+
+    features:
+      - call
+      - register
+      - rtcp
+
+    mongodb:
+      version: 4.4
+      address: 127.0.0.1
+      port: 27017
+      path: /var/lib/mongodb
+      db: sip3
+
+    influxdb:
+      address: 127.0.0.1
+      port: 8086
+      path: /var/lib/influxdb
+      db: sip3
+
+    grafana:
+      datasources:
+        database: sip3
+
+    salto:
+      server:
+        uri: udp://0.0.0.0:15060
+      management:
+        uri: udp://0.0.0.0:15090
+

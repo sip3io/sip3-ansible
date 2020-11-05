@@ -1,14 +1,18 @@
 - name: "Install Twig for CentOS"
   include: centos.yml
   when:
-    - platform == "centos"
+    - platform | lower == "centos"
+    - ansible_facts['distribution'] | lower == "centos"
+
+- name: "Install Twig for Debian"
+  include: debian.yml
+  when:
+    - platform | lower == "debian"
+    - ansible_facts['distribution'] | lower == "debian"
+    - ansible_facts['distribution_major_version'] | int >= 9
 
 #- name: "Install Twig for Docker"
 #  include: docker.yml
 #  when:
 #    - platform == "docker"
 #
-#- name: "Install Twig for Debian"
-#  include: debian.yml
-#  when:
-#    - platform == "debian"

@@ -1,17 +1,15 @@
 - name: "Installing"
   block:
-    - name: "Add CentOS repository"
-      yum_repository:
-        name: centos-updates
-        description: "CentOS-$releasever - Updates"
-        mirrorlist: http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=updates&infra=$infra
-        gpgcheck: no
-        proxy: "{{ proxy | default('_none_') }}"
+    - name: "Add Debian repository"
+      apt_repository:
+        repo: deb http://ftp.ru.debian.org/debian/ {{ ansible_facts['lsb']['codename'] }} main contrib
+        state: present
       when: add_system_repo == "yes"
 
-    - name: "Install the {{ java.version.centos }} version of OpenJDK"
-      yum:
-        name: java-{{ java.version.centos }}-openjdk
+    - name: "Install the {{ java.version.debian[ansible_facts['lsb']['codename']] }} version of OpenJDK"
+      apt:
+        name: openjdk-{{ java.version.debian[ansible_facts['lsb']['codename']] }}-jre
+
   when: state == "started"
 
 #
