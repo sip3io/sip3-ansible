@@ -49,6 +49,11 @@
         src: templates/mongod.conf.j2
         dest: /etc/mongod.conf
 
+    - name: "Deploying MongoDB config for recreate /var/run/mongodb on tmpfs"
+      template:
+        src: templates/mongodb.conf.tmpfs.j2
+        dest: /usr/lib/tmpfiles.d/mongodb.conf
+
     - name: "Start service MongoDB"
       systemd:
         name: mongod
@@ -56,7 +61,7 @@
         enabled: yes
         state: restarted
 
-    - name: "Wait for MongoDB serice starts"
+    - name: "Wait for MongoDB service starts"
       wait_for:
         host: 127.0.0.1
         port: "{{ mongodb.port }}"
