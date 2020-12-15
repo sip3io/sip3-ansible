@@ -2,13 +2,13 @@
   block:
     - name: "Add Debian repository"
       apt_repository:
-        repo: deb http://ftp.ru.debian.org/debian/ {{ ansible_facts['lsb']['codename'] }} main contrib
+        repo: deb http://deb.debian.org/debian/ {{ ansible_facts['lsb']['codename'] }} main contrib
         state: present
-      when: add_system_repo == "yes"
+      when: add_system_repo == true
 
-    - name: "Install the {{ java.version.debian[ansible_facts['lsb']['codename']] }} version of OpenJDK"
+    - name: "Install the default version of OpenJDK from Debian repository"
       apt:
-        name: openjdk-{{ java.version.debian[ansible_facts['lsb']['codename']] }}-jre
+        name: default-jre
 
   when: state == "started"
 
@@ -16,13 +16,13 @@
 #- name: "Uninstalling"
 #  block:
 #    - name: "Uninstall Java"
-#      yum:
-#        name: java-{{ java_version }}-openjdk
+#      apt:
+#        pkg: default-jre
 #        autoremove: yes
 #        state: absent
-#    - name: "Delete CentOS repository"
+#    - name: "Delete Debian repository"
 #      file:
-#        path: /etc/yum.repos.d/centos-updates.repo
+#        path: /etc/apt/sources.list.d/deb_debian_org_debian.list
 #        force: true
 #        state: absent
 #      when: add_system_repo is defined

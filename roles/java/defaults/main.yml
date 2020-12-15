@@ -1,8 +1,4 @@
 state: started
-add_system_repo: "no"
+add_system_repo: false
 java:
-  version:
-    centos: "1.8.0"
-    debian:
-      buster: "11"
-      stretch: "8"
+  version: 1.8.0

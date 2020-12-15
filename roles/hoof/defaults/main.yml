@@ -1,5 +1,5 @@
 state: started
-add_system_repo: no
+add_system_repo: false
 hoof:
-  reconfigure: yes
+  reconfigure: true
 edition: ce

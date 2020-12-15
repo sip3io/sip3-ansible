@@ -2,9 +2,9 @@
   block:
     - name: "Add Debian repository"
       apt_repository:
-        repo: deb http://ftp.ru.debian.org/debian/ {{ ansible_facts['lsb']['codename'] }} main contrib
+        repo: deb http://deb.debian.org/debian/ {{ ansible_facts['lsb']['codename'] }} main contrib
         state: present
-      when: add_system_repo == "yes"
+      when: add_system_repo == true
 
     - name: "Install gnupg and apt-transport-https packages"
       apt:
@@ -60,7 +60,7 @@
       template:
         src: templates/nginx.conf.j2
         dest: /etc/nginx/nginx.conf
-      when: hoof.reconfigure == "yes"
+      when: hoof.reconfigure == true
 
     - name: "Download SIP3 Hoof via proxy version: {{ version | default('latest') }}"
       block:
