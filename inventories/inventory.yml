@@ -92,11 +92,7 @@ all:
       - udf
     # Settings for Java
     java:
-      version:
-        centos: "1.8.0"
-        debian:
-          buster: "11"
-          stretch: "8"
+      version: 1.8.0
       xms: 512M
       xmx: 1024M
       gc: G1
