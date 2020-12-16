@@ -53,6 +53,8 @@ all:
     ansible_user: root
     # Management ip address for SSH access
     ansible_host: 127.0.0.1
+    # May be usefull for Non-SSH connection in case of localhost (127.0.0.1). Uncomment for use.
+    # ansible_connection: local
     # SSH port for management access to hosts
     ansible_port: 22
     # Properties ansible_user, ansible_host and ansible_port can be individual for each hosts,

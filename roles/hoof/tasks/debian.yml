@@ -1,0 +1,190 @@
+- name: "Installing"
+  block:
+    - name: "Add Debian repository"
+      apt_repository:
+        repo: deb http://deb.debian.org/debian/ {{ ansible_facts['lsb']['codename'] }} main contrib
+        state: present
+      when: add_system_repo == true
+
+    - name: "Install gnupg and apt-transport-https packages"
+      apt:
+        pkg:
+          - gnupg
+          - apt-transport-https
+
+    - name: "Add signing key for NGINX repository"
+      apt_key:
+        url: "https://nginx.org/keys/nginx_signing.key"
+        state: present
+
+    - name: "Add NGINX repository"
+      apt_repository:
+        repo: deb http://nginx.org/packages/debian {{ ansible_facts['lsb']['codename'] }} nginx
+        state: present
+        filename: nginx
+
+    - name: "Check and install tar and unzip"
+      apt:
+        pkg:
+          - tar
+          - unzip
+
+    - name: "Install NGINX"
+      apt:
+        pkg:
+          - nginx
+
+    - name: "Creates directories for SIP3 Hoof"
+      block:
+        - name: "Checking folders"
+          stat:
+            path: "{{item}}"
+          register: folder_stats
+          with_items:
+            - ["/etc/nginx/conf.d","/var/www/sip3-hoof"]
+        - name: "Creating multiple folders without disturbing previous permissions"
+          file:
+            path: "{{item.item}}"
+            state: directory
+            mode: 0755
+          when: item.stat.exists == false
+          with_items:
+            - "{{folder_stats.results}}"
+
+    - name: "Create NGINX config for SIP3 Hoof application"
+      template:
+        src: templates/sip3-hoof.conf.j2
+        dest: /etc/nginx/conf.d/sip3-hoof.conf
+
+    - name: "Reconfigure default NGINX config"
+      template:
+        src: templates/nginx.conf.j2
+        dest: /etc/nginx/nginx.conf
+      when: hoof.reconfigure == true
+
+    - name: "Download SIP3 Hoof via proxy version: {{ version | default('latest') }}"
+      block:
+        - name: "Download application via proxy into /var/www/sip3-hoof version: {{ version | default('latest') }}"
+          get_url:
+            url: https://maven.sip3.io/releases-ce/io/sip3/hoof/ce/sip3-hoof-ce/{{ version | default('latest') }}/sip3-hoof-ce-{{ version | default('latest') }}.tgz
+            dest: /var/www/sip3-hoof/sip3-hoof-ce.tgz
+            use_proxy: yes
+          environment:
+            https_proxy: "{{ proxy }}"
+
+        - name: "Extract SIP3 Hoof archive"
+          shell:
+            cmd: tar -zxvf sip3-hoof-ce.tgz && rm -f sip3-hoof-ce.tgz
+            chdir: /var/www/sip3-hoof/
+            warn: no
+      when:
+        - proxy is defined
+        - edition == "ce"
+
+    - name: "Download SIP3 Hoof version: {{ version | default('latest') }}"
+      block:
+        - name: "Download application into /var/www/sip3-hoof version: {{ version | default('latest') }}"
+          get_url:
+            url: https://maven.sip3.io/releases-ce/io/sip3/hoof/ce/sip3-hoof-ce/{{ version | default('latest') }}/sip3-hoof-ce-{{ version | default('latest') }}.tgz
+            dest: /var/www/sip3-hoof/sip3-hoof-ce.tgz
+            use_proxy: no
+
+        - name: "Extract SIP3 Hoof archive"
+          shell:
+            cmd: tar -zxvf sip3-hoof-ce.tgz && rm -f sip3-hoof-ce.tgz
+            chdir: /var/www/sip3-hoof/
+            warn: no
+      when:
+        - proxy is undefined
+        - edition == "ce"
+
+    - name: "Download SIP3 Hoof EE via proxy version: {{ version | default('latest') }}"
+      block:
+        - name: "Download application via proxy into /var/www/sip3-hoof version: {{ version | default('latest') }}"
+          get_url:
+            url: https://maven.sip3.io/releases-ee/io/sip3/hoof/{{ edition }}/sip3-hoof-{{ edition }}/{{ version | default('latest') }}/sip3-hoof-{{ edition }}-{{ version | default('latest') }}.tgz
+            dest: /var/www/sip3-hoof/sip3-hoof-{{ edition }}.tgz
+            url_username: "{{ support.username | default('none') }}"
+            url_password: "{{ support.password | default('none') }}"
+            use_proxy: yes
+          environment:
+            https_proxy: "{{ proxy }}"
+
+        - name: "Extract SIP3 Hoof EE archive"
+          shell:
+            cmd: tar -zxvf sip3-hoof-{{ edition }}.tgz && rm -f sip3-hoof-{{ edition }}.tgz
+            chdir: /var/www/sip3-hoof/
+            warn: no
+      when:
+        - proxy is defined
+        - edition != "ce"
+
+    - name: "Download SIP3 Hoof EE version: {{ version | default('latest') }}"
+      block:
+        - name: "Download application into /var/www/sip3-hoof version: {{ version | default('latest') }}"
+          get_url:
+            url: https://maven.sip3.io/releases-ee/io/sip3/hoof/{{ edition }}/sip3-hoof-{{ edition }}/{{ version | default('latest') }}/sip3-hoof-{{ edition }}-{{ version | default('latest') }}.tgz
+            dest: /var/www/sip3-hoof/sip3-hoof-{{ edition }}.tgz
+            url_username: "{{ support.username | default('none') }}"
+            url_password: "{{ support.password | default('none') }}"
+            use_proxy: no
+
+        - name: "Extract SIP3 Hoof EE archive"
+          shell:
+            cmd: tar -zxvf sip3-hoof-{{ edition }}.tgz && rm -f sip3-hoof-{{ edition }}.tgz
+            chdir: /var/www/sip3-hoof/
+            warn: no
+      when:
+        - proxy is undefined
+        - edition != "ce"
+
+    - name: "Start NGINX"
+      systemd:
+        name: nginx
+        state: started
+        daemon_reload: yes
+        enabled: yes
+  when: state == "started"
+
+- name: "Uninstalling"
+  block:
+    - name: "Stop NGINX"
+      systemd:
+        name: nginx
+        state: stopped
+        enabled: no
+
+    - name: "Uninstall NGINX"
+      apt:
+        pkg:
+          - nginx
+        autoremove: yes
+        state: absent
+
+    - name: "Purge project files"
+      block:
+        - name: "Checking project files"
+          stat:
+            path: "{{item}}"
+          register: folder_stats
+          with_items:
+            - "/etc/yum.repos.d/nginx.repo"
+            - "/var/www/sip3-hoof"
+        - name: "Delete project files"
+          file:
+            path: "{{ item.item }}"
+            force: true
+            state: absent
+          when: item.stat.exists == true and item.stat.isdir == false
+          with_items:
+            - "{{folder_stats.results}}"
+        - name: "Delete project folders"
+          file:
+            path: "{{ item.item }}"
+            force: true
+            state: absent
+          when: item.stat.exists == true and item.stat.isdir == true
+          with_items:
+            - "{{folder_stats.results}}"
+      ignore_errors: yes
+  when: state == "absent"

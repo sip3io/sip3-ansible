@@ -1,4 +1,4 @@
 state: started
-add_system_repo: yes
+add_system_repo: false
 java:
   version: 1.8.0

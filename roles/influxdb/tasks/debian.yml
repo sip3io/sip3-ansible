@@ -1,0 +1,93 @@
+- name: "Installing"
+  block:
+    - name: "Add Debian repository"
+      apt_repository:
+        repo: deb http://deb.debian.org/debian/ {{ ansible_facts['lsb']['codename'] }} main contrib
+        state: present
+      when: add_system_repo == true
+
+    - name: "Install gnupg and apt-transport-https packages"
+      apt:
+        pkg:
+          - gnupg
+          - apt-transport-https
+
+    - name: "Add signing key for InfluxDB repository"
+      apt_key:
+        url: "https://repos.influxdata.com/influxdb.key"
+        state: present
+
+    - name: "Add InfluxDB repository"
+      apt_repository:
+        repo: deb https://repos.influxdata.com/debian {{ ansible_facts['lsb']['codename'] }} stable
+        state: present
+        filename: influxdb
+
+    - name: "Install the latest version of InfluxDB"
+      apt:
+        pkg:
+          - influxdb
+
+    - name: "Creates directory {{ influxdb.path | default('/var/lib/influxdb') }} for InfluxDB"
+      file:
+        path: "{{ influxdb.path | default('/var/lib/influxdb') }}"
+        state: directory
+        mode: 0755
+        group: influxdb
+        owner: influxdb
+
+    - name: "Create InfluxDB config"
+      template:
+        src: templates/influxdb.conf.j2
+        dest: /etc/influxdb/influxdb.conf
+
+    - name: "Start service InfluxDB"
+      systemd:
+        name: influxdb
+        state: started
+        daemon_reload: yes
+        enabled: yes
+  when: state == "started"
+
+- name: "Uninstalling"
+  block:
+    - name: Stop InfluxDB
+      systemd:
+        name: influxdb
+        state: stopped
+        enabled: no
+
+    - name: "Uninstall InfluxDB"
+      yum:
+        name: influxdb
+        autoremove: yes
+        state: absent
+
+    - name: "Purge project files"
+      block:
+        - name: "Collecting project files"
+          stat:
+            path: "{{item}}"
+          register: folder_stats
+          with_items:
+            - "/etc/influxdb"
+            - "{{ influxdb.path | default('/var/lib/influxdb') }}"
+            - "/etc/yum.repos.d/influxdb.repo"
+        - name: "Delete project files"
+          file:
+            path: "{{ item.item }}"
+            force: true
+            state: absent
+          when: item.stat.exists == true and item.stat.isdir == false
+          with_items:
+            - "{{folder_stats.results}}"
+        - name: "Delete project folders"
+          file:
+            path: "{{ item.item }}"
+            force: true
+            state: absent
+          when: item.stat.exists == true and item.stat.isdir == true
+          with_items:
+            - "{{folder_stats.results}}"
+      ignore_errors: yes
+  when: state == "absent"
