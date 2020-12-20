@@ -9,9 +9,9 @@
         proxy: "{{ proxy | default('_none_') }}"
       when: add_system_repo == true
 
-    - name: "Install the {{ java.version.centos }} version of OpenJDK"
+    - name: "Install the {{ java.version }} version of OpenJDK"
       yum:
-        name: java-{{ java.version.centos }}-openjdk
+        name: java-{{ java.version }}-openjdk
   when: state == "started"
 
 #
