@@ -1,0 +1,17 @@
+all:
+  hosts:
+    hoof:
+      ansible_host: 192.168.215.15
+  vars:
+    ansible_user: ansible
+    ansible_port: 22
+    ansible_become: true
+
+    platform: debian
+    edition: ce
+    version: 2020.2.1
+
+    features:
+      - call
+      - register
+      - rtcp

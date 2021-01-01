@@ -1,0 +1,29 @@
+- name: "Installing"
+  block:
+    - name: "Add Debian repository"
+      apt_repository:
+        repo: deb http://deb.debian.org/debian/ {{ ansible_facts['lsb']['codename'] }} main contrib
+        state: present
+      when: add_system_repo == true
+
+    - name: "Install the default version of OpenJDK from Debian repository"
+      apt:
+        name: default-jre
+
+  when: state == "started"
+
+#
+#- name: "Uninstalling"
+#  block:
+#    - name: "Uninstall Java"
+#      apt:
+#        pkg: default-jre
+#        autoremove: yes
+#        state: absent
+#    - name: "Delete Debian repository"
+#      file:
+#        path: /etc/apt/sources.list.d/deb_debian_org_debian.list
+#        force: true
+#        state: absent
+#      when: add_system_repo is defined
+#  when: state == "absent"

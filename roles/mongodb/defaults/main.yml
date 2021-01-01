@@ -1,4 +1,5 @@
 state: started
+add_system_repo: true
 hostmap:
   - name: "node-1"
     sip:

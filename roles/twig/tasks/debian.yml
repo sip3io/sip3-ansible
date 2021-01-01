@@ -1,0 +1,152 @@
+- name: "Installing"
+  block:
+    - name: "Create SIP3 account"
+      user:
+        name: sip3
+        comment: "SIP3 Account"
+        append: yes
+
+    - name: "Creates directories for SIP3 Twig"
+      block:
+        - name: "Checking folders"
+          stat:
+            path: "{{item}}"
+          register: folder_stats
+          with_items:
+            - "/etc/sip3-twig"
+            - "/var/log/sip3-twig"
+            - "/opt/sip3-twig"
+            - "/tmp/sip3-twig"
+        - name: "Creating multiple folders without disturbing previous permissions"
+          file:
+            path: "{{item.item}}"
+            state: directory
+            mode: 0755
+            group: sip3
+            owner: sip3
+          when: item.stat.exists == false
+          with_items:
+            - "{{ folder_stats.results }}"
+
+    - name: "Create /usr/lib/systemd/system directory if does not exists"
+      file:
+        path: "/usr/lib/systemd/system"
+        state: directory
+        mode: 0755
+
+    - name: "Create SIP3 Twig application config"
+      template:
+        src: templates/application.yml.j2
+        dest: /etc/sip3-twig/application.yml
+
+    - name: "Create SIP3 Twig application log config"
+      template:
+        src: templates/logback.xml.j2
+        dest: /etc/sip3-twig/logback.xml
+
+    - name: "Create SIP3 Twig systemd service"
+      template:
+        src: templates/sip3-twig.service.j2
+        dest: /usr/lib/systemd/system/sip3-twig.service
+
+    - name: "Create SIP3 Twig start script"
+      template:
+        src: templates/sip3-twig.j2
+        dest: /opt/sip3-twig/sip3-twig
+        mode: 0755
+
+    - name: "Create SIP3 Twig environment config file"
+      template:
+        src: templates/environment.conf.j2
+        dest: /etc/sip3-twig/environment.conf
+
+    - name: "Get SIP3 Twig application via proxy version: {{ version | default('latest') }}"
+      get_url:
+        url: https://maven.sip3.io/releases-ce/io/sip3/twig/ce/sip3-twig-ce/{{ version | default('latest') }}/sip3-twig-ce-{{ version | default('latest') }}.jar
+        dest: /opt/sip3-twig/sip3-twig.jar
+        use_proxy: yes
+      environment:
+        https_proxy: "{{ proxy | default('_none_') }}"
+      when:
+        - proxy is defined
+        - edition == "ce"
+
+    - name: "Get SIP3 Twig application version: {{ version | default('latest') }}"
+      get_url:
+        url: https://maven.sip3.io/releases-ce/io/sip3/twig/ce/sip3-twig-ce/{{ version | default('latest') }}/sip3-twig-ce-{{ version | default('latest') }}.jar
+        dest: /opt/sip3-twig/sip3-twig.jar
+        use_proxy: no
+      when:
+        - proxy is undefined
+        - edition == "ce"
+
+    - name: "Get SIP3 Twig EE application via proxy version: {{ version | default('latest') }}"
+      get_url:
+        url: https://maven.sip3.io/releases-ee/io/sip3/twig/{{ edition }}/sip3-twig-{{ edition }}/{{ version | default('latest') }}/sip3-twig-{{ edition }}-{{ version | default('latest') }}.jar
+        dest: /opt/sip3-twig/sip3-twig.jar
+        use_proxy: yes
+        url_username: "{{ support.username | default('none') }}"
+        url_password: "{{ support.password | default('none') }}"
+      environment:
+        https_proxy: "{{ proxy }}"
+      when:
+        - proxy is defined
+        - edition != "ce"
+
+    - name: "Get SIP3 Twig EE application version: {{ version | default('latest') }}"
+      get_url:
+        url: https://maven.sip3.io/releases-ee/io/sip3/twig/{{ edition }}/sip3-twig-{{ edition }}/{{ version | default('latest') }}/sip3-twig-{{ edition }}-{{ version | default('latest') }}.jar
+        dest: /opt/sip3-twig/sip3-twig.jar
+        use_proxy: no
+        url_username: "{{ support.username | default('none') }}"
+        url_password: "{{ support.password | default('none') }}"
+      when:
+        - proxy is undefined
+        - edition != "ce"
+
+    - name: "Start SIP3 Twig"
+      systemd:
+        name: sip3-twig
+        daemon_reload: yes
+        state: restarted
+        enabled: yes
+  when: state == "started"
+
+- name: "Uninstalling"
+  block:
+    - name: Stop SIP3 Twig
+      systemd:
+        name: sip3-twig
+        enabled: no
+        state: stopped
+
+    - name: "Purge project files"
+      block:
+        - name: "Collecting project files"
+          stat:
+            path: "{{item}}"
+          register: folder_stats
+          with_items:
+            - "/etc/sip3-twig"
+            - "/var/log/sip3-twig"
+            - "/opt/sip3-twig"
+            - "/tmp/sip3-twig"
+            - "/usr/lib/systemd/system/sip3-twig.service"
+        - name: "Delete project files"
+          file:
+            path: "{{ item.item }}"
+            force: true
+            state: absent
+          when: item.stat.exists == true and item.stat.isdir == false
+          with_items:
+            - "{{folder_stats.results}}"
+        - name: "Delete project folders"
+          file:
+            path: "{{ item.item }}"
+            force: true
+            state: absent
+          when: item.stat.exists == true and item.stat.isdir == true
+          with_items:
+            - "{{folder_stats.results}}"
+      ignore_errors: yes
+  when: state == "absent"

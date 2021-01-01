@@ -1,5 +1,11 @@
 - name: "Installing"
   block:
+
+    - name: "Make sure we have a 'wheel' group"
+      group:
+        name: wheel
+        state: present
+
     - name: "Create SIP3 account"
       user:
         name: sip3
@@ -7,18 +13,15 @@
         groups: wheel
         append: yes
 
-    - name: "Add CentOS repository"
-      yum_repository:
-        name: centos-updates
-        description: "CentOS-$releasever - Updates"
-        mirrorlist: http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=updates&infra=$infra
-        gpgcheck: no
-        proxy: "{{ proxy | default('_none_') }}"
+    - name: "Add Debian repository"
+      apt_repository:
+        repo: deb http://deb.debian.org/debian/ {{ ansible_facts['lsb']['codename'] }} main contrib
+        state: present
       when: add_system_repo == true
 
     - name: "Install libpcap library"
-      yum:
-        name: libpcap
+      apt:
+        name: libpcap0.8
 
     - name: "Creates directories for SIP3 Captain"
       block:
@@ -42,6 +45,12 @@
           when: item.stat.exists == false
           with_items:
             - "{{ folder_stats.results }}"
+
+    - name: "Create /usr/lib/systemd/system directory if does not exists"
+      file:
+        path: "/usr/lib/systemd/system"
+        state: directory
+        mode: 0755
 
     - name: "Create SIP3 Captain application config"
       template:

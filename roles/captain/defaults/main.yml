@@ -1,5 +1,5 @@
 state: started
-add_system_repo: yes
+add_system_repo: true
 edition: ce
 features:
   - call

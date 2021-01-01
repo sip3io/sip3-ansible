@@ -1,0 +1,24 @@
+all:
+  hosts:
+    influxdb:
+      ansible_host: 192.168.215.15
+  vars:
+    ansible_user: ansible
+    ansible_port: 22
+    ansible_become: true
+
+    platform: debian
+    edition: ce
+    version: 2020.2.1
+
+    features:
+      - call
+      - register
+      - rtcp
+
+    influxdb:
+      # If you want to use for InfluxDB exclusive ip address, you can set here. Otherwise will be use variable 'address'
+      address: 127.0.0.1
+      port: 8086
+      path: /var/lib/influxdb
+      db: sip3

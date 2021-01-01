@@ -1,0 +1,182 @@
+- name: "Installing"
+  block:
+    - name: "Create SIP3 account"
+      user:
+        name: sip3
+        comment: "SIP3 Account"
+        append: yes
+
+    - name: "Creates directories for SIP3 Salto"
+      block:
+        - name: "Checking folders"
+          stat:
+            path: "{{ item }}"
+          register: folder_stats
+          with_items:
+            - "/etc/sip3-salto"
+            - "/var/log/sip3-salto"
+            - "/opt/sip3-salto"
+            - "/opt/sip3-salto/udf"
+            - "/tmp/sip3-salto"
+        - name: "Creating multiple folders without disturbing previous permissions"
+          file:
+            path: "{{ item.item }}"
+            state: directory
+            mode: 0755
+            group: sip3
+            owner: sip3
+          when: item.stat.exists == false
+          with_items:
+            - "{{ folder_stats.results }}"
+
+    - name: "Create /usr/lib/systemd/system directory if does not exists"
+      file:
+        path: "/usr/lib/systemd/system"
+        state: directory
+        mode: 0755
+
+    - name: "Create SIP3 Salto application config"
+      template:
+        src: templates/application.yml.j2
+        dest: /etc/sip3-salto/application.yml
+
+    - name: "Create SIP3 Salto application log config"
+      template:
+        src: templates/logback.xml.j2
+        dest: /etc/sip3-salto/logback.xml
+
+    - name: "Create SIP3 Salto start script"
+      template:
+        src: templates/sip3-salto.j2
+        dest: /opt/sip3-salto/sip3-salto
+        mode: 0755
+
+    - name: "Create SIP3 Salto environment config file"
+      template:
+        src: templates/environment.conf.j2
+        dest: /etc/sip3-salto/environment.conf
+
+    - name: "Create SIP3 Salto application codecs config"
+      template:
+        src: templates/codecs.yml.j2
+        dest: /etc/sip3-salto/codecs.yml
+
+    - name: "Create Vert.x metrics config"
+      template:
+        src: templates/vertx-options.json.j2
+        dest: /etc/sip3-salto/vertx-options.json
+      when: '"vertx_metrics" in features'
+
+    - name: "Create SIP3 Salto UDF functions"
+      copy:
+        content: "{{ item.body }}"
+        dest: /opt/sip3-salto/udf/{{ item.name }}
+      loop: "{{ salto.udf }}"
+      when:
+        - '"udf" in features'
+        - salto.udf is defined
+
+    - name: "Create SIP3 Salto UDF function template"
+      template:
+        src: templates/sip3_message_udf.groovy.j2
+        dest: /opt/sip3-salto/udf/sip3_udf_message.groovy
+      when:
+        - '"udf" in features'
+        - salto.udf is undefined
+
+    - name: "Create SIP3 Salto systemd service"
+      template:
+        src: templates/sip3-salto.service.j2
+        dest: /usr/lib/systemd/system/sip3-salto.service
+
+    - name: "Get SIP3 Salto application via proxy version: {{ version | default('latest') }}"
+      get_url:
+        url: https://maven.sip3.io/releases-ce/io/sip3/salto/ce/sip3-salto-ce/{{ version | default('latest') }}/sip3-salto-ce-{{ version | default('latest') }}.jar
+        dest: /opt/sip3-salto/sip3-salto.jar
+        use_proxy: yes
+      environment:
+        https_proxy: "{{ proxy | default('_none_') }}"
+      when:
+        - proxy is defined
+        - edition == "ce"
+
+    - name: "Get SIP3 Salto application version: {{ version | default('latest') }}"
+      get_url:
+        url: https://maven.sip3.io/releases-ce/io/sip3/salto/ce/sip3-salto-ce/{{ version | default('latest') }}/sip3-salto-ce-{{ version | default('latest') }}.jar
+        dest: /opt/sip3-salto/sip3-salto.jar
+        use_proxy: no
+      when:
+        - proxy is undefined
+        - edition == "ce"
+
+    - name: "Get SIP3 Salto EE application via proxy version: {{ version | default('latest') }}"
+      get_url:
+        url: https://maven.sip3.io/releases-ee/io/sip3/salto/{{ edition }}/sip3-salto-{{ edition }}/{{ version | default('latest') }}/sip3-salto-{{ edition }}-{{ version | default('latest') }}.jar
+        dest: /opt/sip3-salto/sip3-salto.jar
+        use_proxy: yes
+        url_username: "{{ support.username | default('none') }}"
+        url_password: "{{ support.password | default('none') }}"
+      environment:
+        https_proxy: "{{ proxy }}"
+      when:
+        - proxy is defined
+        - edition != "ce"
+
+    - name: "Get SIP3 Salto EE application version: {{ version | default('latest') }}"
+      get_url:
+        url: https://maven.sip3.io/releases-ee/io/sip3/salto/{{ edition }}/sip3-salto-{{ edition }}/{{ version | default('latest') }}/sip3-salto-{{ edition }}-{{ version | default('latest') }}.jar
+        dest: /opt/sip3-salto/sip3-salto.jar
+        use_proxy: no
+        url_username: "{{ support.username | default('none') }}"
+        url_password: "{{ support.password | default('none') }}"
+      when:
+        - proxy is undefined
+        - edition != "ce"
+
+    - name: "Start SIP3 Salto"
+      systemd:
+        name: sip3-salto
+        daemon_reload: yes
+        state: restarted
+        enabled: yes
+  when: state == "started"
+
+- name: "Uninstalling"
+  block:
+    - name: "Stop SIP3 Salto"
+      systemd:
+        name: sip3-salto
+        enabled: no
+        state: stopped
+
+    - name: "Purge project files"
+      block:
+        - name: "Collecting project files"
+          stat:
+            path: "{{item}}"
+          register: folder_stats
+          with_items:
+            - "/etc/sip3-salto"
+            - "/var/log/sip3-salto"
+            - "/opt/sip3-salto/udf"
+            - "/opt/sip3-salto"
+            - "/tmp/sip3-salto"
+            - "/usr/lib/systemd/system/sip3-salto.service"
+        - name: "Delete project files"
+          file:
+            path: "{{ item.item }}"
+            force: true
+            state: absent
+          when: item.stat.exists == true and item.stat.isdir == false
+          with_items:
+            - "{{folder_stats.results}}"
+        - name: "Delete project folders"
+          file:
+            path: "{{ item.item }}"
+            force: true
+            state: absent
+          when: item.stat.exists == true and item.stat.isdir == true
+          with_items:
+            - "{{folder_stats.results}}"
+      ignore_errors: yes
+  when: state == "absent"

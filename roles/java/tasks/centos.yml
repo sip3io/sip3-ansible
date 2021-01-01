@@ -7,11 +7,11 @@
         mirrorlist: http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=updates&infra=$infra
         gpgcheck: no
         proxy: "{{ proxy | default('_none_') }}"
-      when: add_system_repo == "yes"
+      when: add_system_repo == true
 
-    - name: "Install the {{ java.version }} version of OpenJDK"
+    - name: "Install the {{ java.version.centos }} version of OpenJDK"
       yum:
-        name: java-{{ java.version }}-openjdk
+        name: java-{{ java.version.centos }}-openjdk
   when: state == "started"
 
 #
