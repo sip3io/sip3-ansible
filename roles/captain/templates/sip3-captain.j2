@@ -7,9 +7,9 @@ export LD_LIBRARY_PATH=/opt/sip3-captain/lib:$LD_LIBRARY_PATH
 
 $JAVA_HOME/bin/java \
  $JAVA_OPTS \
+ -Dlogback.configurationFile=/etc/sip3-captain/logback.xml \
  -jar /opt/sip3-captain/sip3-captain.jar \
  -Dconfig.location=/etc/sip3-captain/application.yml \
- -Dlogback.configurationFile=/etc/sip3-captain/logback.xml \
  -Dvertx.cacheDirBase=/tmp/sip3-captain \
  $VERTX_OPTS \
 2>&1 >>/var/log/sip3-captain/default.log
