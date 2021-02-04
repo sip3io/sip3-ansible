@@ -14,43 +14,43 @@
 
 codecs:
   - name: PCMA
-    payload_type: 8
+    payload_types: [ 8 ]
     clock_rate: 8000
     ie: 0
     bpl: 4.3
 
   - name: PCMU
-    payload_type: 0
+    payload_types: [ 0 ]
     clock_rate: 8000
     ie: 0
     bpl: 4.3
 
   - name: G722
-    payload_type: 9
+    payload_types: [ 9 ]
     clock_rate: 8000
     ie: 5
     bpl: 7.1
 
   - name: CN
-    payload_type: 13
+    payload_types: [ 13 ]
     clock_rate: 8000
     ie: 0
     bpl: 4.3
 
   - name: G723
-    payload_type: 4
+    payload_types: [ 4 ]
     clock_rate: 8000
     ie: 15
     bpl: 16.1
 
   - name: G729
-    payload_type: 1
+    payload_types: [ 1 ]
     clock_rate: 8000
     ie: 10
     bpl: 19.0
 
   - name: GSM
-    payload_type: 3
+    payload_types: [ 3, 5, 100..110 ]
     clock_rate: 8000
     ie: 20
     bpl: 10.0
