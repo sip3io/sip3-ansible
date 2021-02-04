@@ -93,12 +93,14 @@ mongo:
         hashed: {{ salto.mongodb.collections.sip_options_raw.indexes.hashed | default('[call_id]') }}
       max-collections: {{ salto.mongodb.collections.sip_options_raw.max_collections | default('30') }}
     {% endif -%}
-    {% if "rtcp" in features -%}
-    - prefix: rtpr_rtcp_index
+    {% if "rtp" in features or "rtcp" in features %}
+    - prefix: media_call_index
       indexes:
-        ascending: {{ salto.mongodb.collections.rtpr_rtcp_index.indexes.ascending | default('[started_at, src_addr, src_host, dst_addr, dst_host, mos, r_factor]') }}
-        hashed: {{ salto.mongodb.collections.rtpr_rtcp_index.indexes.hashed | default('[call_id]') }}
-      max-collections: {{ salto.mongodb.collections.rtpr_rtcp_index.max_collections | default('30') }}
+        ascending: {{ salto.mongodb.collections.media_call_index.indexes.ascending | default('[created_at, src_addr, src_host, dst_addr, dst_host, mos, r_factor]') }}
+        hashed: {{ salto.mongodb.collections.media_call_index.indexes.hashed | default('[call_id]') }}
+      max-collections: {{ salto.mongodb.collections.media_call_index.max_collections | default('30') }}
+    {% endif -%}
+    {% if "rtcp" in features -%}
     - prefix: rtpr_rtcp_raw
       indexes:
         ascending: {{ salto.mongodb.collections.rtpr_rtcp_raw.indexes.ascending | default('[created_at]') }}
@@ -106,11 +108,6 @@ mongo:
       max-collections: {{ salto.mongodb.collections.rtpr_rtcp_raw.max_collections | default('30') }}
     {% endif -%}
     {% if "rtp" in features -%}
-    - prefix: rtpr_rtp_index
-      indexes:
-        ascending: {{ salto.mongodb.collections.rtpr_rtp_index.indexes.ascending | default('[started_at, src_addr, src_host, dst_addr, dst_host, mos, r_factor]') }}
-        hashed: {{ salto.mongodb.collections.rtpr_rtp_index.indexes.hashed | default('[call_id]') }}
-      max-collections: {{ salto.mongodb.collections.rtpr_rtp_index.max_collections | default('30') }}
     - prefix: rtpr_rtp_raw
       indexes:
         ascending: {{ salto.mongodb.collections.rtpr_rtp_raw.indexes.ascending | default('[created_at]') }}
@@ -167,12 +164,14 @@ sip:
     extension-headers: {{ salto.sip.message.extension_headers | default('[]') }}
 
   transaction:
+    trim-to-size-delay: {{ salto.sip.transaction.trim_to_size_delay | default('3600000') }}
     expiration-delay: {{ salto.sip.transaction.expiration_delay | default('1000') }}
     response-timeout: {{ salto.sip.transaction.response_timeout | default('3000') }}
     aggregation-timeout: {{ salto.sip.transaction.aggregation_timeout | default('60000') }}
     termination-timeout: {{ salto.sip.transaction.termination_timeout | default('2000') }}
     transaction-exclusions: {{ salto.sip.transaction.transaction_exclusions | default('[]') }}
   call:
+    trim-to-size-delay: {{ salto.sip.call.trim_to_size_delay | default('3600000') }}
     expiration-delay: {{ salto.sip.call.expiration_delay | default('1000') }}
     aggregation-timeout: {{ salto.sip.call.aggregation_timeout | default('120000') }}
     termination-timeout: {{ salto.sip.call.termination_timeout | default('2000') }}
@@ -180,6 +179,7 @@ sip:
     transaction-exclusions: {{ salto.sip.call.transaction_exclusions | default('[]') }}
   {% if "register" in features -%}
   register:
+    trim-to-size-delay: {{ salto.sip.register.trim_to_size_delay | default('3600000') }}
     expiration-delay: {{ salto.sip.register.expiration_delay | default('1000') }}
     aggregation-timeout: {{ salto.sip.register.aggregation_timeout | default('5000') }}
     update-period: {{ salto.sip.register.update_period | default('60000') }}
@@ -188,6 +188,19 @@ sip:
   {% endif %}
 
 {% if "rtp" in features or "rtcp" in features %}
-rtp-r:
-  cumulative-metrics: {{ salto.rtp_r.cumulative_metrics | default('true') }}
+media:
+  trim-to-size-delay: {{ salto.media.trim_to_size_delay | default('3600000') }}
+  expiration-delay: {{ salto.media.expiration_delay | default('4000') }}
+  aggregation-timeout: {{ salto.media.aggregation_timeout | default('30000') }}
+  {% if "rtcp" in features %}
+  rtcp:
+    trim-to-size-delay: {{ salto.media.rtcp.trim_to_size_delay | default('3600000') }}
+    expiration-delay: {{ salto.media.rtcp.expiration_delay | default('4000') }}
+    aggregation-timeout: {{ salto.media.rtcp.aggregation_timeout | default('30000') }}
+  {% endif %}
+  rtp-r:
+    trim-to-size-delay: {{ salto.media.rtp_r.trim_to_size_delay | default('3600000') }}
+    expiration-delay: {{ salto.media.rtp_r.expiration_delay | default('4000') }}
+    aggregation-timeout: {{ salto.media.rtp_r.aggregation_timeout | default('30000') }}
+    cumulative-metrics: {{ salto.media.rtp_r.cumulative_metrics | default('true') }}
 {% endif %}
