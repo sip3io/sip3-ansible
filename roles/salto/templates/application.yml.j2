@@ -192,12 +192,13 @@ media:
   trim-to-size-delay: {{ salto.media.trim_to_size_delay | default('3600000') }}
   expiration-delay: {{ salto.media.expiration_delay | default('4000') }}
   aggregation-timeout: {{ salto.media.aggregation_timeout | default('30000') }}
-  {% if "rtcp" in features %}
+  {% if "rtcp" in features -%}
   rtcp:
     trim-to-size-delay: {{ salto.media.rtcp.trim_to_size_delay | default('3600000') }}
     expiration-delay: {{ salto.media.rtcp.expiration_delay | default('4000') }}
     aggregation-timeout: {{ salto.media.rtcp.aggregation_timeout | default('30000') }}
-  {% endif %}
+  {%- endif %}
+
   rtp-r:
     trim-to-size-delay: {{ salto.media.rtp_r.trim_to_size_delay | default('3600000') }}
     expiration-delay: {{ salto.media.rtp_r.expiration_delay | default('4000') }}
