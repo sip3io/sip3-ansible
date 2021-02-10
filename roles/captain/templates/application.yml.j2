@@ -25,7 +25,7 @@ pcap:
 #! Encoder
 encoder:
   bulk-size: {{ captain.encoder.bulk_size | default('1') }}
-  min-size-to-compress: {{ captain.encoder.min_size_to_compress | default('1400') }}
+  mtu-size: {{ captain.encoder.mtu_size | default('1450') }}
 
 #! IPv4
 ipv4:
@@ -67,6 +67,12 @@ rtp:
     aggregation-timeout: {{ captain.rtp.collector.aggregation_timeout | default('4000') }}
 {% endif %}
 
+{% if "vxlan" in features -%}
+#! VXLAN
+vxlan:
+  enabled: true
+{% endif %}
+
 {% if "tzsp" in features -%}
 #! TZSP
 tzsp:
@@ -85,6 +91,9 @@ sender:
   ssl:
     key-store: {{ captain.sender.ssl.key_store | default(salto.server.ssl.key_store | default('')) }}
     key-store-password: {{ captain.sender.ssl.key_store | default(salto.server.ssl.key_store_password | default('')) }}
+  {% endif %}
+  {% if captain.sender.dns_cache_ttl is defined -%}
+  dns-cache-ttl: {{ captain.sender.dns_cache_ttl }}
   {% endif %}
 
 {% if "rtp" in features or "rtcp" in features -%}

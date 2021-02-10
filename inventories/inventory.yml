@@ -61,7 +61,7 @@ all:
     # Installation platform. E.g. centos, docker, debian etc
     platform: centos
     # SIP3 version release
-    version: 2020.2.1
+    version: 2021.1.1
     # Community or Enterprise version edition
     edition: ce
     # Account for EE downloading
@@ -103,15 +103,6 @@ all:
       path: /var/lib/influxdb
       db: sip3
 
-    # Properties of NGINX for UI
-    nginx:
-      # Hostname of UI for access via browser
-      server_name: _
-      listen_port: 80
-      # Reconfigure /etc/nginx/nginx.conf for use :80 for SIP3 Hoof
-      # Will recommend set to 'yes' if you use scratch install of NGINX
-      reconfigure: yes
-
     # Properties of Grafana for represent metric graphs
     grafana:
       datasources:
@@ -151,6 +142,10 @@ all:
     twig:
       server:
         port: 8080
+      # You can set existing grafana server as Authorization Provider by providing url to it
+      # security:
+      #   grafana:
+      #     url: https://grafana.example.com/api/user
 
     # Properties for SIP3 Captain application
     captain:
@@ -164,7 +159,12 @@ all:
 
     # Configuration properties for running SIP3 Hoof
     hoof:
-      # Nothing...
+      # Hostname of UI for access via browser
+      server_name: _
+      listen_port: 80
+      # Reconfigure /etc/nginx/nginx.conf for use :80 for SIP3 Hoof
+      # Will recommend set to 'yes' if you use scratch install of NGINX
+      reconfigure: yes
 
     # Structure of hosts map for correlation legs in flow diagram
     hostmap:
