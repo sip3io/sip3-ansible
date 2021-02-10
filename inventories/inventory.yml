@@ -142,6 +142,10 @@ all:
     twig:
       server:
         port: 8080
+      # You can set existing grafana server as Authorization Provider by providing url to it
+      # security:
+      #   grafana:
+      #     url: https://grafana.example.com/api/user
 
     # Properties for SIP3 Captain application
     captain:

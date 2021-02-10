@@ -29,7 +29,11 @@ session:
 security:
   enabled: true
   grafana:
+    {% if twig.security.grafana.url is defined -%}
+    url: {{ twig.security.grafana.url }}
+    {% else %}
     url: http://{{ hoof.address | default(address | default('127.0.0.1')) }}/grafana/api/user
+    {% endif %}
 
 #! MongoDB
 # TODO: change mongo to mongodb
