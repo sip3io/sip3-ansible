@@ -93,7 +93,7 @@ mongo:
         hashed: {{ salto.mongodb.collections.sip_options_raw.indexes.hashed | default('[call_id]') }}
       max-collections: {{ salto.mongodb.collections.sip_options_raw.max_collections | default('30') }}
     {% endif -%}
-    {% if "rtp" in features or "rtcp" in features %}
+    {% if "rtp" in features or "rtcp" in features -%}
     - prefix: media_call_index
       indexes:
         ascending: {{ salto.mongodb.collections.media_call_index.indexes.ascending | default('[created_at, src_addr, src_host, dst_addr, dst_host, mos, r_factor]') }}
