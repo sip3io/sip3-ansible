@@ -94,11 +94,11 @@ mongo:
       max-collections: {{ salto.mongodb.collections.sip_options_raw.max_collections | default('30') }}
     {% endif -%}
     {% if "rtp" in features or "rtcp" in features -%}
-    - prefix: media_call_index
+    - prefix: rtpr_media_index
       indexes:
-        ascending: {{ salto.mongodb.collections.media_call_index.indexes.ascending | default('[created_at, src_addr, src_host, dst_addr, dst_host, mos, r_factor]') }}
-        hashed: {{ salto.mongodb.collections.media_call_index.indexes.hashed | default('[call_id]') }}
-      max-collections: {{ salto.mongodb.collections.media_call_index.max_collections | default('30') }}
+        ascending: {{ salto.mongodb.collections.rtpr_media_index.indexes.ascending | default('[created_at, src_addr, src_host, dst_addr, dst_host, mos, r_factor, bad_report_fraction, forward_rtp.mos, forward_rtp.r_factor, forward_rtcp.mos, forward_rtcp.r_factor, reverse_rtp.mos, reverse_rtp.r_factor, reverse_rtcp.mos, reverse_rtcp.r_factor]') }}
+        hashed: {{ salto.mongodb.collections.rtpr_media_index.indexes.hashed | default('[call_id]') }}
+      max-collections: {{ salto.mongodb.collections.rtpr_media_index.max_collections | default('30') }}
     {% endif -%}
     {% if "rtcp" in features -%}
     - prefix: rtpr_rtcp_raw
