@@ -60,8 +60,6 @@ all:
     add_system_repo: no
     # Installation platform. E.g. centos, docker, debian etc
     platform: centos
-    # SIP3 version release
-    version: 2021.1.1
     # Community or Enterprise version edition
     edition: ce
     # Account for EE downloading
