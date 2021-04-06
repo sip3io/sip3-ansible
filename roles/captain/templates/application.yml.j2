@@ -61,10 +61,11 @@ rtp:
   enabled: true
   bulk-size: {{ captain.rtp.bulk_size | default('1024') }}
   collector:
-    bulk-size: {{ captain.rtp.collector.bulk_size | default('512') }}
-    queue-size: {{ captain.rtp.collector.queue_size | default('64') }}
+    enabled: {{ captain.rtp.collector.enabled | default('false') }}
+    bulk-size: {{ captain.rtp.collector.bulk_size | default('128') }}
+    queue-size: {{ captain.rtp.collector.queue_size | default('16') }}
     expiration-delay: {{ captain.rtp.collector.expiration_delay | default('500') }}
-    aggregation-timeout: {{ captain.rtp.collector.aggregation_timeout | default('4000') }}
+    aggregation-timeout: {{ captain.rtp.collector.aggregation_timeout | default('30000') }}
 {% endif %}
 
 {% if "vxlan" in features -%}
