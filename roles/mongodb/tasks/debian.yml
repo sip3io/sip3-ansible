@@ -63,8 +63,8 @@
 
     - name: "Wait for MongoDB service starts"
       wait_for:
-        host: 127.0.0.1
-        port: "{{ mongodb.port }}"
+        host: "{{ mongodb.address | default(address | default('127.0.0.1')) }}"
+        port: "{{ mongodb.port | default('27017') }}"
         delay: 1
         timeout: 15
 
