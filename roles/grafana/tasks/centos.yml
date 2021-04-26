@@ -34,6 +34,11 @@
         src: templates/sip3-technical_dashboard.json.j2
         dest: /etc/grafana/provisioning/dashboards/sip3-technical_dashboard.json
 
+    - name: "Copy SIP Metrics to Grafana"
+      template:
+        src: templates/sip3-sip_metrics.json.j2
+        dest: /etc/grafana/provisioning/dashboards/sip3-sip_metrics.json
+
     - name: "Create Grafana config for SIP3 application"
       template:
         src: templates/grafana.ini.j2
@@ -73,6 +78,7 @@
           with_items:
             - "/etc/grafana/provisioning/datasources/sip3-datasource.yml"
             - "/etc/grafana/provisioning/dashboards/sip3-technical_dashboard.json"
+            - "/etc/grafana/provisioning/dashboards/sip3-sip_metrics.json"
             - "/etc/grafana/provisioning/dashboards/sip3-dashboard.yml"
             - "/etc/yum.repos.d/grafana.repo"
         - name: "Delete project files"

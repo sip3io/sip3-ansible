@@ -16,7 +16,7 @@
   "gnetId": null,
   "graphTooltip": 0,
   "id": 1,
-  "iteration": 1579707554139,
+  "iteration": 1618135402835,
   "links": [],
   "panels": [
     {
@@ -97,7 +97,7 @@
           "measurement": "sip_call_attempts",
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT sum(\"value\") FROM \"sip_call_attempts\" WHERE (\"state\" = 'answered') AND $timeFilter GROUP BY time($__interval) fill(null)",
+          "query": "SELECT sum(\"value\")/$__interval_ms*1000 FROM \"sip_call_attempts\" WHERE (\"state\" = 'answered') AND $timeFilter GROUP BY time($__interval) fill(null)",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
@@ -231,6 +231,12 @@
               {
                 "params": [],
                 "type": "sum"
+              },
+              {
+                "params": [
+                  " / $__interval_ms*1000"
+                ],
+                "type": "math"
               }
             ]
           ],
@@ -350,6 +356,12 @@
               {
                 "params": [],
                 "type": "sum"
+              },
+              {
+                "params": [
+                  " / $__interval_ms*1000"
+                ],
+                "type": "math"
               }
             ]
           ],
@@ -452,7 +464,7 @@
           ],
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT sum(Answered)/sum(Seizure)*100 FROM\n(SELECT sum(\"value\") as Answered FROM \"sip_call_attempts\" WHERE (\"state\" = 'answered') AND $timeFilter GROUP BY time($TimeScale) fill(null)),\n(SELECT sum(\"value\") as Seizure FROM \"sip_call_attempts\" WHERE $timeFilter GROUP BY time($TimeScale) fill(null))\n",
+          "query": "SELECT sum(Answered)/sum(Seizure)*100 FROM\n(SELECT sum(\"value\") as Answered FROM \"sip_call_attempts\" WHERE (\"state\" = 'answered') AND $timeFilter GROUP BY time($__interval) fill(null)),\n(SELECT sum(\"value\") as Seizure FROM \"sip_call_attempts\" WHERE $timeFilter GROUP BY time($__interval) fill(null))\n",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
@@ -538,7 +550,7 @@
           ],
           "orderByTime": "ASC",
           "policy": "default",
-          "query": "SELECT (sum(\"sum\")/sum(\"count\"))/1000 FROM \"sip_call_duration\" WHERE $timeFilter GROUP BY time($TimeScale) fill(null)",
+          "query": "SELECT moving_average(acd,5) FROM\n(\nSELECT (sum(\"sum\")/sum(\"count\"))/1000 as acd FROM \"sip_call_duration\" WHERE $timeFilter GROUP BY time($__interval) fill(null)\n)",
           "rawQuery": true,
           "refId": "A",
           "resultFormat": "time_series",
@@ -632,6 +644,9 @@
       "linewidth": 1,
       "links": [],
       "nullPointMode": "null",
+      "options": {
+        "alertThreshold": true
+      },
       "percentage": false,
       "pointradius": 5,
       "points": false,
@@ -646,7 +661,7 @@
           "groupBy": [
             {
               "params": [
-                "$TimeScale"
+                "$__interval"
               ],
               "type": "time"
             },
@@ -679,6 +694,18 @@
               {
                 "params": [],
                 "type": "sum"
+              },
+              {
+                "params": [
+                  "5"
+                ],
+                "type": "moving_average"
+              },
+              {
+                "params": [
+                  " / $__interval_ms*1000"
+                ],
+                "type": "math"
               }
             ]
           ],
@@ -731,106 +758,6 @@
   "schemaVersion": 16,
   "style": "dark",
   "tags": [],
-  "templating": {
-    "list": [
-      {
-        "allValue": null,
-        "current": {
-          "tags": [],
-          "text": "1m",
-          "value": "1m"
-        },
-        "hide": 0,
-        "includeAll": false,
-        "label": null,
-        "multi": false,
-        "name": "TimeScale",
-        "options": [
-          {
-            "selected": false,
-            "text": "1s",
-            "value": "1s"
-          },
-          {
-            "selected": false,
-            "text": "10s",
-            "value": "10s"
-          },
-          {
-            "selected": true,
-            "text": "1m",
-            "value": "1m"
-          },
-          {
-            "selected": false,
-            "text": "10m",
-            "value": "10m"
-          },
-          {
-            "selected": false,
-            "text": "1h",
-            "value": "1h"
-          },
-          {
-            "selected": false,
-            "text": "1d",
-            "value": "1d"
-          }
-        ],
-        "query": "1s, 10s, 1m, 10m, 1h, 1d",
-        "skipUrlSync": false,
-        "type": "custom"
-      },
-      {
-        "allValue": null,
-        "current": {
-          "tags": [],
-          "text": "60",
-          "value": "60"
-        },
-        "hide": 0,
-        "includeAll": false,
-        "label": null,
-        "multi": false,
-        "name": "ValueScale",
-        "options": [
-          {
-            "selected": false,
-            "text": "1",
-            "value": "1"
-          },
-          {
-            "selected": false,
-            "text": "10",
-            "value": "10"
-          },
-          {
-            "selected": true,
-            "text": "60",
-            "value": "60"
-          },
-          {
-            "selected": false,
-            "text": "600",
-            "value": "600"
-          },
-          {
-            "selected": false,
-            "text": "3600",
-            "value": "3600"
-          },
-          {
-            "selected": false,
-            "text": "86400",
-            "value": "86400"
-          }
-        ],
-        "query": "1, 10, 60, 600, 3600, 86400",
-        "skipUrlSync": false,
-        "type": "custom"
-      }
-    ]
-  },
   "time": {
     "from": "now-1h",
     "to": "now"
