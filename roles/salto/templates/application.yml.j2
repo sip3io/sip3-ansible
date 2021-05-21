@@ -183,6 +183,7 @@ sip:
     aggregation-timeout: {{ salto.sip.call.aggregation_timeout | default('120000') }}
     termination-timeout: {{ salto.sip.call.termination_timeout | default('2000') }}
     duration-timeout: {{ salto.sip.call.duration_timeout | default('7200000') }}
+    duration-distributions: {{ salto.sip.call.duration_distributions | default('[]') }}
     transaction-exclusions: {{ salto.sip.call.transaction_exclusions | default('[]') }}
   {% if "register" in features -%}
   register:
@@ -211,6 +212,7 @@ media:
     expiration-delay: {{ salto.media.rtp_r.expiration_delay | default('4000') }}
     aggregation-timeout: {{ salto.media.rtp_r.aggregation_timeout | default('30000') }}
     cumulative-metrics: {{ salto.media.rtp_r.cumulative_metrics | default('true') }}
+    r-factor-distributions: {{ salto.media.rtp_r.r_factor_distributions | default('[]') }}
 {% endif %}
 
 {% if "rec" in features %}
