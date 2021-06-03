@@ -4,7 +4,7 @@ sip3-ansible project provides an easy way to configure and install SIP3 componen
 
 ## 1. Installation
 
-To start working with SIP3 clone this repository, checkout the latest release branch (i.e. `release/2021.2.2`), describe an inventory file and run the SIP3 Ansible Playbook. If you want to get more details, please read the SIP3 [Installation Guide](https://sip3.io/docs/InstallationGuide.html).
+To start working with SIP3 clone this repository, checkout the latest release branch (i.e. `release/2021.2.3`), describe an inventory file and run the SIP3 Ansible Playbook. If you want to get more details, please read the SIP3 [Installation Guide](https://sip3.io/docs/InstallationGuide.html).
 
 ## 2. Documentation
 

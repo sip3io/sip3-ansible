@@ -1,6 +1,6 @@
 state: started
 add_system_repo: true
-version: 2021.2.2
+version: 2021.2.3
 edition: ce
 features:
   - call
