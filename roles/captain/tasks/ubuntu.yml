@@ -29,6 +29,7 @@
             - "/opt/sip3-captain"
             - "/opt/sip3-captain/lib"
             - "/tmp/sip3-captain"
+
         - name: "Creating multiple folders without disturbing previous permissions"
           file:
             path: "{{item.item}}"
@@ -46,30 +47,21 @@
         state: directory
         mode: 0755
 
-    - name: "Create SIP3 Captain application config"
+    - name: "Create SIP3 Captain application log config"
       template:
-        src: templates/application.yml.j2
-        dest: /etc/sip3-captain/application.yml
-      when: captain.pcap.dev|length == 1 or captain.pcap.dev is not defined
+        src: templates/logback.xml.j2
+        dest: /etc/sip3-captain/logback.xml
+
+    - name: "Create SIP3 Captain environment config file"
+      template:
+        src: templates/environment.conf.j2
+        dest: /etc/sip3-captain/environment.conf
 
     - name: "Create SIP3 Captain application configs"
       template:
         src: templates/application.yml.j2
         dest: /etc/sip3-captain/application-{{ item }}.yml
       loop: "{{ captain.pcap.dev }}"
-      when: captain.pcap.dev|length >= 2
-
-    - name: "Create SIP3 Captain application log config"
-      template:
-        src: templates/logback.xml.j2
-        dest: /etc/sip3-captain/logback.xml
-
-    - name: "Create SIP3 Captain start script"
-      template:
-        src: templates/sip3-captain.j2
-        dest: /opt/sip3-captain/sip3-captain
-        mode: 0755
-      when: captain.pcap.dev|length == 1 or captain.pcap.dev is not defined
 
     - name: "Create SIP3 Captain start scripts"
       template:
@@ -77,25 +69,12 @@
         dest: /opt/sip3-captain/sip3-captain-{{ item }}
         mode: 0755
       loop: "{{ captain.pcap.dev }}"
-      when: captain.pcap.dev|length >= 2
-
-    - name: "Create SIP3 Captain environment config file"
-      template:
-        src: templates/environment.conf.j2
-        dest: /etc/sip3-captain/environment.conf
-
-    - name: "Create SIP3 Captain systemd service"
-      template:
-        src: templates/sip3-captain.service.j2
-        dest: /usr/lib/systemd/system/sip3-captain.service
-      when: captain.pcap.dev|length == 1 or captain.pcap.dev is not defined
 
     - name: "Create SIP3 Captain systemd services"
       template:
         src: templates/sip3-captain.service.j2
         dest: /usr/lib/systemd/system/sip3-captain-{{ item }}.service
       loop: "{{ captain.pcap.dev }}"
-      when: captain.pcap.dev|length >= 2
 
     - name: "Get SIP3 Captain application via proxy version: {{ version | default('latest') }}"
       get_url:
@@ -141,22 +120,12 @@
         - proxy is undefined
         - edition != "ce"
 
-
-    - name: "Stop SIP3 Captain if multi-device"
+    - name: "Stop SIP3 Captain"
       systemd:
         name: sip3-captain
         daemon_reload: no
         state: stopped
         enabled: no
-      when: captain.pcap.dev|length >= 2
-
-    - name: "Start SIP3 Captain"
-      systemd:
-        name: sip3-captain
-        daemon_reload: yes
-        state: restarted
-        enabled: yes
-      when: captain.pcap.dev|length == 1 or captain.pcap.dev is not defined
 
     - name: "Start SIP3 Captains"
       systemd:
@@ -165,7 +134,6 @@
         state: restarted
         enabled: yes
       loop: "{{ captain.pcap.dev }}"
-      when: captain.pcap.dev|length >= 2
   when: state == "started"
 
 - name: "Uninstalling"
@@ -182,7 +150,6 @@
         enabled: no
         state: stopped
       loop: "{{ captain.pcap.dev }}"
-      when: captain.pcap.dev|length >= 2
 
     - name: "Purge project files"
       block:
