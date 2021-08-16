@@ -1,3 +1,10 @@
+{%- if captain.pcap.dev is defined -%}
+  {%- if captain.pcap.dev|length > 1 -%}
+    {%- set dev = item -%}
+  {%- else -%}
+    {%- set dev = captain.pcap.dev | default('lo') -%}
+  {%- endif -%}
+{%- endif -%}
 name: {{ captain.name | default('sip3-captain') }}
 
 #! Vert.x
@@ -13,8 +20,8 @@ dpdk:
 {% else %}
 #! Pcap (libpcap, WinPcap, Npcap)
 pcap:
-  {% if captain.pcap.dev is defined -%}
-  dev: {{ captain.pcap.dev | default('lo') }}
+  {% if dev is defined -%}
+  dev: {{ dev }}
   {% else -%}
   dir: {{ captain.pcap.dir | default('/tmp/sip3-captain') }}
   {% endif -%}
