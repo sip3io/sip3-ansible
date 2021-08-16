@@ -1,0 +1,217 @@
+- name: "Installing"
+  block:
+
+    - name: "Make sure we have a 'wheel' group"
+      group:
+        name: wheel
+        state: present
+
+    - name: "Create SIP3 account"
+      user:
+        name: sip3
+        comment: "SIP3 Account"
+        groups: wheel
+        append: yes
+
+    - name: "Install libpcap library"
+      apt:
+        name: libpcap0.8
+
+    - name: "Creates directories for SIP3 Captain"
+      block:
+        - name: "Checking folders"
+          stat:
+            path: "{{item}}"
+          register: folder_stats
+          with_items:
+            - "/etc/sip3-captain"
+            - "/var/log/sip3-captain"
+            - "/opt/sip3-captain"
+            - "/opt/sip3-captain/lib"
+            - "/tmp/sip3-captain"
+        - name: "Creating multiple folders without disturbing previous permissions"
+          file:
+            path: "{{item.item}}"
+            state: directory
+            mode: 0755
+            group: sip3
+            owner: sip3
+          when: item.stat.exists == false
+          with_items:
+            - "{{ folder_stats.results }}"
+
+    - name: "Create /usr/lib/systemd/system directory if does not exists"
+      file:
+        path: "/usr/lib/systemd/system"
+        state: directory
+        mode: 0755
+
+    - name: "Create SIP3 Captain application config"
+      template:
+        src: templates/application.yml.j2
+        dest: /etc/sip3-captain/application.yml
+      when: captain.pcap.dev|length == 1 or captain.pcap.dev is not defined
+
+    - name: "Create SIP3 Captain application configs"
+      template:
+        src: templates/application.yml.j2
+        dest: /etc/sip3-captain/application-{{ item }}.yml
+      loop: "{{ captain.pcap.dev }}"
+      when: captain.pcap.dev|length >= 2
+
+    - name: "Create SIP3 Captain application log config"
+      template:
+        src: templates/logback.xml.j2
+        dest: /etc/sip3-captain/logback.xml
+
+    - name: "Create SIP3 Captain start script"
+      template:
+        src: templates/sip3-captain.j2
+        dest: /opt/sip3-captain/sip3-captain
+        mode: 0755
+      when: captain.pcap.dev|length == 1 or captain.pcap.dev is not defined
+
+    - name: "Create SIP3 Captain start scripts"
+      template:
+        src: templates/sip3-captain.j2
+        dest: /opt/sip3-captain/sip3-captain-{{ item }}
+        mode: 0755
+      loop: "{{ captain.pcap.dev }}"
+      when: captain.pcap.dev|length >= 2
+
+    - name: "Create SIP3 Captain environment config file"
+      template:
+        src: templates/environment.conf.j2
+        dest: /etc/sip3-captain/environment.conf
+
+    - name: "Create SIP3 Captain systemd service"
+      template:
+        src: templates/sip3-captain.service.j2
+        dest: /usr/lib/systemd/system/sip3-captain.service
+      when: captain.pcap.dev|length == 1 or captain.pcap.dev is not defined
+
+    - name: "Create SIP3 Captain systemd services"
+      template:
+        src: templates/sip3-captain.service.j2
+        dest: /usr/lib/systemd/system/sip3-captain-{{ item }}.service
+      loop: "{{ captain.pcap.dev }}"
+      when: captain.pcap.dev|length >= 2
+
+    - name: "Get SIP3 Captain application via proxy version: {{ version | default('latest') }}"
+      get_url:
+        url: https://maven.sip3.io/releases-ce/io/sip3/captain/ce/sip3-captain-ce/{{ version | default('latest') }}/sip3-captain-ce-{{ version | default('latest') }}.jar
+        dest: /opt/sip3-captain/sip3-captain.jar
+        use_proxy: yes
+      environment:
+        https_proxy: "{{ proxy }}"
+      when:
+        - proxy is defined
+        - edition == "ce"
+
+    - name: "Get SIP3 Captain application version: {{ version | default('latest') }}"
+      get_url:
+        url: https://maven.sip3.io/releases-ce/io/sip3/captain/ce/sip3-captain-ce/{{ version | default('latest') }}/sip3-captain-ce-{{ version | default('latest') }}.jar
+        dest: /opt/sip3-captain/sip3-captain.jar
+        use_proxy: no
+      when:
+        - proxy is undefined
+        - edition == "ce"
+
+    - name: "Get SIP3 Captain EE application via proxy version: {{ version | default('latest') }}"
+      get_url:
+        url: https://maven.sip3.io/releases-ee/io/sip3/captain/{{ edition }}/sip3-captain-{{ edition }}/{{ version | default('latest') }}/sip3-captain-{{ edition }}-{{ version | default('latest') }}.jar
+        dest: /opt/sip3-captain/sip3-captain.jar
+        use_proxy: yes
+        url_username: "{{ support.username | default('none') }}"
+        url_password: "{{ support.password | default('none') }}"
+      environment:
+        https_proxy: "{{ proxy }}"
+      when:
+        - proxy is defined
+        - edition != "ce"
+
+    - name: "Get SIP3 Captain EE application version: {{ version | default('latest') }}"
+      get_url:
+        url: https://maven.sip3.io/releases-ee/io/sip3/captain/{{ edition }}/sip3-captain-{{ edition }}/{{ version | default('latest') }}/sip3-captain-{{ edition }}-{{ version | default('latest') }}.jar
+        dest: /opt/sip3-captain/sip3-captain.jar
+        use_proxy: no
+        url_username: "{{ support.username | default('none') }}"
+        url_password: "{{ support.password | default('none') }}"
+      when:
+        - proxy is undefined
+        - edition != "ce"
+
+
+    - name: "Stop SIP3 Captain if multi-device"
+      systemd:
+        name: sip3-captain
+        daemon_reload: no
+        state: stopped
+        enabled: no
+      when: captain.pcap.dev|length >= 2
+
+    - name: "Start SIP3 Captain"
+      systemd:
+        name: sip3-captain
+        daemon_reload: yes
+        state: restarted
+        enabled: yes
+      when: captain.pcap.dev|length == 1 or captain.pcap.dev is not defined
+
+    - name: "Start SIP3 Captains"
+      systemd:
+        name: sip3-captain-{{ item }}
+        daemon_reload: yes
+        state: restarted
+        enabled: yes
+      loop: "{{ captain.pcap.dev }}"
+      when: captain.pcap.dev|length >= 2
+  when: state == "started"
+
+- name: "Uninstalling"
+  block:
+    - name: Stop SIP3 Captain
+      systemd:
+        name: sip3-captain
+        enabled: no
+        state: stopped
+
+    - name: Stop SIP3 Captains
+      systemd:
+        name: sip3-captain-{{ item }}
+        enabled: no
+        state: stopped
+      loop: "{{ captain.pcap.dev }}"
+      when: captain.pcap.dev|length >= 2
+
+    - name: "Purge project files"
+      block:
+        - name: "Collecting project files"
+          stat:
+            path: "{{item}}"
+          register: folder_stats
+          with_items:
+            - "/etc/sip3-captain"
+            - "/var/log/sip3-captain"
+            - "/opt/sip3-captain/lib"
+            - "/opt/sip3-captain"
+            - "/tmp/sip3-captain"
+            - "/usr/lib/systemd/system/sip3-captain.service"
+        - name: "Delete project files"
+          file:
+            path: "{{ item.item }}"
+            force: true
+            state: absent
+          when: item.stat.exists == true and item.stat.isdir == false
+          with_items:
+            - "{{folder_stats.results}}"
+        - name: "Delete project folders"
+          file:
+            path: "{{ item.item }}"
+            force: true
+            state: absent
+          when: item.stat.exists == true and item.stat.isdir == true
+          with_items:
+            - "{{folder_stats.results}}"
+      ignore_errors: yes
+  when: state == "absent"

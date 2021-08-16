@@ -11,6 +11,12 @@
     - ansible_facts['distribution'] | lower == "debian"
     - ansible_facts['distribution_major_version'] | int >= 9
 
+- name: "Install Captain for Ubuntu"
+  include: ubuntu.yml
+  when:
+    - platform | lower == "ubuntu"
+    - ansible_facts['distribution'] | lower == "ubuntu"
+
 #- name: "Install Captain for Docker"
 #  include: docker.yml
 #  when:
