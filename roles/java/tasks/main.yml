@@ -11,6 +11,12 @@
     - ansible_facts['distribution'] | lower == "debian"
     - ansible_facts['distribution_major_version'] | int >= 9
 
+- name: "Install Java for Ubuntu"
+  include: ubuntu.yml
+  when:
+    - platform | lower == "ubuntu"
+    - ansible_facts['distribution'] | lower == "ubuntu"
+
 #- name: "Install Java for Docker"
 #  include: docker.yml
 #  when:
