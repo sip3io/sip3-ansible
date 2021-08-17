@@ -131,6 +131,7 @@
         daemon_reload: no
         state: stopped
         enabled: no
+      ignore_errors: yes
 
     - name: "Start SIP3 Captains"
       systemd:
@@ -148,6 +149,7 @@
         name: sip3-captain
         enabled: no
         state: stopped
+      ignore_errors: yes
 
     - name: Stop SIP3 Captains
       systemd:
@@ -155,6 +157,7 @@
         enabled: no
         state: stopped
       loop: "{{ captain.pcap.dev }}"
+      ignore_errors: yes
 
     - name: "Purge project files"
       block:
