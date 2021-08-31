@@ -4,6 +4,7 @@
       user:
         name: sip3
         comment: "SIP3 Account"
+        system: yes
         append: yes
 
     - name: "Creates directories for SIP3 Salto"
@@ -44,12 +45,6 @@
       template:
         src: templates/logback.xml.j2
         dest: /etc/sip3-salto/logback.xml
-
-    - name: "Create SIP3 Salto start script"
-      template:
-        src: templates/sip3-salto.j2
-        dest: /opt/sip3-salto/sip3-salto
-        mode: 0755
 
     - name: "Create SIP3 Salto environment config file"
       template:

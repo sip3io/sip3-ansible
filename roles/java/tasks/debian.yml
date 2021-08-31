@@ -9,6 +9,7 @@
     - name: "Install the default version of OpenJDK from Debian repository"
       apt:
         name: default-jre
+        update_cache: yes
 
   when: state == "started"
 
