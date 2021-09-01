@@ -4,7 +4,7 @@
       user:
         name: sip3
         comment: "SIP3 Account"
-        groups: wheel
+        system: yes
         append: yes
 
     - name: "Add CentOS repository"
@@ -19,6 +19,7 @@
     - name: "Install libpcap library"
       yum:
         name: libpcap
+        update_cache: yes
 
     - name: "Creates directories for SIP3 Captain"
       block:
@@ -52,12 +53,6 @@
       template:
         src: templates/logback.xml.j2
         dest: /etc/sip3-captain/logback.xml
-
-    - name: "Create SIP3 Captain start script"
-      template:
-        src: templates/sip3-captain.j2
-        dest: /opt/sip3-captain/sip3-captain
-        mode: 0755
 
     - name: "Create SIP3 Captain environment config file"
       template:

@@ -4,10 +4,25 @@ Documentation=https://www.sip3.io/docs
 After=network-online.target
 
 [Service]
-WorkingDirectory=/opt/sip3-twig
-ExecStart=/opt/sip3-twig/sip3-twig
 User=sip3
-Type=simple
+Group=sip3
+EnvironmentFile=-/etc/sip3-twig/environment.conf
+WorkingDirectory=/opt/sip3-twig
+ExecStartPre=/usr/bin/mkdir -p /tmp/sip3-twig
+ExecStartPre=/usr/bin/touch /var/run/sip3-twig.pid
+ExecStartPre=/usr/bin/chown -R sip3:sip3 /var/run/sip3-twig.pid /tmp/sip3-twig
+ExecStartPre=/usr/bin/chmod -R 0755 /var/run/sip3-twig.pid /tmp/sip3-twig
+PermissionsStartOnly=true
+PIDFile=/var/run/sip3-twig.pid
+ExecStart=/usr/bin/sh -c '\
+$JAVA_HOME/bin/java \
+  $JAVA_XMS $JAVA_XMX $JAVA_GC $JAVA_OTHER \
+ -jar /opt/sip3-twig/sip3-twig.jar \
+ --spring.config.location=/etc/sip3-twig/application.yml \
+ --logging.config=/etc/sip3-twig/logback.xml \
+2>&1 >>/var/log/sip3-twig/default.log & echo $! > /var/run/sip3-twig.pid'
+SuccessExitStatus=143
+Type=forking
 Restart=on-failure
 RestartSec=10
 

@@ -8,6 +8,7 @@
       user:
         name: sip3
         comment: "SIP3 Account"
+        system: yes
         append: yes
 
     - name: "Creates directories for SIP3 Twig"
@@ -46,12 +47,6 @@
       template:
         src: templates/sip3-twig.service.j2
         dest: /usr/lib/systemd/system/sip3-twig.service
-
-    - name: "Create SIP3 Twig start script"
-      template:
-        src: templates/sip3-twig.j2
-        dest: /opt/sip3-twig/sip3-twig
-        mode: 0755
 
     - name: "Create SIP3 Twig environment config file"
       template:
