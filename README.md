@@ -8,7 +8,7 @@ To start working with SIP3 clone this repository, checkout the latest release br
 
 ## 2. Documentation
 
-The entire SIP3 Documentation including Getting Started Guide, Installation Guide, Features, Tutorials and Realease Notes can be found here.
+The entire SIP3 Documentation including Installation Guide, Features, Tutorials and Realease Notes can be found [here](https://sip3.io/docs/InstallationGuide.html).
 
 ## 3. Support
 
