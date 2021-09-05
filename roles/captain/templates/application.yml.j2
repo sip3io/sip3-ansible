@@ -18,6 +18,8 @@ pcap:
   {% else -%}
   dir: {{ captain.pcap.dir | default('/tmp/sip3-captain') }}
   {% endif -%}
+  snaplen: {{ captain.pcap.snaplen | default('1520') }}
+  buffer-size: {{ captain.pcap.buffer_size | default('2097152') }}
   bpf-filter: "{{ captain.pcap.bpf_filter | default('tcp or udp') }}"
   timeout-millis: {{ captain.pcap.timeout_millis | default('10') }}
 {% endif %}
@@ -101,9 +103,6 @@ sender:
   ssl:
     key-store: {{ captain.sender.ssl.key_store | default(salto.server.ssl.key_store | default('')) }}
     key-store-password: {{ captain.sender.ssl.key_store | default(salto.server.ssl.key_store_password | default('')) }}
-  {% endif %}
-  {% if captain.sender.dns_cache_ttl is defined -%}
-  dns-cache-ttl: {{ captain.sender.dns_cache_ttl }}
   {% endif %}
 
 {% if "rtp" in features or "rtcp" in features -%}

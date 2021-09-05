@@ -1,4 +1,14 @@
 {
+  {% if captain.sender.dns_cache_ttl is defined or captain.sender.dns_server is defined -%}
+  "addressResolverOptions": {
+    "cacheMaxTimeToLive": {{ captain.sender.dns_cache_ttl | default('60') }},
+    {% if captain.sender.dns_server is defined -%}
+    "servers" : {{ captain.sender.dns_server }}
+    {% endif %}
+
+  },
+  {% endif -%}
+
   "metricsOptions": {
     "enabled": {{ vertx.enabled | default('false') }},
     "jvmMetricsEnabled": {{ vertx.jvmMetricsEnabled | default('false') }},
