@@ -101,7 +101,7 @@ mongo:
       max-collections: {{ salto.mongodb.collections.rtpr_media_index.max_collections | default('30') }}
     - prefix: rtpr_rtcp_raw
       indexes:
-        ascending: {{ salto.mongodb.collections.rtpr_rtcp_raw.indexes.ascending | default('[created_at, src_addr, src_host, dst_addr, dst_host]') }}
+        ascending: {{ salto.mongodb.collections.rtpr_rtcp_raw.indexes.ascending | default('[created_at]') }}
         hashed: {{ salto.mongodb.collections.rtpr_rtcp_raw.indexes.hashed | default('[call_id]') }}
       max-collections: {{ salto.mongodb.collections.rtpr_rtcp_raw.max_collections | default('30') }}
     {% endif -%}
@@ -120,7 +120,7 @@ mongo:
     {% if "rec" in features -%}
     - prefix: rec_raw
       indexes:
-        ascending: {{ salto.mongodb.collections.rec_raw.indexes.ascending | default('[created_at]') }}
+        ascending: {{ salto.mongodb.collections.rec_raw.indexes.ascending | default('[created_at, src_addr, src_host, dst_addr, dst_host]') }}
         hashed: {{ salto.mongodb.collections.rec_raw.indexes.hashed | default('[call_id]') }}
       max-collections: {{ salto.mongodb.collections.rec_raw.max_collections | default('30') }}
     {% endif %}
