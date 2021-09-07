@@ -25,7 +25,7 @@ $JAVA_HOME/bin/java \
  -Dcodecs.location=/etc/sip3-captain/codecs.yml \
  -Dvertx.cacheDirBase=/tmp/sip3-captain \
  $VERTX_OPTS \
-2>&1 >>/var/log/sip3-captain/default.log & echo $! > /var/run/sip3-captain.pid'
+& echo $! > /var/run/sip3-captain.pid'
 SuccessExitStatus=143
 Type=forking
 Restart=on-failure

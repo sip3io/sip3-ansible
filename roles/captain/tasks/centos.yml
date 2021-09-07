@@ -112,6 +112,14 @@
         - proxy is undefined
         - edition != "ce"
 
+    - name: "Change permissions for /var/log/sip3-captain/default.log"
+      file:
+        path: /var/log/sip3-captain/default.log
+        state: touch
+        owner: sip3
+        group: sip3
+        mode: u=rw,g=r,o=r
+
     - name: "Start SIP3 Captain"
       systemd:
         name: sip3-captain
