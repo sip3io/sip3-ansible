@@ -1,4 +1,4 @@
-JAVA_HOME={{ java.home | default('/usr')}}
+JAVA_HOME={{ java.home | default('/etc/alternatives/jre_11')}}
 JAVA_XMS=-Xms{{ java.xms | default('512M') }}
 JAVA_XMX=-Xmx{{ java.xmx | default('1024M') }}
 JAVA_GC=-XX:+Use{{ java.gc | default('G1') }}GC

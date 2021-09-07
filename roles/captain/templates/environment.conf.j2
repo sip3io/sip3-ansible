@@ -1,4 +1,4 @@
-JAVA_HOME={{ java.home | default('/usr')}}
+JAVA_HOME={{ java.home | default('/etc/alternatives/jre_11')}}
 JAVA_XMS=-Xms{{ java.xms | default('512M') }}
 JAVA_XMX=-Xmx{{ java.xmx | default('1024M') }}
 JAVA_GC=-XX:+Use{{ java.gc | default('G1') }}GC
@@ -7,5 +7,5 @@ JAVA_OTHER={{ java.other | default('') }}
 VERTX_OPTS="-options /etc/sip3-captain/vertx-options.json"
 {% endif %}
 {% if "dpdk" in features or "sip3-libpcap" in features -%}
-LD_LIBRARY_PATH=/opt/sip3-captain/lib 
+LD_LIBRARY_PATH=/opt/sip3-captain/lib
 {% endif %}
