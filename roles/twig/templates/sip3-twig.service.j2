@@ -20,7 +20,7 @@ $JAVA_HOME/bin/java \
  -jar /opt/sip3-twig/sip3-twig.jar \
  --spring.config.location=/etc/sip3-twig/application.yml \
  --logging.config=/etc/sip3-twig/logback.xml \
-2>&1 >>/var/log/sip3-twig/default.log & echo $! > /var/run/sip3-twig.pid'
+& echo $! > /var/run/sip3-twig.pid'
 SuccessExitStatus=143
 Type=forking
 Restart=on-failure

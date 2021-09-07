@@ -24,7 +24,7 @@ $JAVA_HOME/bin/java \
  $UDF_OPTS \
  -Dvertx.cacheDirBase=/tmp/sip3-salto \
  $VERTX_OPTS \
-2>&1 >>/var/log/sip3-salto/default.log & echo $! > /var/run/sip3-salto.pid'
+& echo $! > /var/run/sip3-salto.pid'
 SuccessExitStatus=143
 Type=forking
 Restart=on-failure
