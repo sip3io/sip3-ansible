@@ -48,6 +48,9 @@
         src: templates/sip3-twig.service.j2
         dest: /usr/lib/systemd/system/sip3-twig.service
 
+    - set_fact:
+        java_home: "/etc/alternatives/jre_11"
+
     - name: "Create SIP3 Twig environment config file"
       template:
         src: templates/environment.conf.j2

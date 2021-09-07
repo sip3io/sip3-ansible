@@ -54,6 +54,9 @@
         src: templates/logback.xml.j2
         dest: /etc/sip3-captain/logback.xml
 
+    - set_fact:
+        java_home: "/etc/alternatives/jre_11"
+
     - name: "Create SIP3 Captain environment config file"
       template:
         src: templates/environment.conf.j2

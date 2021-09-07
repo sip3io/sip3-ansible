@@ -13,9 +13,6 @@
       yum:
         name: java-{{ java.version }}-openjdk
 
-    - set_fact:
-        java_home: "/etc/alternatives/jre_11"
-
   when: state == "started"
 
 #
