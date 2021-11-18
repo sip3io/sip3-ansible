@@ -1,16 +1,16 @@
 - name: "Installing"
   block:
 
-    - name: "Make sure we have a 'wheel' group"
+    - name: "Make sure we have a 'sudo' group"
       group:
-        name: wheel
+        name: sudo
         state: present
 
     - name: "Create SIP3 account"
       user:
         name: sip3
         comment: "SIP3 Account"
-        groups: wheel
+        groups: sudo
         append: yes
 
     - name: "Install libpcap library"
