@@ -12,44 +12,12 @@
         gpgcheck: no
         proxy: "{{ proxy | default('_none_') }}"
 
-    - name: "Install NGINX and Grafana"
+    - name: "Install Grafana"
       yum:
-        name:  "{{ packages }}"
-      vars:
-        packages:
-          - grafana
-
-    - name: "Create Grafana Datasource for SIP3 application"
-      template:
-        src: templates/sip3-datasource.yml.j2
-        dest: /etc/grafana/provisioning/datasources/sip3-datasource.yml
-
-    - name: "Create Grafana Dashboard for SIP3 application"
-      template:
-        src: templates/sip3-dashboard.yml.j2
-        dest: /etc/grafana/provisioning/dashboards/sip3-dashboard.yml
-
-    - name: "Copy Technical Dashboard to Grafana"
-      template:
-        src: templates/sip3-technical_dashboard.json.j2
-        dest: /etc/grafana/provisioning/dashboards/sip3-technical_dashboard.json
-
-    - name: "Copy SIP Metrics to Grafana"
-      template:
-        src: templates/sip3-sip_metrics.json.j2
-        dest: /etc/grafana/provisioning/dashboards/sip3-sip_metrics.json
-
-    - name: "Create Grafana config for SIP3 application"
-      template:
-        src: templates/grafana.ini.j2
-        dest: /etc/grafana/grafana.ini
-
-    - name: "Start Grafana"
-      systemd:
-        name: grafana-server
-        daemon_reload: yes
-        state: restarted
-        enabled: yes
+        name: grafana
+        update_cache: yes
+      notify:
+        - restart grafana-server
   when: state == "started"
 
 - name: "Uninstalling"
@@ -62,10 +30,7 @@
 
     - name: "Uninstall Grafana"
       yum:
-        name:  "{{ packages }}"
-      vars:
-        packages:
-          - grafana
+        name:  grafana
         autoremove: yes
         state: absent
 

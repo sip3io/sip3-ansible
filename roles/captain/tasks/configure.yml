@@ -1,0 +1,124 @@
+- name: "Create SIP3 Captain configuration files"
+  template:
+    src: "{{ item.name }}.j2"
+    dest: "/{{ item.name }}"
+    mode: "{{ item.mode }}"
+    owner: "sip3"
+    group: "sip3"
+  loop:
+    - { name: "etc/sip3-captain/application.yml", mode: "0644" }
+    - { name: "etc/sip3-captain/environment.conf", mode: "0644" }
+    - { name: "etc/sip3-captain/logback.xml", mode: "0644" }
+    - { name: "etc/sip3-captain/vertx-options.json", mode: "0644" }
+  notify:
+    - restart sip3-captain
+
+
+
+#    - name: "Creates directories for SIP3 Captain"
+#      block:
+#        - name: "Checking folders"
+#          stat:
+#            path: "{{item}}"
+#          register: folder_stats
+#          with_items:
+#            - "/etc/sip3-captain"
+#            - "/var/log/sip3-captain"
+#            - "/opt/sip3-captain"
+#            - "/opt/sip3-captain/lib"
+#            - "/tmp/sip3-captain"
+#        - name: "Creating multiple folders without disturbing previous permissions"
+#          file:
+#            path: "{{item.item}}"
+#            state: directory
+#            mode: 0755
+#            group: sip3
+#            owner: sip3
+#          when: item.stat.exists == false
+#          with_items:
+#            - "{{ folder_stats.results }}"
+#
+#    - name: "Create /usr/lib/systemd/system directory if does not exists"
+#      file:
+#        path: "/usr/lib/systemd/system"
+#        state: directory
+#        mode: 0755
+#
+#    - name: "Create SIP3 Captain application config"
+#      template:
+#        src: templates/application.yml.j2
+#        dest: /etc/sip3-captain/application.yml
+#
+#    - name: "Create SIP3 Captain application log config"
+#      template:
+#        src: templates/logback.xml.j2
+#        dest: /etc/sip3-captain/logback.xml
+#
+#    - name: "Create SIP3 Captain environment config file"
+#      template:
+#        src: templates/environment.conf.j2
+#        dest: /etc/sip3-captain/environment.conf
+#
+#    - name: "Create SIP3 Captain systemd service"
+#      template:
+#        src: templates/sip3-captain.service.j2
+#        dest: /usr/lib/systemd/system/sip3-captain.service
+#
+#    - name: "Get SIP3 Captain application via proxy version: {{ version | default('latest') }}"
+#      get_url:
+#        url: https://maven.sip3.io/releases-ce/io/sip3/captain/ce/sip3-captain-ce/{{ version | default('latest') }}/sip3-captain-ce-{{ version | default('latest') }}.jar
+#        dest: /opt/sip3-captain/sip3-captain.jar
+#        use_proxy: yes
+#      environment:
+#        https_proxy: "{{ proxy }}"
+#      when:
+#        - proxy is defined
+#        - edition == "ce"
+#
+#    - name: "Get SIP3 Captain application version: {{ version | default('latest') }}"
+#      get_url:
+#        url: https://maven.sip3.io/releases-ce/io/sip3/captain/ce/sip3-captain-ce/{{ version | default('latest') }}/sip3-captain-ce-{{ version | default('latest') }}.jar
+#        dest: /opt/sip3-captain/sip3-captain.jar
+#        use_proxy: no
+#      when:
+#        - proxy is undefined
+#        - edition == "ce"
+#
+#    - name: "Get SIP3 Captain EE application via proxy version: {{ version | default('latest') }}"
+#      get_url:
+#        url: https://maven.sip3.io/releases-ee/io/sip3/captain/{{ edition }}/sip3-captain-{{ edition }}/{{ version | default('latest') }}/sip3-captain-{{ edition }}-{{ version | default('latest') }}.jar
+#        dest: /opt/sip3-captain/sip3-captain.jar
+#        use_proxy: yes
+#        url_username: "{{ support.username | default('none') }}"
+#        url_password: "{{ support.password | default('none') }}"
+#      environment:
+#        https_proxy: "{{ proxy }}"
+#      when:
+#        - proxy is defined
+#        - edition != "ce"
+#
+#    - name: "Get SIP3 Captain EE application version: {{ version | default('latest') }}"
+#      get_url:
+#        url: https://maven.sip3.io/releases-ee/io/sip3/captain/{{ edition }}/sip3-captain-{{ edition }}/{{ version | default('latest') }}/sip3-captain-{{ edition }}-{{ version | default('latest') }}.jar
+#        dest: /opt/sip3-captain/sip3-captain.jar
+#        use_proxy: no
+#        url_username: "{{ support.username | default('none') }}"
+#        url_password: "{{ support.password | default('none') }}"
+#      when:
+#        - proxy is undefined
+#        - edition != "ce"
+#
+#    - name: "Change permissions for /var/log/sip3-captain/default.log"
+#      file:
+#        path: /var/log/sip3-captain/default.log
+#        state: touch
+#        owner: sip3
+#        group: sip3
+#        mode: u=rw,g=r,o=r
+#
+#    - name: "Start SIP3 Captain"
+#      systemd:
+#        name: sip3-captain
+#        daemon_reload: yes
+#        state: restarted
+#        enabled: yes

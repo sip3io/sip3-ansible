@@ -1,0 +1,122 @@
+name: {{ captain.name | default('sip3-captain') }}
+
+#! Vert.x
+vertx:
+  instances: {{ captain.vertx.instances | default('1') }}
+
+{% if "dpdk" in features -%}
+#! DPDK
+dpdk:
+  port: {{ captain.dpdk.port | default('0') }}
+  rx-queue-size: {{ captain.dpdk.rx_queue_size | default('1') }}
+  bulk-size: {{ captain.dpdk.bulk_size | default('256') }}
+{% else %}
+#! Pcap (libpcap, WinPcap, Npcap)
+pcap:
+  {% if captain.pcap.dev is defined -%}
+  dev: {{ captain.pcap.dev | default('lo') }}
+  {% else -%}
+  dir: {{ captain.pcap.dir | default('/tmp/sip3-captain') }}
+  {% endif -%}
+  snaplen: {{ captain.pcap.snaplen | default('1520') }}
+  buffer-size: {{ captain.pcap.buffer_size | default('2097152') }}
+  bpf-filter: "{{ captain.pcap.bpf_filter | default('tcp or udp') }}"
+  timeout-millis: {{ captain.pcap.timeout_millis | default('10') }}
+{% endif %}
+
+#! Encoder
+encoder:
+  bulk-size: {{ captain.encoder.bulk_size | default('1') }}
+  mtu-size: {{ captain.encoder.mtu_size | default('1450') }}
+
+#! IPv4
+ipv4:
+  fragment-ttl: {{ captain.ipv4.fragment_ttl | default('60000') }}
+  bulk-size: {{ captain.ipv4.bulk_size | default('1') }}
+
+#! TCP
+tcp:
+  expiration-delay: {{ captain.tcp.expiration_delay | default('200') }}
+  aggregation-timeout: {{ captain.tcp.aggregation_timeout | default('200') }}
+  idle-connection-timeout: {{ captain.tcp.idle_connection_timeout | default('300000') }}
+
+#! SIP
+sip:
+  bulk-size: {{ captain.sip.bulk_size | default('1') }}
+
+{% if "icmp" in features -%}
+#! ICMP
+icmp:
+  bulk-size: {{ captain.icmp.bulk_size | default('1') }}
+{% endif %}
+
+{% if "rtcp" in features -%}
+#! RTCP
+rtcp:
+  enabled: true
+  bulk-size: {{ captain.rtcp.bulk_size | default('1') }}
+{% endif %}
+
+{% if "rtp" in features -%}
+#! RTP
+rtp:
+  enabled: true
+  bulk-size: {{ captain.rtp.bulk_size | default('1024') }}
+  collector:
+    enabled: {{ captain.rtp.collector.enabled | default('false') }}
+    bulk-size: {{ captain.rtp.collector.bulk_size | default('128') }}
+    queue-size: {{ captain.rtp.collector.queue_size | default('16') }}
+    expiration-delay: {{ captain.rtp.collector.expiration_delay | default('500') }}
+    aggregation-timeout: {{ captain.rtp.collector.aggregation_timeout | default('30000') }}
+{% endif %}
+
+{% if "rec" in features -%}
+#! Recording
+recording:
+   trim-to-size-delay: {{ captain.recording.trim_to_size_delay | default('3600000') }}
+   expiration-delay: {{ captain.recording.expiration_delay | default('4000') }}
+   aggregation-timeout: {{ captain.recording.aggregation_timeout | default('30000') }}
+   duration-timeout: {{ captain.recording.duration_timeout | default('3600000') }}
+{% endif %}
+
+{% if "vxlan" in features -%}
+#! VXLAN
+vxlan:
+  enabled: true
+{% endif %}
+
+{% if "tzsp" in features -%}
+#! TZSP
+tzsp:
+  enabled: true
+{% endif %}
+
+#! Sender
+sender:
+  {% if captain.sender.uri is defined -%}
+  uri: {{ captain.sender.uri }}
+  {% else -%}
+  uri: udp://{{ salto.address | default(address | default('127.0.0.1')) }}:{{ salto.port | default('15060')}}
+  {% endif -%}
+  reconnection-timeout: {{ captain.sender.reconnection_timeout | default('1000') }}
+  {% if "ssl" in features -%}
+  ssl:
+    key-store: {{ captain.sender.ssl.key_store | default(salto.server.ssl.key_store | default('')) }}
+    key-store-password: {{ captain.sender.ssl.key_store | default(salto.server.ssl.key_store_password | default('')) }}
+  {% endif %}
+
+{% if "rtp" in features or "rtcp" in features -%}
+#! Management socket
+management:
+  {% if captain.management.uri is defined -%}
+  uri: {{ captain.management.uri }}
+  {% else -%}
+  uri: udp://{{ salto.address | default(address | default('127.0.0.1')) }}:{{ salto.management.port | default('15090')}}
+  {% endif -%}
+  register-delay: {{ captain.management.register_delay | default('60000') }}
+{% endif %}
+
+#! Metrics
+metrics:
+  logging:
+    step: {{ captain.metrics.logging.step | default('15000') }}

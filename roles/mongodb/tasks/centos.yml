@@ -14,11 +14,14 @@
 
     - name: "Install the latest version of MongoDB"
       yum:
-        name:  "{{ packages }}"
+        name: "{{ packages }}"
+        update_cache: yes
       vars:
         packages:
           - mongodb-org-server
           - mongodb-org-shell
+      notify:
+        - restart mongod
 
     - name: "Creates directory {{ mongodb.path | default('/data/db') }} for MongoDB"
       file:
@@ -27,11 +30,20 @@
         mode: 0755
         group: mongod
         owner: mongod
+      notify:
+        - restart mongod
 
     - name: "Create MongoDB config"
       template:
-        src: templates/mongod.conf.j2
-        dest: /etc/mongod.conf
+        src: "{{ item.name }}.j2"
+        dest: "/{{ item.name }}"
+        mode: "{{ item.mode }}"
+        owner: "root"
+        group: "root"
+      loop:
+        - { name: "etc/mongod.conf", mode: "0644" }
+      notify:
+        - restart mongod
 
     - name: "Start service MongoDB"
       systemd:
@@ -39,16 +51,6 @@
         state: started
         daemon_reload: yes
         enabled: yes
-
-    - name: "Flush hostmap"
-      shell: mongo --host {{ mongodb.address | default(address | default('127.0.0.1')) }} {{ mongodb.db | default(address | default('sip3')) }} --port {{ mongodb.port | default('27017') }} --eval 'db.hosts.drop()'
-
-    - name: "Insert hostmap into MongoDB"
-      shell: mongo --host {{ mongodb.address | default(address | default('127.0.0.1')) }} {{ mongodb.db | default(address | default('sip3')) }} --port {{ mongodb.port | default('27017') }} --eval 'db.hosts.insert({{ item | to_json(ensure_ascii=False) }})'
-      loop: "{{ hostmap }}"
-
-    - name: "Create index for hostmap"
-      shell: "mongo --host {{ mongodb.address | default(address | default('127.0.0.1')) }} {{ mongodb.db | default(address | default('sip3')) }} --port {{ mongodb.port | default('27017') }} --eval 'db.hosts.createIndex({ name: 1 })'"
   when: state == "started"
 
 - name: "Uninstalling"
@@ -61,13 +63,13 @@
 
     - name: "Uninstall MongoDB"
       yum:
-        name: "{{ packages }}"
+        name:  "{{ packages }}"
+        autoremove: yes
+        state: absent
       vars:
         packages:
           - mongodb-org-server
           - mongodb-org-shell
-        autoremove: yes
-        state: absent
 
     - name: "Purge project files"
       block:
@@ -76,10 +78,7 @@
             path: "{{item}}"
           register: folder_stats
           with_items:
-            - "/etc/mongod.conf"
             - "{{ mongodb.path | default('/data/db') }}/"
-            - "/var/log/mongodb"
-            - "/etc/yum.repos.d/mongodb-org-{{ mongodb.version }}.repo"
         - name: "Delete project files"
           file:
             path: "{{ item.item }}"

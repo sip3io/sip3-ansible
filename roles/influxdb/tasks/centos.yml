@@ -4,17 +4,34 @@
       selinux:
         state: disabled
 
-    - name: "Add InfluxDB repository"
-      yum_repository:
-        name: influxdb
-        description: InfluxDB Repository
-        baseurl: https://repos.influxdata.com/rhel/$releasever/$basearch/stable
-        gpgcheck: no
-        proxy: "{{ proxy | default('_none_') }}"
+    - name: "Add repositories"
+      block:
+        - name: "Add InfluxDB repository"
+          yum_repository:
+            name: influxdb
+            description: InfluxDB Repository
+            baseurl: https://repos.influxdata.com/rhel/$releasever/$basearch/stable
+            gpgcheck: no
+            proxy: "{{ proxy | default('_none_') }}"
+
+        - name: "Add CentOS repository"
+          yum_repository:
+            name: centos-updates
+            description: "CentOS-$releasever - Updates"
+            mirrorlist: http://mirrorlist.centos.org/?release=$releasever&arch=$basearch&repo=updates&infra=$infra
+            gpgcheck: no
+            proxy: "{{ proxy | default('_none_') }}"
+          when: add_system_repo == true
 
     - name: "Install the latest version of InfluxDB"
       yum:
-        name: influxdb
+        name: "{{ packages }}"
+      vars:
+        packages:
+          - curl
+          - influxdb
+      notify:
+        - restart influxd
 
     - name: "Creates directory {{ influxdb.path | default('/var/lib/influxdb') }} for InfluxDB"
       file:
@@ -23,18 +40,20 @@
         mode: 0755
         group: influxdb
         owner: influxdb
+      notify:
+        - restart influxd
 
     - name: "Create InfluxDB config"
       template:
-        src: templates/influxdb.conf.j2
-        dest: /etc/influxdb/influxdb.conf
-
-    - name: "Start service InfluxDB"
-      systemd:
-        name: influxdb
-        state: started
-        daemon_reload: yes
-        enabled: yes
+        src: "{{ item.name }}.j2"
+        dest: "/{{ item.name }}"
+        mode: "{{ item.mode }}"
+        owner: "root"
+        group: "root"
+      loop:
+        - { name: "etc/influxdb/influxdb.conf", mode: "0644" }
+      notify:
+        - restart influxd
   when: state == "started"
 
 - name: "Uninstalling"

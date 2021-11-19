@@ -1,0 +1,45 @@
+- name: "Creates directories for SIP3 Hoof"
+  block:
+    - name: "Checking folders"
+      stat:
+        path: "{{item}}"
+      register: folder_stats
+      with_items:
+        - "/etc/nginx/conf.d"
+        - "/var/www/sip3-hoof"
+    - name: "Creating multiple folders without disturbing previous permissions"
+      file:
+        path: "{{item.item}}"
+        state: directory
+        mode: 0755
+      when: item.stat.exists == false
+      with_items:
+        - "{{folder_stats.results}}"
+
+- name: "Create Grafana configuration"
+  template:
+    src: "{{ item.name }}.j2"
+    dest: "/{{ item.name }}"
+    mode: "{{ item.mode }}"
+    owner: "root"
+    group: "root"
+  loop:
+    - { name: "etc/nginx/nginx.conf", mode: "0644" }
+    - { name: "etc/nginx/conf.d/sip3-hoof.conf", mode: "0644" }
+  notify:
+    - restart sip3-captain
+
+- name: "Download SIP3 Hoof version: {{ edition }}-{{ version }}"
+  block:
+    - name: "Download application into /var/www/sip3-hoof version: {{ edition }}-{{ version }}"
+      get_url:
+        url: https://maven.sip3.io/releases-{{ edition }}/io/sip3/hoof/{{ edition }}/sip3-hoof-{{ edition }}/{{ version }}/sip3-hoof-{{ edition }}-{{ version }}.tgz
+        dest: /var/www/sip3-hoof/sip3-hoof-{{ edition }}.tgz
+
+    - name: "Extract SIP3 Hoof archive"
+      shell:
+        cmd: tar -zxvf sip3-hoof-{{ edition }}.tgz && rm -f sip3-hoof-{{ edition }}.tgz
+        chdir: /var/www/sip3-hoof/
+        warn: no
+  notify:
+    - restart nginx

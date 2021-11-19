@@ -1,18 +1,15 @@
-- name: "Install Salto for CentOS"
+- name: "Install SIP3 Salto for CentOS"
   include: centos.yml
   when:
     - platform | lower == "centos"
     - ansible_facts['distribution'] | lower == "centos"
 
-- name: "Install Salto for Debian"
+- name: "Install SIP3 Salto for Debian"
   include: debian.yml
   when:
     - platform | lower == "debian"
     - ansible_facts['distribution'] | lower == "debian"
     - ansible_facts['distribution_major_version'] | int >= 9
 
-#- name: "Install Salto for Docker"
-#  include: docker.yml
-#  when:
-#    - platform == "docker"
-#
+- name: "Configure SIP3 Salto"
+  include: configure.yml

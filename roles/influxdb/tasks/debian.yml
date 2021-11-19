@@ -1,32 +1,32 @@
 - name: "Installing"
   block:
-    - name: "Add Debian repository"
-      apt_repository:
-        repo: deb http://deb.debian.org/debian/ {{ ansible_facts['lsb']['codename'] }} main contrib
-        state: present
-      when: add_system_repo == true
+    - name: "Add repositories"
+      block:
+        - name: "Install gnupg packages"
+          apt:
+            pkg:
+              - gnupg
+            update_cache: yes
 
-    - name: "Install gnupg and apt-transport-https packages"
-      apt:
-        pkg:
-          - gnupg
-          - apt-transport-https
+        - name: "Add signing key for InfluxDB repository"
+          apt_key:
+            url: "https://repos.influxdata.com/influxdb.key"
+            state: present
 
-    - name: "Add signing key for InfluxDB repository"
-      apt_key:
-        url: "https://repos.influxdata.com/influxdb.key"
-        state: present
-
-    - name: "Add InfluxDB repository"
-      apt_repository:
-        repo: deb https://repos.influxdata.com/debian {{ ansible_facts['lsb']['codename'] }} stable
-        state: present
-        filename: influxdb
+        - name: "Add InfluxDB repository"
+          apt_repository:
+            repo: deb https://repos.influxdata.com/debian {{ ansible_facts['lsb']['codename'] }} stable
+            state: present
+            filename: influxdb
 
     - name: "Install the latest version of InfluxDB"
       apt:
         pkg:
+          - curl
           - influxdb
+        update_cache: yes
+      notify:
+        - restart influxd
 
     - name: "Creates directory {{ influxdb.path | default('/var/lib/influxdb') }} for InfluxDB"
       file:
@@ -35,18 +35,20 @@
         mode: 0755
         group: influxdb
         owner: influxdb
+      notify:
+        - restart influxd
 
     - name: "Create InfluxDB config"
       template:
-        src: templates/influxdb.conf.j2
-        dest: /etc/influxdb/influxdb.conf
-
-    - name: "Start service InfluxDB"
-      systemd:
-        name: influxdb
-        state: started
-        daemon_reload: yes
-        enabled: yes
+        src: "{{ item.name }}.j2"
+        dest: "/{{ item.name }}"
+        mode: "{{ item.mode }}"
+        owner: "root"
+        group: "root"
+      loop:
+        - { name: "etc/influxdb/influxdb.conf", mode: "0644" }
+      notify:
+        - restart influxd
   when: state == "started"
 
 - name: "Uninstalling"
@@ -58,9 +60,8 @@
         enabled: no
 
     - name: "Uninstall InfluxDB"
-      yum:
+      apt:
         name: influxdb
-        autoremove: yes
         state: absent
 
     - name: "Purge project files"

@@ -1,0 +1,6 @@
+- name: restart sip3-salto
+  systemd:
+    name: sip3-salto
+    daemon_reload: true
+    state: restarted
+    enabled: true

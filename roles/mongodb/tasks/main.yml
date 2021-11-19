@@ -11,8 +11,5 @@
     - ansible_facts['distribution'] | lower == "debian"
     - ansible_facts['distribution_major_version'] | int >= 9
 
-#- name: "Install Storage for Docker"
-#  include: docker.yml
-#  when:
-#    - platform == "docker"
-#
+- name: "Configure MongoDB and collections"
+  include: configure.yml

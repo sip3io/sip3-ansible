@@ -10,9 +10,3 @@
     - platform | lower == "debian"
     - ansible_facts['distribution'] | lower == "debian"
     - ansible_facts['distribution_major_version'] | int >= 9
-
-#- name: "Install Statistics Storage for Docker"
-#  include: docker.yml
-#  when:
-#    - platform == "docker"
-#

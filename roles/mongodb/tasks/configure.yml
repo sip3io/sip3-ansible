@@ -1,0 +1,19 @@
+- name: "Configure Hostmap"
+  block:
+    - name: "Wait for MongoDB service starts"
+      wait_for:
+        host: "{{ mongodb.address | default(address | default('127.0.0.1')) }}"
+        port: "{{ mongodb.port | default('27017') }}"
+        delay: 1
+        timeout: 15
+
+    - name: "Flush hostmap"
+      shell: mongo --host {{ mongodb.address | default(address | default('127.0.0.1')) }} {{ mongodb.db | default(address | default('sip3')) }} --port {{ mongodb.port | default('27017') }} --eval 'db.hosts.drop()'
+
+    - name: "Insert hostmap into MongoDB"
+      shell: mongo --host {{ mongodb.address | default(address | default('127.0.0.1')) }} {{ mongodb.db | default(address | default('sip3')) }} --port {{ mongodb.port | default('27017') }} --eval 'db.hosts.insert({{ item | to_json(ensure_ascii=False) }})'
+      loop: "{{ hostmap }}"
+
+    - name: "Create index for hostmap"
+      shell: "mongo --host {{ mongodb.address | default(address | default('127.0.0.1')) }} {{ mongodb.db | default(address | default('sip3')) }} --port {{ mongodb.port | default('27017') }} --eval 'db.hosts.createIndex({ name: 1 })'"
+  when: state == "started"

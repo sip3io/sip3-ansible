@@ -1,0 +1,6 @@
+- name: restart sip3-twig
+  systemd:
+    name: sip3-twig
+    daemon_reload: true
+    state: restarted
+    enabled: true

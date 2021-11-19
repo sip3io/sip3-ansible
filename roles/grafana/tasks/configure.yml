@@ -1,0 +1,15 @@
+- name: "Create Grafana configuration"
+  template:
+    src: "{{ item.name }}.j2"
+    dest: "/{{ item.name }}"
+    mode: "{{ item.mode }}"
+    owner: "grafana"
+    group: "grafana"
+  loop:
+    - { name: "etc/grafana/provisioning/datasources/sip3-datasource.yml", mode: "0644" }
+    - { name: "etc/grafana/provisioning/dashboards/sip3-dashboard.yml", mode: "0644" }
+    - { name: "etc/grafana/provisioning/dashboards/sip3-technical_dashboard.json", mode: "0644" }
+    - { name: "etc/grafana/provisioning/dashboards/sip3-sip_metrics.json", mode: "0644" }
+    - { name: "etc/grafana/grafana.ini", mode: "0644" }
+  notify:
+    - restart grafana-server

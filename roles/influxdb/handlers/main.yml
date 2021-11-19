@@ -1,0 +1,6 @@
+- name: restart influxd
+  systemd:
+    name: influxd
+    daemon_reload: true
+    state: restarted
+    enabled: true

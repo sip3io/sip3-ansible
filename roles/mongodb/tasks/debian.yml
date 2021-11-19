@@ -1,32 +1,32 @@
 - name: "Installing"
   block:
+    - name: "Add repositories"
+      block:
+        - name: "Install gnupg packages"
+          apt:
+            pkg:
+              - gnupg
+            update_cache: yes
 
-    - name: "Add Debian repository"
-      apt_repository:
-        repo: deb http://deb.debian.org/debian/ {{ ansible_facts['lsb']['codename'] }} main contrib
-        state: present
-      when: add_system_repo == true
+        - name: "Add signing key for Mongo repository"
+          apt_key:
+            url: "https://www.mongodb.org/static/pgp/server-{{ mongodb.version }}.asc"
+            state: present
 
-    - name: "Install gnupg package"
-      apt:
-        name: "gnupg"
-
-    - name: "Add signing key for Mongo repository"
-      apt_key:
-        url: "https://www.mongodb.org/static/pgp/server-{{ mongodb.version }}.asc"
-        state: present
-
-    - name: "Add MongoDB repository"
-      apt_repository:
-        repo: deb http://repo.mongodb.org/apt/debian {{ ansible_facts['lsb']['codename'] }}/mongodb-org/{{ mongodb.version }} main
-        state: present
-        filename: mongodb-org-{{ mongodb.version }}
+        - name: "Add MongoDB repository"
+          apt_repository:
+            repo: deb http://repo.mongodb.org/apt/debian {{ ansible_facts['lsb']['codename'] }}/mongodb-org/{{ mongodb.version }} main
+            state: present
+            filename: mongodb-org-{{ mongodb.version }}
 
     - name: "Install the latest version of MongoDB"
       apt:
         pkg:
           - mongodb-org-server
           - mongodb-org-shell
+        update_cache: yes
+      notify:
+        - restart mongod
 
     - name: "Creates directory {{ mongodb.path | default('/data/db') }} for MongoDB"
       file:
@@ -35,6 +35,20 @@
         mode: 0755
         group: mongodb
         owner: mongodb
+      notify:
+        - restart mongod
+
+    - name: "Create MongoDB config"
+      template:
+        src: "{{ item.name }}.j2"
+        dest: "/{{ item.name }}"
+        mode: "{{ item.mode }}"
+        owner: "root"
+        group: "root"
+      loop:
+        - { name: "etc/mongod.conf", mode: "0644" }
+      notify:
+        - restart mongod
 
     - name: "Create directory '/var/run/mongodb' for MongoDB"
       file:
@@ -43,40 +57,28 @@
         mode: 0755
         group: mongodb
         owner: mongodb
-
-    - name: "Create MongoDB config"
-      template:
-        src: templates/mongod.conf.j2
-        dest: /etc/mongod.conf
+      notify:
+        - restart mongod
 
     - name: "Deploying MongoDB config for recreate /var/run/mongodb on tmpfs"
-      template:
-        src: templates/mongodb.conf.tmpfs.j2
-        dest: /usr/lib/tmpfiles.d/mongodb.conf
+      copy:
+        src: "{{ item.name }}"
+        dest: "/{{ item.name }}"
+        owner: "{{ item.ownership }}"
+        group: "{{ item.ownership }}"
+        mode: "0644"
+        backup: "{{ item.backup }}"
+      loop:
+        - { name: "usr/lib/tmpfiles.d/mongodb.conf", ownership: "root", backup: "no" }
+      notify:
+        - restart mongod
 
     - name: "Start service MongoDB"
       systemd:
         name: mongod
+        state: started
         daemon_reload: yes
         enabled: yes
-        state: restarted
-
-    - name: "Wait for MongoDB service starts"
-      wait_for:
-        host: "{{ mongodb.address | default(address | default('127.0.0.1')) }}"
-        port: "{{ mongodb.port | default('27017') }}"
-        delay: 1
-        timeout: 15
-
-    - name: "Flush hostmap"
-      shell: mongo --host {{ mongodb.address | default(address | default('127.0.0.1')) }} {{ mongodb.db | default(address | default('sip3')) }} --port {{ mongodb.port | default('27017') }} --eval 'db.hosts.drop()'
-
-    - name: "Insert hostmap into MongoDB"
-      shell: mongo --host {{ mongodb.address | default(address | default('127.0.0.1')) }} {{ mongodb.db | default(address | default('sip3')) }} --port {{ mongodb.port | default('27017') }} --eval 'db.hosts.insert({{ item | to_json(ensure_ascii=False) }})'
-      loop: "{{ hostmap }}"
-
-    - name: "Create index for hostmap"
-      shell: "mongo --host {{ mongodb.address | default(address | default('127.0.0.1')) }} {{ mongodb.db | default(address | default('sip3')) }} --port {{ mongodb.port | default('27017') }} --eval 'db.hosts.createIndex({ name: 1 })'"
   when: state == "started"
 
 - name: "Uninstalling"
@@ -102,10 +104,7 @@
             path: "{{item}}"
           register: folder_stats
           with_items:
-            - "/etc/mongod.conf"
             - "{{ mongodb.path | default('/data/db') }}/"
-            - "/var/log/mongodb"
-            - "/etc/yum.repos.d/mongodb-org-{{ mongodb.version }}.repo"
         - name: "Delete project files"
           file:
             path: "{{ item.item }}"

@@ -3,6 +3,8 @@
 #
 # To run playbook, please use:
 # ansible-playbook -i inventories/inventory.yml playbooks/sip3.yml
+# To run playbook locally use:
+# ansible-playbook -i inventories/inventory.yml playbooks/sip3.yml --connection=local
 #
 # Also you can set tags which will be use: sip3, storage, frontend, backend
 # E.g.
@@ -56,8 +58,6 @@ all:
     # E.g.
     # proxy: http://127.0.0.1:3128
 
-    # Needs add Operating system repositories for installation
-    add_system_repo: no
     # Installation platform. E.g. centos, docker, debian etc
     platform: centos
     # Community or Enterprise version edition
@@ -74,7 +74,6 @@ all:
       - udf
     # Settings for Java
     java:
-      version: 1.8.0
       xms: 512M
       xmx: 1024M
       gc: G1

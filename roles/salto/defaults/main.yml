@@ -1,7 +1,7 @@
 state: started
 features:
   - call
-version: 2021.3.1
+version: latest
 edition: ce
 salto:
   webhook:

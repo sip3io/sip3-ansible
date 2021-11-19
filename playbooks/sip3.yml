@@ -29,12 +29,6 @@
     - role: ../roles/influxdb
       tags: storage
 
-- name: "Install OpenJDK"
-  hosts: captain, salto, twig, backend
-  roles:
-    - role: ../roles/java
-      tags: backend, sip3, salto, twig, captain
-
 - name: "Install SIP3 Salto"
   hosts: salto, backend
   roles:

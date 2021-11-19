@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration scan="true" scanPeriod="60 seconds">
+    <appender name="DEFAULT" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>/var/log/sip3-salto/default.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>/var/log/sip3-salto/%d{yyyy-MM-dd}.default.log</fileNamePattern>
+            <maxHistory>15</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{dd-MM-yyyy HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    {% if "webhook" in features -%}
+    <appender name="WEBHOOK" class="io.sip3.logback.WebhookAppender">
+        <url>{{ salto.webhook.url | default('https://hooks.slack.com/services/') }}</url>
+        <json>
+           {{ salto.webhook.body | default('{"text": ":fire: Salto :fire:", "attachments": [{"text": "{message}"}]}') }}
+        </json>
+        <interval>60</interval>
+        <encoder>
+            <pattern>%d{dd-MM-yyyy HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+        </encoder>
+    </appender>
+    {% endif %}
+
+    <appender name="METRICS" class="ch.qos.logback.core.rolling.RollingFileAppender">
+        <file>/var/log/sip3-salto/metrics.log</file>
+        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+            <fileNamePattern>/var/log/sip3-salto/%d{yyyy-MM-dd}.metrics.log</fileNamePattern>
+            <maxHistory>15</maxHistory>
+        </rollingPolicy>
+        <encoder>
+            <pattern>%d{dd-MM-yyyy HH:mm:ss.SSS} - %msg%n</pattern>
+        </encoder>
+    </appender>
+
+    <logger name="io.micrometer.core.instrument.logging.LoggingMeterRegistry" level="INFO" additivity="false">
+        <appender-ref ref="METRICS"/>
+    </logger>
+
+    <logger name="io.sip3" level="INFO" additivity="false">
+        <appender-ref ref="DEFAULT"/>
+        {% if "webhook" in features -%}
+        <appender-ref ref="WEBHOOK"/>
+        {% endif -%}
+
+    </logger>
+
+    <root level="ERROR">
+        <appender-ref ref="DEFAULT"/>
+        {% if "webhook" in features -%}
+        <appender-ref ref="WEBHOOK"/>
+        {%- endif %}
+
+    </root>
+</configuration>

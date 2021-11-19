@@ -1,168 +1,41 @@
 - name: "Installing"
   block:
-    - name: "Create SIP3 account"
-      user:
-        name: sip3
-        comment: "SIP3 Account"
-        system: yes
-        append: yes
-
-    - name: "Add Debian repository"
-      apt_repository:
-        repo: deb http://deb.debian.org/debian/ {{ ansible_facts['lsb']['codename'] }} main contrib
-        state: present
-      when: add_system_repo == true
-
-    - name: "Install libpcap library"
-      apt:
-        name: libpcap0.8
-        update_cache: yes
-
-    - name: "Creates directories for SIP3 Captain"
+    - name: "Add repositories"
       block:
-        - name: "Checking folders"
-          stat:
-            path: "{{item}}"
-          register: folder_stats
-          with_items:
-            - "/etc/sip3-captain"
-            - "/var/log/sip3-captain"
-            - "/opt/sip3-captain"
-            - "/opt/sip3-captain/lib"
-            - "/tmp/sip3-captain"
-        - name: "Creating multiple folders without disturbing previous permissions"
-          file:
-            path: "{{item.item}}"
-            state: directory
-            mode: 0755
-            group: sip3
-            owner: sip3
-          when: item.stat.exists == false
-          with_items:
-            - "{{ folder_stats.results }}"
+        - name: "Install gnupg packages"
+          apt:
+            name: gnupg
+            update_cache: yes
 
-    - name: "Create /usr/lib/systemd/system directory if does not exists"
-      file:
-        path: "/usr/lib/systemd/system"
-        state: directory
-        mode: 0755
+        - name: "Add signing key for SIP3 repository"
+          apt_key:
+            url: "https://repo.sip3.io/apt/keyFile"
+            state: present
 
-    - name: "Create SIP3 Captain application config"
-      template:
-        src: templates/application.yml.j2
-        dest: /etc/sip3-captain/application.yml
+        - name: "Add SIP3 repository"
+          apt_repository:
+            repo: deb [ arch=all ] https://repo.sip3.io/apt/ {{ edition }} contrib
+            state: present
 
-    - name: "Create SIP3 Captain application log config"
-      template:
-        src: templates/logback.xml.j2
-        dest: /etc/sip3-captain/logback.xml
-
-    - name: "Create SIP3 Captain environment config file"
-      template:
-        src: templates/environment.conf.j2
-        dest: /etc/sip3-captain/environment.conf
-
-    - name: "Create SIP3 Captain systemd service"
-      template:
-        src: templates/sip3-captain.service.j2
-        dest: /usr/lib/systemd/system/sip3-captain.service
-
-    - name: "Get SIP3 Captain application via proxy version: {{ version | default('latest') }}"
-      get_url:
-        url: https://maven.sip3.io/releases-ce/io/sip3/captain/ce/sip3-captain-ce/{{ version | default('latest') }}/sip3-captain-ce-{{ version | default('latest') }}.jar
-        dest: /opt/sip3-captain/sip3-captain.jar
-        use_proxy: yes
-      environment:
-        https_proxy: "{{ proxy }}"
-      when:
-        - proxy is defined
-        - edition == "ce"
-
-    - name: "Get SIP3 Captain application version: {{ version | default('latest') }}"
-      get_url:
-        url: https://maven.sip3.io/releases-ce/io/sip3/captain/ce/sip3-captain-ce/{{ version | default('latest') }}/sip3-captain-ce-{{ version | default('latest') }}.jar
-        dest: /opt/sip3-captain/sip3-captain.jar
-        use_proxy: no
-      when:
-        - proxy is undefined
-        - edition == "ce"
-
-    - name: "Get SIP3 Captain EE application via proxy version: {{ version | default('latest') }}"
-      get_url:
-        url: https://maven.sip3.io/releases-ee/io/sip3/captain/{{ edition }}/sip3-captain-{{ edition }}/{{ version | default('latest') }}/sip3-captain-{{ edition }}-{{ version | default('latest') }}.jar
-        dest: /opt/sip3-captain/sip3-captain.jar
-        use_proxy: yes
-        url_username: "{{ support.username | default('none') }}"
-        url_password: "{{ support.password | default('none') }}"
-      environment:
-        https_proxy: "{{ proxy }}"
-      when:
-        - proxy is defined
-        - edition != "ce"
-
-    - name: "Get SIP3 Captain EE application version: {{ version | default('latest') }}"
-      get_url:
-        url: https://maven.sip3.io/releases-ee/io/sip3/captain/{{ edition }}/sip3-captain-{{ edition }}/{{ version | default('latest') }}/sip3-captain-{{ edition }}-{{ version | default('latest') }}.jar
-        dest: /opt/sip3-captain/sip3-captain.jar
-        use_proxy: no
-        url_username: "{{ support.username | default('none') }}"
-        url_password: "{{ support.password | default('none') }}"
-      when:
-        - proxy is undefined
-        - edition != "ce"
-
-    - name: "Change permissions for /var/log/sip3-captain/default.log"
-      file:
-        path: /var/log/sip3-captain/default.log
-        state: touch
-        owner: sip3
-        group: sip3
-        mode: u=rw,g=r,o=r
-
-    - name: "Start SIP3 Captain"
-      systemd:
-        name: sip3-captain
-        daemon_reload: yes
-        state: restarted
-        enabled: yes
+    - name: "Install packages"
+      apt:
+        pkg:
+          - libpcap0.8
+          - openjdk-11-jre
+          - sip3-captain-{{ edition }}
+        update_cache: yes
   when: state == "started"
 
 - name: "Uninstalling"
   block:
-    - name: Stop SIP3 Captain
+    - name: "Stop SIP3 Captain"
       systemd:
         name: sip3-captain
         enabled: no
         state: stopped
 
-    - name: "Purge project files"
-      block:
-        - name: "Collecting project files"
-          stat:
-            path: "{{item}}"
-          register: folder_stats
-          with_items:
-            - "/etc/sip3-captain"
-            - "/var/log/sip3-captain"
-            - "/opt/sip3-captain/lib"
-            - "/opt/sip3-captain"
-            - "/tmp/sip3-captain"
-            - "/usr/lib/systemd/system/sip3-captain.service"
-        - name: "Delete project files"
-          file:
-            path: "{{ item.item }}"
-            force: true
-            state: absent
-          when: item.stat.exists == true and item.stat.isdir == false
-          with_items:
-            - "{{folder_stats.results}}"
-        - name: "Delete project folders"
-          file:
-            path: "{{ item.item }}"
-            force: true
-            state: absent
-          when: item.stat.exists == true and item.stat.isdir == true
-          with_items:
-            - "{{folder_stats.results}}"
-      ignore_errors: yes
+    - name: "Uninstall package"
+      apt:
+        name: sip3-captain-{{ edition }}
+        state: absent
   when: state == "absent"
