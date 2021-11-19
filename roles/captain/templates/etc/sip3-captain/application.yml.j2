@@ -73,10 +73,9 @@ rtp:
 {% if "rec" in features -%}
 #! Recording
 recording:
-   trim-to-size-delay: {{ captain.recording.trim_to_size_delay | default('3600000') }}
-   expiration-delay: {{ captain.recording.expiration_delay | default('4000') }}
+   expiration-delay: {{ captain.recording.expiration_delay | default('1000') }}
    aggregation-timeout: {{ captain.recording.aggregation_timeout | default('30000') }}
-   duration-timeout: {{ captain.recording.duration_timeout | default('3600000') }}
+   duration-timeout: {{ captain.recording.duration_timeout | default('60000') }}
 {% endif %}
 
 {% if "vxlan" in features -%}
