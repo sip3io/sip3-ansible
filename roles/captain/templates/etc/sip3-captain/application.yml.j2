@@ -36,7 +36,7 @@ ipv4:
 
 #! TCP
 tcp:
-  expiration-delay: {{ captain.tcp.expiration_delay | default('200') }}
+  expiration-delay: {{ captain.tcp.expiration_delay | default('100') }}
   aggregation-timeout: {{ captain.tcp.aggregation_timeout | default('200') }}
   idle-connection-timeout: {{ captain.tcp.idle_connection_timeout | default('300000') }}
 
