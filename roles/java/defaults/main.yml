@@ -1,4 +1,0 @@
-state: started
-add_system_repo: false
-java:
-  version: 11

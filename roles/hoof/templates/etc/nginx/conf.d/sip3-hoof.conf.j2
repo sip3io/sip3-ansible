@@ -11,7 +11,10 @@ server {
     }
 
     location /api/ {
-         proxy_pass http://{{ twig.address | default(address | default('127.0.0.1')) }}:{{ twig.server.port | default('8080') }}{{ twig.server.servlet.context_path | default('/api') }}/;
+        proxy_set_header   Host             $host:$server_port/;
+        proxy_set_header   X-Real-IP        $remote_addr;
+        proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
+        proxy_pass http://{{ twig.address | default(address | default('127.0.0.1')) }}:{{ twig.server.port | default('8080') }}{{ twig.server.servlet.context_path | default('/api') }}/;
     }
 
     location /grafana {

@@ -58,8 +58,6 @@ all:
     # E.g.
     # proxy: http://127.0.0.1:3128
 
-    # Installation platform. E.g. centos, docker, debian etc
-    platform: centos
     # Community or Enterprise version edition
     edition: ce
     # Account for EE downloading

@@ -21,6 +21,11 @@
         packages:
           - java-11-openjdk
           - sip3-twig-{{ edition }}
+
+    - name: "Set Java home"
+      set_fact:
+        java:
+          home: "/usr/lib/jvm/jre-11"
   when: state == "started"
 
 - name: "Uninstalling"

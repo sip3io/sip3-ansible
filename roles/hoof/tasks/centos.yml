@@ -12,6 +12,15 @@
         gpgcheck: no
         proxy: "{{ proxy | default('_none_') }}"
 
+    - name: "Add SIP3 repository"
+      yum_repository:
+        name: sip3
+        description: "SIP3 repository"
+        baseurl: https://repo.sip3.io/yum/{{ edition }}/
+        gpgkey: https://repo.sip3.io/yum/keyFile
+        gpgcheck: yes
+        proxy: "{{ proxy | default('_none_') }}"
+
     - name: "Check and install tar, unzip and NGINX"
       yum:
         name: "{{ packages }}"
@@ -20,6 +29,7 @@
         packages:
           - tar
           - unzip
+          - sip3-hoof-{{ edition }}
           - nginx
       notify:
         - restart nginx

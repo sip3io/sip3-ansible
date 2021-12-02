@@ -7,7 +7,6 @@ all:
     ansible_port: 22
     ansible_become: true
 
-    platform: debian
     edition: ce
 
     features:
