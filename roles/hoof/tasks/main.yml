@@ -6,8 +6,10 @@
 - name: "Install Hoof for Debian"
   include: debian.yml
   when:
-    - ansible_facts['distribution'] | lower in ["debian", "ubuntu"]
-    - ansible_facts['distribution_major_version'] | int >= 10
+    (ansible_facts['distribution'] | lower == "debian" and
+      ansible_facts['distribution_major_version'] | int >= 10) or
+    (ansible_facts['distribution'] | lower == "ubuntu" and
+      ansible_facts['ansible_distribution_version'] in ["20.04"])
 
 - name: "Configure SIP3 Hoof"
   include: configure.yml
