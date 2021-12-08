@@ -1,5 +1,4 @@
 state: started
-version: latest
 hoof:
   reconfigure: true
 edition: ce

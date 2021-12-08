@@ -1,5 +1,4 @@
 state: started
-version: latest
 edition: ce
 features:
   - call

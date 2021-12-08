@@ -1,7 +1,6 @@
 state: started
 features:
   - call
-version: latest
 edition: ce
 salto:
   webhook:
