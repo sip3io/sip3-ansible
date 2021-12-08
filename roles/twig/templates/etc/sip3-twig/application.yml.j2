@@ -27,7 +27,7 @@ session:
 
 #! Security
 security:
-  enabled: true
+  enabled: {{ twig.security.enabled | default('false') }}
   grafana:
     {% if twig.security.grafana.url is defined -%}
     url: {{ twig.security.grafana.url }}
