@@ -117,7 +117,7 @@ mongo:
         ascending: {{ salto.mongodb.collections.rtpr_rtp_raw.indexes.ascending | default('[created_at]') }}
         hashed: {{ salto.mongodb.collections.rtpr_rtp_raw.indexes.hashed | default('[call_id]') }}
       max-collections: {{ salto.mongodb.collections.rtpr_rtp_raw.max_collections | default('30') }}
-    {% endif %}
+    {% endif -%}
     {% if "rec" in features -%}
     - prefix: rec_raw
       indexes:
