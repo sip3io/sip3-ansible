@@ -15,7 +15,7 @@
 
         - name: "Add NGINX repository"
           apt_repository:
-            repo: deb http://nginx.org/packages/debian {{ ansible_facts['lsb']['codename'] }} nginx
+            repo: deb http://nginx.org/packages/{{ ansible_facts['distribution'] | lower }} {{ ansible_facts['lsb']['codename'] }} nginx
             state: present
             filename: nginx
 

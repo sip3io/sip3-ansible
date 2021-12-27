@@ -15,7 +15,7 @@
 
         - name: "Add MongoDB repository"
           apt_repository:
-            repo: deb http://repo.mongodb.org/apt/debian {{ ansible_facts['lsb']['codename'] }}/mongodb-org/{{ mongodb.version }} main
+            repo: deb http://repo.mongodb.org/apt/{{ ansible_facts['distribution'] | lower }} {{ ansible_facts['lsb']['codename'] }}/mongodb-org/{{ mongodb.version }} {% if ansible_facts['distribution'] == "Debian" %}main{% else %}multiverse{% endif %}
             state: present
             filename: mongodb-org-{{ mongodb.version }}
 
