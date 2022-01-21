@@ -26,6 +26,7 @@
           - unzip
           - nginx
         update_cache: yes
+        state: latest
       notify:
         - restart nginx
   when: state == "started"

@@ -24,6 +24,7 @@
           - openjdk-11-jre
           - sip3-captain-{{ edition }}
         update_cache: yes
+        state: latest
 
     - name: "Set Java home"
       set_fact:

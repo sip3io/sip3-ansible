@@ -17,6 +17,7 @@
       yum:
         name: "{{ packages }}"
         update_cache: yes
+        state: latest
       vars:
         packages:
           - libpcap
