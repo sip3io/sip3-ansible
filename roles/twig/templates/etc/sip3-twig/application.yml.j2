@@ -13,6 +13,7 @@ session:
   default-limit: {{ twig.session.default_limit | default('50') }}
   use-x-correlation-header: {{ twig.session.use_x_correlation_header | default('true') }}
   show-retransmits: {{ twig.session.show_retransmits | default('true') }}
+  ignore-nanos: {{ twig.session.ignore_nanos | default('false') }}
   call:
     max-legs: {{ twig.session.call.max_legs | default('10') }}
     aggregation-timeout: {{ twig.session.call.aggregation_timeout | default('60000') }}
@@ -24,6 +25,9 @@ session:
   media:
     block-count: {{ twig.session.media.block_count | default('28') }}
     termination-timeout: {{ twig.session.media.termination_timeout | default('120000') }}
+
+cache:
+  refresh-rate: 55000
 
 #! Security
 security:
@@ -52,12 +56,13 @@ spring:
   jackson:
     property-naming-strategy: SNAKE_CASE
   cache:
-    cache-names: listCollectionNames, listAttributes
+    cache-names: listAttributes, listCollectionNames, listCollectionNamesByPrefix
     caffeine:
       spec: expireAfterWrite=1m
   data:
     mongodb:
       uri: ${mongo.uri}
       database: ${mongo.db}
-
-
+  mvc:
+    pathmatch:
+      matching-strategy: ant-path-matcher
