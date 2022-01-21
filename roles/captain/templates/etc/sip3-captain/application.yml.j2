@@ -18,9 +18,10 @@ pcap:
   {% else -%}
   dir: {{ captain.pcap.dir | default('/tmp/sip3-captain') }}
   {% endif -%}
+  sll: {{ captain.pcap.sll | default('false') }}
+  bpf-filter: "{{ captain.pcap.bpf_filter | default('ip and udp') }}"
   snaplen: {{ captain.pcap.snaplen | default('1520') }}
   buffer-size: {{ captain.pcap.buffer_size | default('2097152') }}
-  bpf-filter: "{{ captain.pcap.bpf_filter | default('tcp or udp') }}"
   timeout-millis: {{ captain.pcap.timeout_millis | default('10') }}
 {% endif %}
 
