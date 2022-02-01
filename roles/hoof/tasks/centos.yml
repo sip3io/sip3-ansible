@@ -46,34 +46,11 @@
 
     - name: "Uninstall NGINX"
       yum:
-        name: nginx
+        name: "{{ packages }}"
         autoremove: yes
         state: absent
-
-    - name: "Purge project files"
-      block:
-        - name: "Checking project files"
-          stat:
-            path: "{{item}}"
-          register: folder_stats
-          with_items:
-            - "/etc/yum.repos.d/nginx.repo"
-            - "/var/www/sip3-hoof"
-        - name: "Delete project files"
-          file:
-            path: "{{ item.item }}"
-            force: true
-            state: absent
-          when: item.stat.exists == true and item.stat.isdir == false
-          with_items:
-            - "{{folder_stats.results}}"
-        - name: "Delete project folders"
-          file:
-            path: "{{ item.item }}"
-            force: true
-            state: absent
-          when: item.stat.exists == true and item.stat.isdir == true
-          with_items:
-            - "{{folder_stats.results}}"
-      ignore_errors: yes
+      vars:
+        packages:
+          - sip3-hoof-{{ edition }}
+          - nginx
   when: state == "absent"

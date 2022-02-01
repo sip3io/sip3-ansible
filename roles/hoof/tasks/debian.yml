@@ -43,31 +43,6 @@
       apt:
         pkg:
           - nginx
+          - sip3-hoof-{{ edition }}
         state: absent
-
-    - name: "Purge project files"
-      block:
-        - name: "Checking project files"
-          stat:
-            path: "{{item}}"
-          register: folder_stats
-          with_items:
-            - "/var/www/sip3-hoof"
-        - name: "Delete project files"
-          file:
-            path: "{{ item.item }}"
-            force: true
-            state: absent
-          when: item.stat.exists == true and item.stat.isdir == false
-          with_items:
-            - "{{folder_stats.results}}"
-        - name: "Delete project folders"
-          file:
-            path: "{{ item.item }}"
-            force: true
-            state: absent
-          when: item.stat.exists == true and item.stat.isdir == true
-          with_items:
-            - "{{folder_stats.results}}"
-      ignore_errors: yes
   when: state == "absent"
