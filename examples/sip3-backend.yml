@@ -7,7 +7,7 @@ all:
     ansible_port: 22
     ansible_become: true
 
-     edition: ce
+    edition: ce
 
     features:
       - call
