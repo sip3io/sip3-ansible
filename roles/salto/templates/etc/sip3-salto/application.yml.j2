@@ -109,7 +109,7 @@ mongo:
     {% if "rtp" in features -%}
     - prefix: rtpr_rtp_index
       indexes:
-        ascending: {{ salto.mongodb.collections.rtpr_media_index.indexes.ascending | default('[created_at, src_addr, src_host, dst_addr, dst_host, caller, callee, mos, r_factor, codec, one_way, duration, bad_report_fraction]') }}
+        ascending: {{ salto.mongodb.collections.rtpr_media_index.indexes.ascending | default('[created_at, src_addr, src_host, dst_addr, dst_host, caller, callee, recorded, mos, r_factor, codec, one_way, duration, bad_report_fraction]') }}
         hashed: {{ salto.mongodb.collections.rtpr_media_index.indexes.hashed | default('[call_id]') }}
       max-collections: {{ salto.mongodb.collections.rtpr_media_index.max_collections | default('30') }}
     - prefix: rtpr_rtp_raw
@@ -215,8 +215,7 @@ media:
 
   rtp-r:
     expiration-delay: {{ salto.media.rtp_r.expiration_delay | default('1000') }}
-    aggregation-timeout: {{ salto.media.rtp_r.aggregation_timeout | default('30000') }}
-    cumulative-metrics: {{ salto.media.rtp_r.cumulative_metrics | default('true') }}
+    aggregation-timeout: {{ salto.media.rtp_r.aggregation_timeout | default('35000') }}
     min-expected-packets: {{ salto.media.rtp_r.min_expected_packets | default('100') }}
     r-factor-distributions: {{ salto.media.rtp_r.r_factor_distributions | default('[30, 50, 75, 95]') }}
     duration-distributions: {{ salto.media.rtp_r.duration_distributions | default('[10s, 30s, 1m, 5m, 1h]') }}
@@ -225,7 +224,6 @@ media:
 {% if "rec" in features %}
 recording:
   enabled: true
-  trim-to-size-delay: {{ salto.recording.trim_to_size_delay | default('3600000') }}
   expiration-delay: {{ salto.recording.expiration_delay | default('4000') }}
   aggregation-timeout: {{ salto.recording.aggregation_timeout | default('30000') }}
   bulk-size: {{ salto.recording.bulk_size | default('64') }}
