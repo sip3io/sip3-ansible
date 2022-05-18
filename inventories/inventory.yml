@@ -20,17 +20,73 @@
 # ansible-playbook -i inventories/inventory.yml playbooks/sip3.yml --limit 'all:!captain'
 
 all:
-
   ###
   # Section which define hosts where will be install SIP3 applications
-  hosts:
+  children:
     mongodb:
+      hosts:
+        # Add MongoDB hosts here
+        #mongodb1:
     influxdb:
+      hosts:
+        # Add influxdb hosts here
+        #influxdb1:
     salto:
-    captain:
+      hosts:
+        # Add sip3-salto hosts here
+        #salto1:
     twig:
+      hosts:
+        # Add sip3-twig hosts here
+        #twig1:
     grafana:
+      hosts:
+        # Add grafana hosts here
+        #grafana1:
     hoof:
+      hosts:
+        # Add sip3-salto hosts here
+        #hoof1:
+    captain:
+      hosts:
+        # Add sip3-captain hosts here
+        # You can add real hosts or interfaces symlinks
+        #captain1@eth0:
+          # Ansible ssh connection facts
+          # SSH host. You can use dns name or IP address
+          #ansible_ssh_host: captain1
+          # SSH username
+          #ansible_user: root
+          # SSH password
+          #ansible_password: root
+          # You can set specific captain part variables for host. Or any another variables. That variables will overwrite global variables
+          #captain:
+          #  pcap:
+              # Ethernet interface where Captain will be sniff.
+          #    dev: enp1s0
+              # Libpcap filter string. For more information about semantic you can find in pcap-filter(7)
+          #    bpf_filter: tcp or udp
+          #  rtcp:
+          #    enabled: false
+        #second captain interface on captain1
+        #captain1@lo:
+          # Ansible ssh connection facts
+          # SSH host. You can use dns name or IP address
+          #ansible_ssh_host: captain1
+          # SSH username
+          #ansible_user: root
+          # SSH password
+          #ansible_password: root
+          # You can skip sip3 package install for fake "interface" hosts
+          #config_only: true
+          #captain:
+          #  pcap:
+              # Ethernet interface where Captain will be sniff.
+          #    dev: lo
+              # Libpcap filter string. For more information about semantic you can find in pcap-filter(7)
+          #    bpf_filter: tcp or udp
+          #  rtcp:
+          #    enabled: false
 
   ###
   # Commons variables of SIP3 applications

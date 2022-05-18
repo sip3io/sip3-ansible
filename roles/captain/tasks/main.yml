@@ -1,15 +1,17 @@
 - name: "Install SIP3 Captain for CentOS"
   include: centos.yml
   when:
-    - ansible_facts['distribution'] | lower in ["centos", "sangoma", "oracle"]
+    (ansible_facts['distribution'] | lower in ["centos", "sangoma", "oracle", "rocky"]) and
+    (not config_only or config_only is not defined)
 
 - name: "Install SIP3 Captain for Debian"
   include: debian.yml
   when:
-    (ansible_facts['distribution'] | lower == "debian" and
+    ((ansible_facts['distribution'] | lower == "debian" and
       ansible_facts['distribution_major_version'] | int >= 10) or
     (ansible_facts['distribution'] | lower == "ubuntu" and
-      ansible_facts['ansible_distribution_version'] in ["20.04"])
+      ansible_facts['ansible_distribution_version'] in ["20.04"])) and
+    (not config_only or config_only is not defined)
 
 - name: "Configure SIP3 Captain"
   include: configure.yml
