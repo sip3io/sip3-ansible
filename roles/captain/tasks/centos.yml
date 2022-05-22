@@ -1,6 +1,6 @@
 - name: "Installing"
   block:
-    - name: Disable SELinux
+    - name: "Disable SELinux"
       selinux:
         state: disabled
 

@@ -1,3 +1,28 @@
+- name: "Create SIP3 Captain basic configuration files"
+  template:
+    src: "{{ item.name }}.j2"
+    dest: "/{{ item.name }}"
+    mode: "{{ item.mode }}"
+    owner: "sip3"
+    group: "sip3"
+  loop:
+    - { name: "etc/sip3-captain/environment.conf", mode: "0644" }
+    - { name: "etc/sip3-captain/vertx-options.json", mode: "0644" }
+
+- name: "Create SIP3 Captain interface configuration files"
+  template:
+    src: "{{ item.name }}.j2"
+    dest: "/{{ item.name.split('.')[0] }}-{{ captain.pcap.dev }}.{{ item.name.split('.')[1] }}"
+    mode: "{{ item.mode }}"
+    owner: "sip3"
+    group: "sip3"
+  loop:
+    - { name: "etc/sip3-captain/application.yml", mode: "0644" }
+    - { name: "etc/sip3-captain/logback.xml", mode: "0644" }
+  notify:
+    - restart sip3-captain@
+  when: captain.pcap.dev is defined
+
 - name: "Create SIP3 Captain configuration files"
   template:
     src: "{{ item.name }}.j2"
@@ -7,13 +32,10 @@
     group: "sip3"
   loop:
     - { name: "etc/sip3-captain/application.yml", mode: "0644" }
-    - { name: "etc/sip3-captain/environment.conf", mode: "0644" }
     - { name: "etc/sip3-captain/logback.xml", mode: "0644" }
-    - { name: "etc/sip3-captain/vertx-options.json", mode: "0644" }
   notify:
     - restart sip3-captain
-
-
+  when: captain.pcap.dev is not defined
 
 #    - name: "Creates directories for SIP3 Captain"
 #      block:
