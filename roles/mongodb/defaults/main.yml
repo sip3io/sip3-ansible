@@ -2,7 +2,3 @@ state: started
 add_system_repo: false
 mongodb:
   version: 4.2
-hostmap:
-  - name: "node-1"
-    sip:
-      - 127.0.0.1/32
