@@ -16,4 +16,4 @@
 
     - name: "Create index for hostmap"
       shell: "mongo --host {{ mongodb.address | default(address | default('127.0.0.1')) }} {{ mongodb.db | default(address | default('sip3')) }} --port {{ mongodb.port | default('27017') }} --eval 'db.hosts.createIndex({ name: 1 })'"
-  when: state == "started"
+  when: state == "started" and hostmap is defined
