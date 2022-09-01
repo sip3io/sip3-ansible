@@ -9,8 +9,14 @@
     - { name: "etc/sip3-twig/application.yml", mode: "0644" }
     - { name: "etc/sip3-twig/environment.conf", mode: "0644" }
     - { name: "etc/sip3-twig/logback.xml", mode: "0644" }
-  notify:
-    - restart sip3-twig
+
+- name: restart sip3-twig
+  systemd:
+    name: sip3-twig
+    daemon_reload: true
+    state: restarted
+    enabled: true
+  when: state == "started"
 
 #   - name: "Creates directories for SIP3 Twig"
 #      block:

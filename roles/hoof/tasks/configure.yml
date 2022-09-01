@@ -8,5 +8,11 @@
   loop:
     - { name: "etc/nginx/nginx.conf", mode: "0644" }
     - { name: "etc/nginx/conf.d/sip3-hoof.conf", mode: "0644" }
-  notify:
-    - restart nginx
+
+- name: restart nginx
+  systemd:
+    name: nginx
+    daemon_reload: true
+    state: restarted
+    enabled: true
+  when: state == "started"
