@@ -139,7 +139,7 @@ all:
 
     # Persistence storage properties
     mongodb:
-      version: 4.2
+      version: 4.4
       # If you want to use for MongoDB exclusive ip address, you can set here. Otherwise will be use variable 'address'
       address: 127.0.0.1
       port: 27017
