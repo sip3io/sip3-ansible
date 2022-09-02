@@ -12,5 +12,11 @@
     - { name: "etc/sip3-salto/logback.xml", mode: "0644" }
     - { name: "etc/sip3-salto/vertx-options.json", mode: "0644" }
     - { name: "opt/sip3-salto/udf/sip3_message_udf.groovy", mode: "0644" }
-  notify:
-    - restart sip3-salto
+
+- name: restart sip3-salto
+  systemd:
+    name: sip3-salto
+    daemon_reload: true
+    state: restarted
+    enabled: true
+  when: state == "started"

@@ -32,11 +32,22 @@
 
 - name: "Uninstalling"
   block:
+
     - name: "Stop SIP3 Captain"
       systemd:
         name: sip3-captain
         enabled: no
         state: stopped
+      when:
+        - captain.pcap.dev is not defined
+
+    - name: "Stop SIP3 Captain interface capture"
+      systemd:
+        name: "sip3-captain-interface@{{ captain.pcap.dev }}"
+        enabled: no
+        state: stopped
+      when:
+        - captain.pcap.dev is defined
 
     - name: "Uninstall package"
       yum:

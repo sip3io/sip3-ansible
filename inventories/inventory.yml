@@ -62,13 +62,13 @@ all:
           # You can set specific captain part variables for host. Or any another variables. That variables will overwrite global variables
           #captain:
           #  pcap:
-              # Ethernet interface where Captain will be sniff.
+          # Ethernet interface where Captain will be sniff.
           #    dev: enp1s0
-              # Libpcap filter string. For more information about semantic you can find in pcap-filter(7)
+          # Libpcap filter string. For more information about semantic you can find in pcap-filter(7)
           #    bpf_filter: tcp or udp
           #  rtcp:
           #    enabled: false
-        #second captain interface on captain1
+          #second captain interface on captain1
         #captain1@lo:
           # Ansible ssh connection facts
           # SSH host. You can use dns name or IP address
@@ -81,9 +81,9 @@ all:
           #config_only: true
           #captain:
           #  pcap:
-              # Ethernet interface where Captain will be sniff.
+          # Ethernet interface where Captain will be sniff.
           #    dev: lo
-              # Libpcap filter string. For more information about semantic you can find in pcap-filter(7)
+          # Libpcap filter string. For more information about semantic you can find in pcap-filter(7)
           #    bpf_filter: tcp or udp
           #  rtcp:
           #    enabled: false
@@ -139,7 +139,7 @@ all:
 
     # Persistence storage properties
     mongodb:
-      version: 4.2
+      version: 4.4
       # If you want to use for MongoDB exclusive ip address, you can set here. Otherwise will be use variable 'address'
       address: 127.0.0.1
       port: 27017
@@ -188,7 +188,6 @@ all:
             vertx.eventBus().localConsumer("sip_message_udf", { event ->
                 event.reply(true)
             })
-
     # Properties for SIP3 Twig application
     twig:
       server:
@@ -234,4 +233,3 @@ all:
         mapping:
           - source: 127.0.1.1/32
             target: 127.0.2.2/32
-

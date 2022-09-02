@@ -34,11 +34,25 @@
 
 - name: "Uninstalling"
   block:
+
+    - name: collect facts about system services
+      ansible.builtin.service_facts:
+
     - name: "Stop SIP3 Captain"
       systemd:
         name: sip3-captain
         enabled: no
         state: stopped
+      when: ansible_facts.services["sip3-captain.service"].state == "running"
+
+    - name: "Stop SIP3 Captain interface capture"
+      systemd:
+        name: "sip3-captain-interface@{{ captain.pcap.dev }}"
+        enabled: no
+        state: stopped
+      when:
+        - captain.pcap.dev is defined
+        - ansible_facts.services["sip3-captain-interface@{{ captain.pcap.dev }}.service"].state == "running"
 
     - name: "Uninstall package"
       apt:
