@@ -1,0 +1,13 @@
+/var/log/mongodb/mongod.log
+{
+     rotate 7
+     daily
+     missingok
+     create 0600 mongod mongod
+     delaycompress
+     compress
+     sharedscripts
+     postrotate
+             /bin/kill -SIGUSR1 $(cat /var/run/mongodb/mongod.pid)
+     endscript
+}

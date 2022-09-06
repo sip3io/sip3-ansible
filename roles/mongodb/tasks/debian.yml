@@ -60,7 +60,7 @@
       notify:
         - restart mongod
 
-    - name: "Deploying MongoDB config for recreate /var/run/mongodb on tmpfs"
+    - name: "Deploying MongoDB tmpfs and logrotate configs"
       copy:
         src: "{{ item.name }}"
         dest: "/{{ item.name }}"
@@ -70,6 +70,7 @@
         backup: "{{ item.backup }}"
       loop:
         - { name: "usr/lib/tmpfiles.d/mongodb.conf", ownership: "root", backup: "no" }
+        - { name: "etc/logrotate.d/mongod", ownership: "root", backup: "no" }
       notify:
         - restart mongod
 
