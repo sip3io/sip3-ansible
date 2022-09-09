@@ -1,0 +1,12 @@
+{
+    "time_zones": [
+{% for timezone in hoof.time_zones %}
+{%- if loop.index0 > 0 -%},{%- endif -%}
+        {
+            "label": "{{ timezone.label }}",
+            "name": "{{ timezone.name }}",
+            "value": "{{ timezone.value }}"
+        }
+{% endfor %}
+    ]
+}
