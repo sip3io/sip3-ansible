@@ -3,11 +3,37 @@ server {
     server_name  {{ hoof.server_name | default(address | default('_')) }};
 
     access_log  /var/log/nginx/sip3-hoof.access.log  main;
+    error_log   /var/log/nginx/sip3-hoof.error.log   error;
+
+    client_max_body_size       64m;
+
+    gzip on;
+    gzip_min_length 1024;
+    gzip_proxied expired no-cache no-store private auth;
+    gzip_buffers 32 4k;
+    gzip_comp_level 9;
+    gzip_disable "msie6";
+    gzip_http_version 1.1;
+    gzip_static on;
+    gzip_vary on;
+    gzip_types text/css text/javascript text/xml text/plain text/x-component application/javascript application/x-javascript application/json application/xml application/rss+xml font/truetype application/x-font-ttf font/opentype application/vnd.ms-fontobject image/svg+xml;
 
     root  /var/www/sip3-hoof;
     index index.html index.htm;
     location / {
          try_files $uri $uri/ /index.html;
+    }
+
+    location /api/management/configuration/hoof {
+         root  /var/www/sip3-hoof;
+    }
+
+    location ~* \.(gif|ico|jpg|jpeg|jpe|png|svg|svgz|tif|tiff|ttf||woff|css|js)$ {
+      expires 31536000s;
+      access_log off;
+      log_not_found off;
+      add_header Pragma public;
+      add_header Cache-Control "max-age=31536000, public";
     }
 
     location /api/ {
