@@ -215,6 +215,10 @@ all:
       # Reconfigure /etc/nginx/nginx.conf for use :80 for SIP3 Hoof
       # Will recommend set to 'yes' if you use scratch install of NGINX
       reconfigure: yes
+      time_zones:
+        - label: "UTC"
+          name: "(UTC) Greenwich Mean Time"
+          value: "+00:00"
 
     # Structure of hosts map for correlation legs in flow diagram
     hostmap:

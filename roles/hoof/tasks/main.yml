@@ -1,7 +1,7 @@
 - name: "Install Hoof for CentOS"
   include: centos.yml
   when:
-    - ansible_facts['distribution'] | lower in ["centos", "sangoma", "oracle"]
+    - ansible_facts['distribution'] | lower in ["centos", "sangoma", "oracle", "rocky"]
 
 - name: "Install Hoof for Debian"
   include: debian.yml

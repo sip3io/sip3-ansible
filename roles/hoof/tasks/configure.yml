@@ -8,6 +8,7 @@
   loop:
     - { name: "etc/nginx/nginx.conf", mode: "0644" }
     - { name: "etc/nginx/conf.d/sip3-hoof.conf", mode: "0644" }
+    - { name: "var/www/sip3-hoof/api/management/configuration/hoof/configuration.json", mode: "0644" }
 
 - name: restart nginx
   systemd:

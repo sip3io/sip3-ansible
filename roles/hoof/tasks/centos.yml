@@ -32,8 +32,13 @@
           - unzip
           - sip3-hoof-{{ edition }}
           - nginx
-      notify:
-        - restart nginx
+
+    - name: "Restart NGINX"
+      systemd:
+        name: nginx
+        state: restarted
+        enabled: yes
+
   when: state == "started"
 
 - name: "Uninstalling"

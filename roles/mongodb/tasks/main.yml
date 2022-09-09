@@ -1,7 +1,7 @@
 - name: "Install Storage for CentOS"
   include: centos.yml
   when:
-    - ansible_facts['distribution'] | lower in ["centos", "sangoma", "oracle"]
+    - ansible_facts['distribution'] | lower in ["centos", "sangoma", "oracle", "rocky"]
 
 - name: "Install Storage for Debian"
   include: debian.yml

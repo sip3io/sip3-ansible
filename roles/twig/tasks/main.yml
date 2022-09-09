@@ -1,7 +1,7 @@
 - name: "Install SIP3 Twig for CentOS-family"
   include: centos.yml
   when:
-    - ansible_facts['distribution'] | lower in ["centos", "sangoma", "oracle"]
+    - ansible_facts['distribution'] | lower in ["centos", "sangoma", "oracle", "rocky"]
 
 - name: "Install SIP3 Twig for Debian/Ubuntu"
   include: debian.yml
