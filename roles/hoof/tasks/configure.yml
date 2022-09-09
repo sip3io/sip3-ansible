@@ -1,3 +1,11 @@
+- name: "Create SIP3 Hoof API direcotry"
+  file:
+    path: /var/www/sip3-hoof/api/management/configuration/hoof
+    state: directory
+    owner: "root"
+    group: "root"
+    recurse: yes
+
 - name: "Create SIP3 Hoof configuration files"
   template:
     src: "{{ item.name }}.j2"

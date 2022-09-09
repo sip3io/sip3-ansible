@@ -28,12 +28,13 @@ server {
          root  /var/www/sip3-hoof;
     }
 
-    location ~* \.(gif|ico|jpg|jpeg|jpe|png|svg|svgz|tif|tiff|ttf||woff|css|js)$ {
-      expires 31536000s;
+    location ~* \.(gif|ico|jpg|jpeg|jpe|png|svg|svgz|tif|tiff|ttf|woff|woff2|css|js)$ {
+      expires 2592000;
+      add_header Cache-Control private;
+      add_header Cache-Control must-revalidate;
+      add_header Pragma private;
       access_log off;
       log_not_found off;
-      add_header Pragma public;
-      add_header Cache-Control "max-age=31536000, public";
     }
 
     location /api/ {
