@@ -51,7 +51,7 @@ all:
       hosts:
         # Add sip3-captain hosts here
         # You can add real hosts or interfaces symlinks
-        #captain1@eth0:
+        #captain1@enp1s0:
           # Ansible ssh connection facts
           # SSH host. You can use dns name or IP address
           #ansible_ssh_host: captain1
@@ -116,10 +116,10 @@ all:
 
     # Community or Enterprise version edition
     edition: ce
-    # Account for EE downloading
-    support:
-      username: foo
-      password: bar
+    # Files for EE downloading. crt and key files should be located in the roles/repo/files directory.
+    license:
+      cert: client.crt
+      key: client.key
     # SIP3 features
     features:
       - call

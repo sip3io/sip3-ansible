@@ -15,31 +15,22 @@
 
         - name: "Add NGINX repository"
           apt_repository:
-            repo: deb http://nginx.org/packages/debian {{ ansible_facts['lsb']['codename'] }} nginx
+            repo: deb http://nginx.org/packages/{{ ansible_facts['distribution'] | lower }} {{ ansible_facts['lsb']['codename'] }} nginx
             state: present
             filename: nginx
 
-        - name: "Add signing key for SIP3 repository"
-          apt_key:
-            url: "https://repo.sip3.io/apt/keyFile"
-            state: present
-
-        - name: "Add SIP3 repository"
-          apt_repository:
-            repo: deb [ arch=all ] https://repo.sip3.io/apt/ {{ edition }} contrib
-            state: present
-
     - name: "Check and install tar, unzip and NGINX"
       apt:
-        pkg:
-          - tar
-          - unzip
-          - nginx
-          - sip3-hoof-{{ edition }}
+        name: "sip3-hoof-{{ edition }}"
         update_cache: yes
         state: latest
-      notify:
-        - restart nginx
+
+    - name: "Restart NGINX"
+      systemd:
+        name: nginx
+        state: restarted
+        enabled: yes
+
   when: state == "started"
 
 - name: "Uninstalling"
