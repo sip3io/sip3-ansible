@@ -2,3 +2,8 @@ state: started
 hoof:
   reconfigure: true
 edition: ce
+time_zones:
+  - label: "UTC"
+    name: "(UTC) Greenwich Mean Time"
+    value: "+00:00"
+
