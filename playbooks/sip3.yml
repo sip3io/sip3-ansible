@@ -29,6 +29,12 @@
     - role: ../roles/influxdb
       tags: storage
 
+- name: "Install SIP3 repos"
+  hosts: salto, twig, hoof, captain, backend
+  roles:
+    - role: ../roles/repo
+      tags: backend, sip3, salto, twig, hoof, captain
+
 - name: "Install SIP3 Salto"
   hosts: salto, backend
   roles:

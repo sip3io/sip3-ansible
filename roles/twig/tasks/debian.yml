@@ -1,23 +1,5 @@
 - name: "Installing"
   block:
-    - name: "Add repositories"
-      block:
-        - name: "Install gnupg packages"
-          apt:
-            pkg:
-              - gnupg
-            update_cache: yes
-
-        - name: "Add signing key for SIP3 repository"
-          apt_key:
-            url: "https://repo.sip3.io/apt/keyFile"
-            state: present
-
-        - name: "Add SIP3 repository"
-          apt_repository:
-            repo: deb [ arch=all ] https://repo.sip3.io/apt/ {{ edition }} contrib
-            state: present
-
     - name: "Install packages"
       apt:
         pkg:

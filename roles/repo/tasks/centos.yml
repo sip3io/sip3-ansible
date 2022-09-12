@@ -1,0 +1,34 @@
+- name: "Installing"
+  block:
+    - name: "Add SIP3 ce repository"
+      yum_repository:
+        name: sip3
+        description: "SIP3 repository"
+        baseurl: https://repo.sip3.io/yum/ce/
+        gpgkey: https://repo.sip3.io/yum/keyFile
+        gpgcheck: yes
+        proxy: "{{ proxy | default('_none_') }}"
+      when: edition == "ce"
+
+    - name: "Copy license files"
+      ansible.builtin.copy:
+        src: "{{ item }}"
+        dest: /opt/
+      with_items:
+        - "{{ license.cert }}"
+        - "{{ license.key }}"
+      when: edition == "ee"
+
+    - name: "Add SIP3 ee repository"
+      yum_repository:
+        name: sip3
+        description: "SIP3 repository"
+        baseurl: https://repo.sip3.io/yum/ee/
+        gpgkey: https://repo.sip3.io/yum/keyFile
+        gpgcheck: yes
+        sslclientcert: "/opt/{{ license.cert }}"
+        sslclientkey: "/opt/{{ license.key }}"
+        proxy: "{{ proxy | default('_none_') }}"
+      when: edition == "ee"
+
+  when: state == "started"
