@@ -80,6 +80,17 @@
 
   when: edition == "ee"
 
+- name: "Stop and disable old SIP3 Captain interface capture"
+  service:
+    name: sip3-captain@{{ captain.pcap.dev }}
+    enabled: no
+    state: stopped
+  register: sip3_captain_result
+  failed_when: "sip3_captain_result is failed and 'Could not find the requested service' not in sip3_captain_result.msg"
+  when:
+    - captain.pcap.dev is defined
+    - state == "started"
+
 - name: "Restart SIP3 Captain interface capture"
   systemd:
     name: "sip3-captain-interface@{{ captain.pcap.dev }}"
