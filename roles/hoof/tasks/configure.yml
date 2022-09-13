@@ -16,7 +16,22 @@
   loop:
     - { name: "etc/nginx/nginx.conf", mode: "0644" }
     - { name: "etc/nginx/conf.d/sip3-hoof.conf", mode: "0644" }
+
+- name: "Create SIP3 Hoof timezone file"
+  template:
+    src: "{{ item.name }}.j2"
+    dest: "/{{ item.name }}"
+    mode: "{{ item.mode }}"
+    owner: "root"
+    group: "root"
+  loop:
     - { name: "var/www/sip3-hoof/api/management/configuration/hoof/configuration.json", mode: "0644" }
+  when: hoof.time_zones is defined
+
+- name: "Show alarm in log"
+  ansible.builtin.debug:
+    msg: "hoof.time_zones variable don't find in your inventory. Please add time_zones variable to inventory. https://github.com/sip3io/sip3-ansible/blob/release/2022.2.1/inventories/inventory.yml for example. Or you can write time zones in /var/www/sip3-hoof/api/management/configuration/hoof/configuration.json on you sip3-hoof host."
+  when: hoof.time_zones is not defined
 
 - name: restart nginx
   systemd:

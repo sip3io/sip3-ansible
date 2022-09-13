@@ -19,7 +19,7 @@
             state: present
             filename: nginx
 
-    - name: "Check and install tar, unzip and NGINX"
+    - name: "Install SIP3 Hoof"
       apt:
         name: "sip3-hoof-{{ edition }}"
         update_cache: yes
