@@ -1,6 +1,6 @@
 - name: "Create SIP3 Hoof API direcotry"
   file:
-    path: /var/www/sip3-hoof/api/management/configuration/hoof
+    path: /var/www/sip3-hoof/api/management/configuration
     state: directory
     owner: "root"
     group: "root"
