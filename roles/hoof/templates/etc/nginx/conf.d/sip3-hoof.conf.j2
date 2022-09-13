@@ -21,20 +21,20 @@ server {
     root  /var/www/sip3-hoof;
     index index.html index.htm;
     location / {
-         try_files $uri $uri/ /index.html;
+        try_files $uri $uri/ /index.html;
     }
 
     location /api/management/configuration/hoof {
-         root  /var/www/sip3-hoof;
+        default_type application/json;
     }
 
     location ~* \.(gif|ico|jpg|jpeg|jpe|png|svg|svgz|tif|tiff|ttf|woff|woff2|css|js)$ {
-      expires 2592000;
-      add_header Cache-Control private;
-      add_header Cache-Control must-revalidate;
-      add_header Pragma private;
-      access_log off;
-      log_not_found off;
+        expires 2592000;
+        add_header Cache-Control private;
+        add_header Cache-Control must-revalidate;
+        add_header Pragma private;
+        access_log off;
+        log_not_found off;
     }
 
     location /api/ {
