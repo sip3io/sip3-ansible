@@ -16,25 +16,26 @@
         state: present
       when: edition == "ce"
 
-    - name: "Copy license files"
-      ansible.builtin.copy:
-        src: "{{ item }}"
-        dest: /opt/
-      with_items:
-        - "{{ license.cert }}"
-        - "{{ license.key }}"
-      when: edition == "ee"
+    - name: "Add SIP3 licensed repository"
+      block:
+        - name: "Copy license files"
+          ansible.builtin.copy:
+            src: "{{ item }}"
+            dest: /opt/
+          with_items:
+            - "{{ license.cert }}"
+            - "{{ license.key }}"
 
-    - name: "Create SIP3 Captain basic configuration files"
-      template:
-        src: "45sip3-io.j2"
-        dest: "/etc/apt/apt.conf.d/45sip3-io"
-      when: edition == "ee"
+        - name: "Create SIP3 repo apt configuration files"
+          template:
+            src: "45sip3-io.j2"
+            dest: "/etc/apt/apt.conf.d/45sip3-io"
 
-    - name: "Add SIP3 ee repository"
-      apt_repository:
-        repo: deb [ arch=ee ] https://repo.sip3.io/apt/ ee contrib
-        state: present
-      when: edition == "ee"
+        - name: "Add SIP3 ee repository"
+          apt_repository:
+            repo: deb [ arch=all ] https://repo.sip3.io/apt/{% if edition != "ee" %}private/{{ edition }}{% endif %} {{ edition }} contrib
+            state: present
+
+      when: edition != "ce"
 
   when: state == "started"
