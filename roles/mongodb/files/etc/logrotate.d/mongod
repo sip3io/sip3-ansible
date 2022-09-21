@@ -3,6 +3,7 @@
      rotate 7
      daily
      missingok
+     notifempty
      create 0600 mongod mongod
      delaycompress
      compress
