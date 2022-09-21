@@ -116,7 +116,7 @@ all:
 
     # Community or Enterprise version edition
     edition: ce
-    # Files for EE downloading. crt and key files should be located in the roles/repo/files directory.
+    # Files for EE downloading. crt and key files should be located in the roles/repo/files/etc/ssl/repo.sip3.io/ directory.
     license:
       cert: client.crt
       key: client.key

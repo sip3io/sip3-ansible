@@ -15,7 +15,7 @@
         - name: "Copy license files"
           ansible.builtin.copy:
             src: "{{ item }}"
-            dest: /opt/
+            dest: "/etc/ssl/repo.sip3.io/"
           with_items:
             - "{{ license.cert }}"
             - "{{ license.key }}"
@@ -27,8 +27,8 @@
             baseurl: https://repo.sip3.io/yum/{% if edition != "ee" %}private/{% endif %}{{ edition }}/
             gpgkey: https://repo.sip3.io/yum/keyFile
             gpgcheck: yes
-            sslclientcert: "/opt/{{ license.cert }}"
-            sslclientkey: "/opt/{{ license.key }}"
+            sslclientcert: "/etc/ssl/repo.sip3.io/{{ license.cert }}"
+            sslclientkey: "/etc/ssl/repo.sip3.io/{{ license.key }}"
             proxy: "{{ proxy | default('_none_') }}"
 
       when: edition != "ce"

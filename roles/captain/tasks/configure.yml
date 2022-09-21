@@ -39,8 +39,8 @@
       ansible.builtin.get_url:
         url: "https://repo.sip3.io/libs/releases-ee/sip3-libpcap/{{ ansible_distribution_major_version }}/libsip3-libpcap.so"
         dest: "/opt/sip3-captain/lib/"
-        client_cert: "/opt/{{ license.cert }}"
-        client_key: "/opt/{{ license.key }}"
+        client_cert: "/etc/ssl/repo.sip3.io/{{ license.cert }}"
+        client_key: "/etc/ssl/repo.sip3.io/{{ license.key }}"
       when:
         - (ansible_facts['distribution'] | lower in ["centos", "sangoma", "oracle", "rocky"])
 
@@ -48,8 +48,8 @@
       ansible.builtin.get_url:
         url: "https://repo.sip3.io/libs/releases-ee/sip3-libpcap/{{ ansible_distribution_major_version }}/libpcap.so.1.10.2-PRE-GIT"
         dest: "/opt/sip3-captain/lib/"
-        client_cert: "/opt/{{ license.cert }}"
-        client_key: "/opt/{{ license.key }}"
+        client_cert: "/etc/ssl/repo.sip3.io/{{ license.cert }}"
+        client_key: "/etc/ssl/repo.sip3.io/{{ license.key }}"
       when:
         - (ansible_facts['distribution'] | lower in ["centos", "sangoma", "oracle", "rocky"])
         - (ansible_facts['distribution_major_version'] | lower in ["7", "8"])
@@ -58,8 +58,8 @@
       ansible.builtin.get_url:
         url: "https://repo.sip3.io/libs/releases-ee/sip3-libpcap/{{ ansible_distribution_release }}/libsip3-libpcap.so"
         dest: "/opt/sip3-captain/lib/"
-        client_cert: "/opt/{{ license.cert }}"
-        client_key: "/opt/{{ license.key }}"
+        client_cert: "/etc/ssl/repo.sip3.io/{{ license.cert }}"
+        client_key: "/etc/ssl/repo.sip3.io/{{ license.key }}"
       when:
         - (ansible_facts['distribution'] | lower in ["debian", "ubuntu"])
 
@@ -67,8 +67,8 @@
       ansible.builtin.get_url:
         url: "https://repo.sip3.io/libs/releases-ee/sip3-libpcap/{{ ansible_distribution_release }}/libpcap.so.1.10.2-PRE-GIT"
         dest: "/opt/sip3-captain/lib/"
-        client_cert: "/opt/{{ license.cert }}"
-        client_key: "/opt/{{ license.key }}"
+        client_cert: "/etc/ssl/repo.sip3.io/{{ license.cert }}"
+        client_key: "/etc/ssl/repo.sip3.io/{{ license.key }}"
       when:
         - (ansible_facts['distribution'] | lower in ["debian", "ubuntu"])     
         - (ansible_facts['distribution_release'] | lower in ["bionic", "buster", "focal", "stretch"])

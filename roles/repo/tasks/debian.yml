@@ -18,18 +18,27 @@
 
     - name: "Add SIP3 licensed repository"
       block:
+
+        - name: "Create license files directory"
+          ansible.builtin.file:
+            path: /etc/ssl/repo.sip3.io
+            state: directory
+            mode: '0755'
+
         - name: "Copy license files"
           ansible.builtin.copy:
             src: "{{ item }}"
-            dest: /opt/
+            dest: "/{{ item }}"
           with_items:
-            - "{{ license.cert }}"
-            - "{{ license.key }}"
+            - "etc/ssl/repo.sip3.io/{{ license.cert }}"
+            - "etc/ssl/repo.sip3.io/{{ license.key }}"
 
         - name: "Create SIP3 repo apt configuration files"
           template:
-            src: "45sip3-io.j2"
-            dest: "/etc/apt/apt.conf.d/45sip3-io"
+            src: "{{ item }}.j2"
+            dest: "/{{ item }}"
+          with_items:
+            - "etc/apt/apt.conf.d/45sip3-io"
 
         - name: "Add SIP3 ee repository"
           apt_repository:
