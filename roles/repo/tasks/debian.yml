@@ -21,7 +21,7 @@
         - name: "Copy license files"
           ansible.builtin.copy:
             src: "{{ item }}"
-            dest: /opt/
+            dest: "/etc/ssl/repo.sip3.io/"
           with_items:
             - "{{ license.cert }}"
             - "{{ license.key }}"
