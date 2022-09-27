@@ -28,7 +28,7 @@ server {
         default_type application/json;
     }
 
-    location ~* \.(gif|ico|jpg|jpeg|jpe|png|svg|svgz|tif|tiff|ttf|woff|woff2|css|js)$ {
+    location ~* ^/(assets/|bundle)?.+\.(gif|ico|jpg|jpeg|jpe|png|svg|svgz|tif|tiff|ttf|woff|woff2|css|js)$ {
         expires 2592000;
         add_header Cache-Control private;
         add_header Cache-Control must-revalidate;
