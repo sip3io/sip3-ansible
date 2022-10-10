@@ -14,5 +14,15 @@
       "step" : {{ vertx.step | default('5') }},
       "retention-duration": "{{ vertx.retention_duration | default('7d') }}"
     }
+    {% if salto.metrics.prometheus.port is defined -%}
+    "prometheusOptions": {
+      "enabled": true,
+      "startEmbeddedServer" : true,
+      "embeddedServerOptions": {
+        "host": {{ salto.metrics.prometheus.host | default('0.0.0.0') }},
+        "port": {{ salto.metrics.prometheus.port }}
+      }
+    }
+    {% endif -%}
   }
 }
