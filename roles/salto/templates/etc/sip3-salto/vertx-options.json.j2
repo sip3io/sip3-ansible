@@ -1,8 +1,8 @@
 {
   "metricsOptions": {
-    "enabled": {{ vertx.enabled | default('false') }},
-    "jvmMetricsEnabled": {{ vertx.jvmMetricsEnabled | default('false') }},
-    "labels": ["EB_ADDRESS", "EB_FAILURE", "EB_SIDE", "LOCAL", "REMOTE", "POOL_TYPE", "POOL_NAME", "CLASS_NAME"],
+    "enabled": {{ (vertx.enabled | default('false')) | lower }},
+    "jvmMetricsEnabled": {{ (vertx.jvmMetricsEnabled | default('false')) | lower }},
+    "labels": ["EB_ADDRESS", "EB_FAILURE", "EB_SIDE", "LOCAL", "REMOTE", "POOL_TYPE", "POOL_NAME", "CLASS_NAME"]{%- if salto.metrics.prometheus.port is not defined -%},
     "influxDbOptions": {
       "enabled": true,
       {% if salto.metrics.influxdb.uri is defined -%}
@@ -13,13 +13,12 @@
       "db": "{{ salto.metrics.influxdb.db | default('sip3') }}",
       "step" : {{ vertx.step | default('5') }},
       "retention-duration": "{{ vertx.retention_duration | default('7d') }}"
-    }
-    {% if salto.metrics.prometheus.port is defined -%}
+    }{%- else -%},
     "prometheusOptions": {
       "enabled": true,
       "startEmbeddedServer" : true,
       "embeddedServerOptions": {
-        "host": {{ salto.metrics.prometheus.host | default('0.0.0.0') }},
+        "host": "{{ salto.metrics.prometheus.host | default('0.0.0.0') }}",
         "port": {{ salto.metrics.prometheus.port }}
       }
     }

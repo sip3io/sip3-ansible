@@ -10,9 +10,9 @@
   {% endif -%}
 
   "metricsOptions": {
-    "enabled": {{ vertx.enabled | default('false') }},
-    "jvmMetricsEnabled": {{ vertx.jvmMetricsEnabled | default('false') }},
-    "labels": ["EB_ADDRESS", "EB_FAILURE", "EB_SIDE", "LOCAL", "REMOTE", "POOL_TYPE", "POOL_NAME", "CLASS_NAME"],
+    "enabled": {{ (vertx.enabled | default('false')) | lower }},
+    "jvmMetricsEnabled": {{ (vertx.jvmMetricsEnabled | default('false')) | lower }},
+    "labels": ["EB_ADDRESS", "EB_FAILURE", "EB_SIDE", "LOCAL", "REMOTE", "POOL_TYPE", "POOL_NAME", "CLASS_NAME"]{%- if captain.metrics.prometheus.port is not defined -%},
     "influxDbOptions": {
       "enabled": true,
       {% if captain.metrics.influxdb.uri is defined -%}
@@ -23,6 +23,15 @@
       "db": "{{ captain.metrics.influxdb.db | default('sip3') }}",
       "step" : {{ vertx.step | default('5') }},
       "retention-duration": "{{ vertx.retention_duration | default('7d') }}"
+    }{%- else -%},
+    "prometheusOptions": {
+      "enabled": true,
+      "startEmbeddedServer" : true,
+      "embeddedServerOptions": {
+        "host": "{{ captain.metrics.prometheus.host | default('0.0.0.0') }}",
+        "port": {{ captain.metrics.prometheus.port }}
+      }
     }
+    {% endif -%}
   }
 }
