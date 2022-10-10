@@ -45,6 +45,30 @@
       notify:
         - restart mongod
 
+    - name: "Create directory '/var/run/mongodb' for MongoDB"
+      file:
+        path: "/var/run/mongodb"
+        state: directory
+        mode: 0755
+        group: mongodb
+        owner: mongodb
+      notify:
+        - restart mongod
+
+    - name: "Deploying MongoDB tmpfs and logrotate configs"
+      copy:
+        src: "{{ item.name }}"
+        dest: "/{{ item.name }}"
+        owner: "{{ item.ownership }}"
+        group: "{{ item.ownership }}"
+        mode: "0644"
+        backup: "{{ item.backup }}"
+      loop:
+        - { name: "usr/lib/tmpfiles.d/mongodb.conf", ownership: "root", backup: "no" }
+        - { name: "etc/logrotate.d/mongod", ownership: "root", backup: "no" }
+      notify:
+        - restart mongod
+
     - name: "Start service MongoDB"
       systemd:
         name: mongod
