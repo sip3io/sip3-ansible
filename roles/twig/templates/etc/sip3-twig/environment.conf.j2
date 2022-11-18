@@ -2,4 +2,4 @@ JAVA_HOME={{ java.home | default('/usr')}}
 JAVA_XMS=-Xms{{ java.xms | default('512M') }}
 JAVA_XMX=-Xmx{{ java.xmx | default('1024M') }}
 JAVA_GC=-XX:+Use{{ java.gc | default('G1') }}GC
-JAVA_OPTS="$JAVA_XMS $JAVA_XMX $JAVA_GC {{ java.other | default('') }}"
+JAVA_OTER="{{ java.other | default('') }}"
