@@ -228,3 +228,9 @@ recording:
   aggregation-timeout: {{ salto.recording.aggregation_timeout | default('30000') }}
   bulk-size: {{ salto.recording.bulk_size | default('64') }}
 {% endif %}
+
+{% if "rtp" in features or "rtcp" in features or "rec" in features -%}
+tasks:
+  enabled: {{ salto.tasks.enabled | default('true') }}
+  update-period: {{ salto.tasks.update-period | default('300000') }}
+{% endif %}

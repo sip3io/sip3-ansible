@@ -41,6 +41,15 @@ tcp:
   aggregation-timeout: {{ captain.tcp.aggregation_timeout | default('200') }}
   idle-connection-timeout: {{ captain.tcp.idle_connection_timeout | default('300000') }}
 
+sctp:
+  expiration-delay: {{ captain.stcp.expiration_delay | default('100') }}
+  aggregation-timeout: {{ captain.stcp.aggregation_timeout | default('60000') }}
+  idle-association-timeout: {{ captain.stcp.idle_connection_timeout | default('300000') }}
+
+encoder:
+  mtu-size: {{ captain.encoder.mtu_size | default('1400') }}
+  bulk-size: {{ captain.encoder.bulk_size | default('1') }}
+
 #! SIP
 sip:
   bulk-size: {{ captain.sip.bulk_size | default('1') }}
@@ -67,8 +76,12 @@ rtp:
     enabled: {{ captain.rtp.collector.enabled | default('false') }}
     bulk-size: {{ captain.rtp.collector.bulk_size | default('128') }}
     queue-size: {{ captain.rtp.collector.queue_size | default('16') }}
+    report-size: {{ captain.rtp.collector.report_size | default('16') }}
     expiration-delay: {{ captain.rtp.collector.expiration_delay | default('500') }}
     aggregation-timeout: {{ captain.rtp.collector.aggregation_timeout | default('30000') }}
+  events:
+    enabled: {{ captain.rtp.events.enabled | default('true') }}
+    mode: {{ captain.rtp.events.mode | default('0') }}
 {% endif %}
 
 {% if "rec" in features -%}
