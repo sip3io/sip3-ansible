@@ -125,6 +125,8 @@ all:
       - call
       - register
       - rtcp
+      - rtp
+      - rec
       - udf
     # Settings for Java
     java:
