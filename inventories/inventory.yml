@@ -120,6 +120,8 @@ all:
     license:
       cert: client.crt
       key: client.key
+    # Put file in roles/salto/files/etc/sip3-salto/
+      file: client.jks
     # SIP3 features
     features:
       - call

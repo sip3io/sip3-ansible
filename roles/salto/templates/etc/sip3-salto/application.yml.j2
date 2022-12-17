@@ -1,6 +1,12 @@
 #! Name
 name: {{ salto.name | default('sip3-salto') }}
 
+{% if license.file is defined and edition != "ce" -%}
+#! License
+license:
+  path: /etc/sip3-salto/{{ license.file }}
+{% endif %}
+
 #! Vert.x
 vertx:
   instances: {{ salto.vertx.instances | default('1') }}
