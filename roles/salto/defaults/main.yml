@@ -3,6 +3,8 @@ features:
   - call
 edition: ce
 salto:
+  tasks:
+    enabled: "true"
   webhook:
     body: |
       {

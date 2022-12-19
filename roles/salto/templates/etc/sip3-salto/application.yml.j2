@@ -1,6 +1,12 @@
 #! Name
 name: {{ salto.name | default('sip3-salto') }}
 
+{% if license.file is defined and edition != "ce" -%}
+#! License
+license:
+  path: /etc/sip3-salto/{{ license.file }}
+{% endif %}
+
 #! Vert.x
 vertx:
   instances: {{ salto.vertx.instances | default('1') }}
@@ -227,4 +233,10 @@ recording:
   expiration-delay: {{ salto.recording.expiration_delay | default('4000') }}
   aggregation-timeout: {{ salto.recording.aggregation_timeout | default('30000') }}
   bulk-size: {{ salto.recording.bulk_size | default('64') }}
+{% endif %}
+
+{% if "rtp" in features or "rtcp" in features or "rec" in features -%}
+tasks:
+  enabled: {{ salto.tasks.enabled | default('true') }}
+  update-period: {{ salto.tasks.update_period | default('300000') }}
 {% endif %}

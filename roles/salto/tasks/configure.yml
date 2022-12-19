@@ -13,6 +13,14 @@
     - { name: "etc/sip3-salto/vertx-options.json", mode: "0644" }
     - { name: "opt/sip3-salto/udf/sip3_message_udf.groovy", mode: "0644" }
 
+- name: "Copy license file"
+  ansible.builtin.copy:
+    src: "{{ item }}"
+    dest: "/{{ item }}"
+  with_items:
+    - "etc/sip3-salto/{{ license.file }}"
+  when: edition != "ce"
+
 - name: restart sip3-salto
   systemd:
     name: sip3-salto
