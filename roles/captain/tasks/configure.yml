@@ -46,7 +46,7 @@
 
     - name: Download SIP3 EE libs for CentOS
       ansible.builtin.get_url:
-        url: "https://repo.sip3.io/libs/releases-ee/sip3-libpcap/{{ ansible_distribution_major_version }}/libpcap.so.1.10.2-PRE-GIT"
+        url: "https://repo.sip3.io/libs/releases-ee/sip3-libpcap/{{ ansible_distribution_major_version }}/libpcap.so.1"
         dest: "/opt/sip3-captain/lib/"
         client_cert: "/etc/ssl/repo.sip3.io/{{ license.cert }}"
         client_key: "/etc/ssl/repo.sip3.io/{{ license.key }}"
@@ -63,20 +63,15 @@
       when:
         - (ansible_facts['distribution'] | lower in ["debian", "ubuntu"])
 
-    - name: Download SIP3 EE libs for Debian
+    - name: Download custom libpcap libs for Debian
       ansible.builtin.get_url:
-        url: "https://repo.sip3.io/libs/releases-ee/sip3-libpcap/{{ ansible_distribution_release }}/libpcap.so.1.10.2-PRE-GIT"
+        url: "https://repo.sip3.io/libs/releases-ee/sip3-libpcap/{{ ansible_distribution_release }}/libpcap.so.1"
         dest: "/opt/sip3-captain/lib/"
         client_cert: "/etc/ssl/repo.sip3.io/{{ license.cert }}"
         client_key: "/etc/ssl/repo.sip3.io/{{ license.key }}"
       when:
-        - (ansible_facts['distribution'] | lower in ["debian", "ubuntu"])     
+        - (ansible_facts['distribution'] | lower in ["debian", "ubuntu"])
         - (ansible_facts['distribution_release'] | lower in ["bionic", "buster", "focal", "stretch"])
-
-    - name: Add LD_LIBRARY_PATH to environment.conf
-      ansible.builtin.lineinfile:
-        path: /etc/sip3-captain/environment.conf
-        line: LD_LIBRARY_PATH=/opt/sip3-captain/lib/
 
   when: edition == "ee"
 
