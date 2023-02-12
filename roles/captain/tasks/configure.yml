@@ -73,7 +73,7 @@
         - (ansible_facts['distribution'] | lower in ["debian", "ubuntu"])
         - (ansible_facts['distribution_release'] | lower in ["bionic", "buster", "focal", "stretch"])
 
-  when: edition == "ee"
+  when: edition != "ce"
 
 - name: "Stop and disable old SIP3 Captain interface capture"
   service:
