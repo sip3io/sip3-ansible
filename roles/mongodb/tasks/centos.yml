@@ -23,13 +23,39 @@
       notify:
         - restart mongod
 
+    - name: Get mongodb user info, no error if missing
+      getent:
+        database: passwd
+        key: mongodb
+        fail_key: False
+
+    - name: use mongodb
+      set_fact:
+        mongo_user: "mongodb"
+      when: getent_passwd.mongodb[0] is defined
+
+    - name: use mongodb
+      set_fact:
+        mongo_user: "mongod"
+      when: getent_passwd.mongodb[0] is not defined
+
     - name: "Creates directory {{ mongodb.path | default('/data/db') }} for MongoDB"
       file:
         path: "{{ mongodb.path | default('/data/db') }}"
         state: directory
         mode: 0755
-        group: mongodb
-        owner: mongodb
+        group: "{{ mongo_user }}"
+        owner: "{{ mongo_user }}"
+      notify:
+        - restart mongod
+
+    - name: "Create directory '/var/run/mongodb' for MongoDB"
+      file:
+        path: "/var/run/mongodb"
+        state: directory
+        mode: 0755
+        group: "{{ mongo_user }}"
+        owner: "{{ mongo_user }}"
       notify:
         - restart mongod
 
@@ -42,16 +68,6 @@
         group: "root"
       loop:
         - { name: "etc/mongod.conf", mode: "0644" }
-      notify:
-        - restart mongod
-
-    - name: "Create directory '/var/run/mongodb' for MongoDB"
-      file:
-        path: "/var/run/mongodb"
-        state: directory
-        mode: 0755
-        group: mongodb
-        owner: mongodb
       notify:
         - restart mongod
 
