@@ -28,8 +28,8 @@
         path: "{{ mongodb.path | default('/data/db') }}"
         state: directory
         mode: 0755
-        group: mongod
-        owner: mongod
+        group: mongodb
+        owner: mongodb
       notify:
         - restart mongod
 

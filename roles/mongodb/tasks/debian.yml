@@ -69,8 +69,8 @@
         path: "/var/run/mongodb"
         state: directory
         mode: 0755
-        group: mongod
-        owner: mongod
+        group: mongodb
+        owner: mongodb
       notify:
         - restart mongod
 
