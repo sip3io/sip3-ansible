@@ -2,32 +2,32 @@
 server:
   port: {{ twig.server.port | default('8080') }}
   servlet:
-    context-path: {{ twig.server.servlet.context_path | default('/api') }}
+    context_path: {{ twig.server.servlet.context_path | default('/api') }}
     session:
        timeout: {{ twig.server.servlet.session.timeout | default('180m') }}
 
 #! Application
-time-suffix: {{ twig.time_suffix | default('yyyyMMdd') }}
+time_suffix: {{ twig.time_suffix | default('yyyyMMdd') }}
 
 session:
-  default-limit: {{ twig.session.default_limit | default('50') }}
-  use-x-correlation-header: {{ twig.session.use_x_correlation_header | default('true') }}
-  show-retransmits: {{ twig.session.show_retransmits | default('true') }}
-  ignore-nanos: {{ twig.session.ignore_nanos | default('false') }}
+  default_limit: {{ twig.session.default_limit | default('50') }}
+  use_x_correlation_header: {{ twig.session.use_x_correlation_header | default('true') }}
+  show_retransmits: {{ twig.session.show_retransmits | default('true') }}
+  ignore_nanos: {{ twig.session.ignore_nanos | default('false') }}
   call:
-    max-legs: {{ twig.session.call.max_legs | default('10') }}
-    aggregation-timeout: {{ twig.session.call.aggregation_timeout | default('60000') }}
-    termination-timeout: {{ twig.session.call.termination_timeout | default('5000') }}
+    max_legs: {{ twig.session.call.max_legs | default('10') }}
+    aggregation_timeout: {{ twig.session.call.aggregation_timeout | default('60000') }}
+    termination_timeout: {{ twig.session.call.termination_timeout | default('5000') }}
   register:
-    max-legs: {{ twig.session.register.max_legs | default('10') }}
-    aggregation-timeout: {{ twig.session.register.aggregation_timeout | default('10000') }}
-    duration-timeout: {{ twig.session.register.duration_timeout | default('900000') }}
+    max_legs: {{ twig.session.register.max_legs | default('10') }}
+    aggregation_timeout: {{ twig.session.register.aggregation_timeout | default('10000') }}
+    duration_timeout: {{ twig.session.register.duration_timeout | default('900000') }}
   media:
-    block-count: {{ twig.session.media.block_count | default('28') }}
-    termination-timeout: {{ twig.session.media.termination_timeout | default('120000') }}
+    block_count: {{ twig.session.media.block_count | default('28') }}
+    termination_timeout: {{ twig.session.media.termination_timeout | default('120000') }}
 
 cache:
-  refresh-rate: 55000
+  refresh_rate: 55000
 
 #! Security
 security:
@@ -48,15 +48,15 @@ mongo:
   uri: mongodb://{{ mongodb.address | default(address | default('127.0.0.1')) }}:{{ mongodb.port | default('27017') }}
   {% endif -%}
   db: {{ mongodb.db | default( twig.mongodb.db | default('sip3')) }}
-  max-execution-time: {{ twig.mongodb.max_execution_time | default('10000') }}
-  batch-size: {{ twig.mongodb.batch_size | default('128') }}
+  max_execution_time: {{ twig.mongodb.max_execution_time | default('10000') }}
+  batch_size: {{ twig.mongodb.batch_size | default('128') }}
 
 #! Spring Jackson
 spring:
   jackson:
-    property-naming-strategy: SNAKE_CASE
+    property_naming_strategy: SNAKE_CASE
   cache:
-    cache-names: listAttributes, listCollectionNames, listCollectionNamesByPrefix
+    cache_names: listAttributes, listCollectionNames, listCollectionNamesByPrefix
     caffeine:
       spec: expireAfterWrite=1m
   data:
@@ -65,4 +65,4 @@ spring:
       database: ${mongo.db}
   mvc:
     pathmatch:
-      matching-strategy: ant-path-matcher
+      matching_strategy: ant-path-matcher
