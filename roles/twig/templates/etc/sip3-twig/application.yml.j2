@@ -63,6 +63,7 @@ spring:
     mongodb:
       uri: ${mongo.uri}
       database: ${mongo.db}
+      field_naming_strategy: org.springframework.data.mapping.model.SnakeCaseFieldNamingStrategy
   mvc:
     pathmatch:
       matching_strategy: ant-path-matcher
