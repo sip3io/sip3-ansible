@@ -1,3 +1,8 @@
+map $http_upgrade $connection_upgrade {
+    default upgrade;
+    ''      close;
+}
+
 server {
     listen       {{ hoof.port | default('80') }} default_server;
     server_name  {{ hoof.server_name | default(address | default('_')) }};
@@ -54,7 +59,12 @@ server {
 
     location /grafana {
         rewrite ^/grafana/(.*)$ /$1 break;
-        proxy_set_header   Host {{ grafana.address | default(address | default('127.0.0.1')) }}:3000;
+        proxy_http_version 1.1;
+        proxy_set_header X-Real-IP $remote_addr;
+        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection $connection_upgrade;
+        proxy_set_header Host {{ grafana.address | default(address | default('127.0.0.1')) }}:3000;
         proxy_pass http://{{ grafana.address | default(address | default('127.0.0.1')) }}:3000;
     }
 
