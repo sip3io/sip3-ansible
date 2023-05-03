@@ -71,12 +71,12 @@ rtcp:
 #! RTP
 rtp:
   enabled: true
-  bulk_size: {{ captain.rtp.bulk_size | default('1024') }}
+  bulk_size: {{ captain.rtp.bulk_size | default('1') }}
   collector:
     enabled: {{ captain.rtp.collector.enabled | default('false') }}
-    bulk_size: {{ captain.rtp.collector.bulk_size | default('128') }}
-    queue_size: {{ captain.rtp.collector.queue_size | default('16') }}
-    report_size: {{ captain.rtp.collector.report_size | default('16') }}
+    bulk_size: {{ captain.rtp.collector.bulk_size | default('1') }}
+    report_size: {{ captain.rtp.collector.report_size | default('256') }}
+    recovery_size: {{ captain.rtp.collector.recovery_size | default('16') }}
     expiration_delay: {{ captain.rtp.collector.expiration_delay | default('500') }}
     aggregation_timeout: {{ captain.rtp.collector.aggregation_timeout | default('30000') }}
   events:
