@@ -1,3 +1,17 @@
+- name: replace root_url
+  lineinfile: 
+    path: /etc/grafana/grafana.ini 
+    regexp: '^;root_url = (.*)$' 
+    line: 'root_url = %(protocol)s://%(domain)s:%(http_port)s/grafana/'
+    backrefs: yes
+
+- name: replace serve_from_sub_path
+  lineinfile: 
+    path: /etc/grafana/grafana.ini 
+    regexp: '^;serve_from_sub_path = false$' 
+    line: 'serve_from_sub_path = true'
+    backrefs: yes
+
 - name: "Create Grafana configuration"
   template:
     src: "{{ item.name }}.j2"
@@ -10,6 +24,5 @@
     - { name: "etc/grafana/provisioning/dashboards/sip3-dashboard.yml", mode: "0644" }
     - { name: "etc/grafana/provisioning/dashboards/sip3-technical_dashboard.json", mode: "0644" }
     - { name: "etc/grafana/provisioning/dashboards/sip3-sip_metrics.json", mode: "0644" }
-    - { name: "etc/grafana/grafana.ini", mode: "0644" }
   notify:
     - restart grafana-server
