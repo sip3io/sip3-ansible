@@ -43,14 +43,7 @@ server {
     }
 
     location /api/ {
-        proxy_set_header   Host             $host:$server_port;
-        proxy_set_header   X-Real-IP        $remote_addr;
-        proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
-        proxy_pass http://{{ twig.address | default(address | default('127.0.0.1')) }}:{{ twig.server.port | default('8080') }}{{ twig.server.servlet.context_path | default('/api') }}/;
-    }
-
-    location /api/swagger-ui/ {
-        rewrite ^/api/swagger-ui/$ /api/swagger-ui/index.html permanent;
+        rewrite ^/api/swagger-ui/?$ /api/swagger-ui/index.html permanent;
         proxy_set_header   Host             $host:$server_port;
         proxy_set_header   X-Real-IP        $remote_addr;
         proxy_set_header   X-Forwarded-For  $proxy_add_x_forwarded_for;
@@ -58,13 +51,12 @@ server {
     }
 
     location /grafana {
-        rewrite ^/grafana/(.*)$ /$1 break;
         proxy_http_version 1.1;
         proxy_set_header X-Real-IP $remote_addr;
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header Upgrade $http_upgrade;
         proxy_set_header Connection $connection_upgrade;
-        proxy_set_header Host {{ grafana.address | default(address | default('127.0.0.1')) }}:3000;
+        proxy_set_header Host $http_host;
         proxy_pass http://{{ grafana.address | default(address | default('127.0.0.1')) }}:3000;
     }
 
