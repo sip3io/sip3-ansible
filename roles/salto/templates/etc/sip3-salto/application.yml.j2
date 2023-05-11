@@ -150,8 +150,8 @@ attributes:
 
 {% if "udf" in features -%}
 udf:
-  check_period: {{ salto.udp.check_period | default(10000) }}
-  execution_timeout: {{ salto.udp.execution_timeout | default(300) }}
+  check_period: {{ salto.udf.check_period | default(10000) }}
+  execution_timeout: {{ salto.udf.execution_timeout | default(300) }}
 {% endif %}
 
 sip:
