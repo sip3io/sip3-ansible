@@ -9,7 +9,7 @@
     (ansible_facts['distribution'] | lower == "debian" and
       ansible_facts['distribution_major_version'] | int >= 10) or
     (ansible_facts['distribution'] | lower == "ubuntu" and
-      ansible_facts['distribution_version'] in ["20.04", "22.04", "22.10"])
+      ansible_facts['distribution_version'] in ["16.04", "18.04", "20.04", "22.04", "22.10"])
 
 - name: "Configure SIP3 Hoof"
   include: configure.yml
