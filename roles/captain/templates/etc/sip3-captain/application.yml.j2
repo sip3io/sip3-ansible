@@ -114,7 +114,6 @@ sender:
     key_store_password: {{ captain.sender.ssl.key_store | default(salto.server.ssl.key_store_password | default('')) }}
   {% endif %}
 
-{% if "rtp" in features or "rtcp" in features -%}
 #! Management socket
 management:
   {% if captain.management.uri is defined -%}
@@ -123,7 +122,6 @@ management:
   uri: udp://{{ salto.address | default(address | default('127.0.0.1')) }}:{{ salto.management.port | default('15090')}}
   {% endif -%}
   register_delay: {{ captain.management.register_delay | default('60000') }}
-{% endif %}
 
 #! Metrics
 metrics:
