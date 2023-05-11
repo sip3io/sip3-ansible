@@ -44,10 +44,6 @@ sctp:
   aggregation_timeout: {{ captain.stcp.aggregation_timeout | default('60000') }}
   idle_association_timeout: {{ captain.stcp.idle_connection_timeout | default('300000') }}
 
-encoder:
-  mtu_size: {{ captain.encoder.mtu_size | default('1400') }}
-  bulk_size: {{ captain.encoder.bulk_size | default('1') }}
-
 #! SIP
 sip:
   bulk_size: {{ captain.sip.bulk_size | default('1') }}
