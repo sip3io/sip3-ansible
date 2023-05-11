@@ -15,8 +15,6 @@ dpdk:
 pcap:
   {% if captain.pcap.dev is defined -%}
   dev: {{ captain.pcap.dev | default('lo') }}
-  {% else -%}
-  dir: {{ captain.pcap.dir | default('/tmp/sip3-captain') }}
   {% endif -%}
   sll: {{ captain.pcap.sll | default('false') }}
   bpf_filter: "{{ captain.pcap.bpf_filter | default('ip and udp') }}"
