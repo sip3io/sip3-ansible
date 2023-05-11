@@ -102,9 +102,9 @@ mongo:
     {% if "rtcp" in features -%}
     - prefix: rtpr_rtcp_index
       indexes:
-        ascending: {{ salto.mongodb.collections.rtpr_media_index.indexes.ascending | default('[created_at, src_addr, src_host, dst_addr, dst_host, caller, callee, mos, r_factor, codec, one_way, duration, bad_report_fraction]') }}
-        hashed: {{ salto.mongodb.collections.rtpr_media_index.indexes.hashed | default('[call_id]') }}
-      max_collections: {{ salto.mongodb.collections.rtpr_media_index.max_collections | default('30') }}
+        ascending: {{ salto.mongodb.collections.rtpr_rtcp_index.indexes.ascending | default('[created_at, src_addr, src_host, dst_addr, dst_host, caller, callee, mos, r_factor, codec, one_way, duration, bad_report_fraction]') }}
+        hashed: {{ salto.mongodb.collections.rtpr_rtcp_index.indexes.hashed | default('[call_id]') }}
+      max_collections: {{ salto.mongodb.collections.rtpr_rtcp_index.max_collections | default('30') }}
     - prefix: rtpr_rtcp_raw
       indexes:
         ascending: {{ salto.mongodb.collections.rtpr_rtcp_raw.indexes.ascending | default('[created_at]') }}
@@ -114,9 +114,9 @@ mongo:
     {% if "rtp" in features -%}
     - prefix: rtpr_rtp_index
       indexes:
-        ascending: {{ salto.mongodb.collections.rtpr_media_index.indexes.ascending | default('[created_at, src_addr, src_host, dst_addr, dst_host, caller, callee, recorded, mos, r_factor, codec, one_way, duration, bad_report_fraction]') }}
-        hashed: {{ salto.mongodb.collections.rtpr_media_index.indexes.hashed | default('[call_id]') }}
-      max_collections: {{ salto.mongodb.collections.rtpr_media_index.max_collections | default('30') }}
+        ascending: {{ salto.mongodb.collections.rtpr_rtp_index.indexes.ascending | default('[created_at, src_addr, src_host, dst_addr, dst_host, caller, callee, recorded, mos, r_factor, codec, one_way, duration, bad_report_fraction]') }}
+        hashed: {{ salto.mongodb.collections.rtpr_rtp_index.indexes.hashed | default('[call_id]') }}
+      max_collections: {{ salto.mongodb.collections.rtpr_rtp_index.max_collections | default('30') }}
     - prefix: rtpr_rtp_raw
       indexes:
         ascending: {{ salto.mongodb.collections.rtpr_rtp_raw.indexes.ascending | default('[created_at]') }}
