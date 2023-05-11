@@ -18,7 +18,7 @@ pcap:
   {% endif -%}
   sll: {{ captain.pcap.sll | default('false') }}
   bpf_filter: "{{ captain.pcap.bpf_filter | default('ip and udp') }}"
-  snaplen: {{ captain.pcap.snaplen | default('1520') }}
+  snaplen: {{ captain.pcap.snaplen | default('65534') }}
   buffer_size: {{ captain.pcap.buffer_size | default('2097152') }}
   timeout_millis: {{ captain.pcap.timeout_millis | default('10') }}
 {% endif %}
