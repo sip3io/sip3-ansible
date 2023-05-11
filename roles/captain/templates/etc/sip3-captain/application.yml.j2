@@ -39,10 +39,12 @@ tcp:
   aggregation_timeout: {{ captain.tcp.aggregation_timeout | default('200') }}
   idle_connection_timeout: {{ captain.tcp.idle_connection_timeout | default('300000') }}
 
+{% if "sctp" in features -%}
 sctp:
   expiration_delay: {{ captain.stcp.expiration_delay | default('100') }}
   aggregation_timeout: {{ captain.stcp.aggregation_timeout | default('60000') }}
   idle_association_timeout: {{ captain.stcp.idle_connection_timeout | default('300000') }}
+{% endif %}
 
 #! SIP
 sip:
