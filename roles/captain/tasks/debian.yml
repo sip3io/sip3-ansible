@@ -22,7 +22,7 @@
       apt:
         pkg:
           - libpcap0.8
-          - sip3-captain-ee
+          - sip3-captain-{{ edition }}
         update_cache: yes
         dpkg_options: '-o "Dpkg::Options::=--ignore-depends=default-jre" -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold"'
         state: latest
