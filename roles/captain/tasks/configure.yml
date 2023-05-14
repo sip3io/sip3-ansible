@@ -61,7 +61,8 @@
         client_cert: "/etc/ssl/repo.sip3.io/{{ license.cert }}"
         client_key: "/etc/ssl/repo.sip3.io/{{ license.key }}"
       when:
-        - (ansible_facts['distribution'] | lower in ["debian", "ubuntu"])
+        - (ansible_facts['distribution'] | lower in ["ubuntu"])
+        - (ansible_facts['distribution_version'] not in ["16.04"])
 
     - name: Download custom libpcap libs for Debian
       ansible.builtin.get_url:

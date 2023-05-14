@@ -1,5 +1,9 @@
 Acquire::https::repo.sip3.io {
+    {% if (ansible_facts['distribution'] | lower in ["ubuntu"] and ansible_facts['distribution_version'] in ["16.04"]) -%}
+    Verify-Peer "false";
+    {% else -%}
     Verify-Peer "true";
+    {% endif %}
     Verify-Host "true";
 
     SslCert "/etc/ssl/repo.sip3.io/{{ license.cert }}";

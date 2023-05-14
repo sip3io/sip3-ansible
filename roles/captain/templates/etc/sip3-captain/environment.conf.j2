@@ -6,6 +6,6 @@ JAVA_OTHER="{{ java.other | default('') }}"
 {% if "vertx_metrics" in features -%}
 VERTX_OPTS="-options /etc/sip3-captain/vertx-options.json"
 {% endif %}
-{% if edition != "ce" -%}
+{% if (edition != "ce" or (ansible_facts['distribution'] | lower not in ["ubuntu"] and ansible_facts['distribution_version'] not in ["16.04"])) -%}
 LD_LIBRARY_PATH=/opt/sip3-captain/lib
 {% endif %}
