@@ -2,7 +2,7 @@
   include: centos.yml
   when:
     (ansible_facts['distribution'] | lower in ["centos", "sangoma", "oracle", "rocky"]) and
-    (not config_only or config_only is not defined)
+    (config_only is not defined or not config_only)
 
 - name: "Install SIP3 repo for Debian"
   include: debian.yml
@@ -11,4 +11,4 @@
       ansible_facts['distribution_major_version'] | int >= 10) or
     (ansible_facts['distribution'] | lower == "ubuntu" and
       ansible_facts['distribution_version'] in ["16.04", "18.04", "20.04", "22.04", "22.10"])) and
-    (not config_only or config_only is not defined)
+    (config_only is not defined or not config_only)

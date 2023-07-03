@@ -26,12 +26,16 @@
     group: "root"
   loop:
     - { name: "var/www/sip3-hoof/api/management/configuration/hoof", mode: "0644" }
-  when: hoof.time_zones is defined
+  when: 
+    - hoof.config is defined 
+    - edition == "ce"
 
 - name: "Show alarm in log"
   ansible.builtin.debug:
-    msg: "hoof.time_zones variable don't find in your inventory. Please add time_zones variable to inventory. https://github.com/sip3io/sip3-ansible/blob/release/2022.2.1/inventories/inventory.yml for example. Or you can write time zones in /var/www/sip3-hoof/api/management/configuration/hoof on you sip3-hoof host."
-  when: hoof.time_zones is not defined
+    msg: "hoof.config variable don't find in your inventory. Please add config variable to inventory. https://github.com/sip3io/sip3-ansible/blob/release/2023.1.2/inventories/inventory.yml for example. Or you can write config in /var/www/sip3-hoof/api/management/configuration/hoof on you sip3-hoof host."
+  when: 
+    - hoof.config is not defined 
+    - edition == "ce"
 
 - name: restart nginx
   systemd:

@@ -1,13 +1,27 @@
 - name: "Installing"
   block:
     - name: "Add SIP3 ce repository"
-      yum_repository:
-        name: sip3
-        description: "SIP3 repository"
-        baseurl: https://repo.sip3.io/yum/ce/
-        gpgkey: https://repo.sip3.io/yum/keyFile
-        gpgcheck: yes
-        proxy: "{{ proxy | default('_none_') }}"
+      block:
+
+        - name: Check that the repos exists
+          stat:
+            path: '/etc/yum.repos.d/sip3.repo'
+          register: stat_result
+
+        - name: Debug
+          debug:
+            msg: "{{ stat_result }}"
+
+        - name: Add repo
+          yum_repository:
+            name: sip3
+            description: "SIP3 repository"
+            baseurl: https://repo.sip3.io/yum/ce/
+            gpgkey: https://repo.sip3.io/yum/keyFile
+            gpgcheck: yes
+            proxy: "{{ proxy | default('_none_') }}"
+          when: not stat_result.stat.exists
+
       when: edition == "ce"
 
     - name: "Add SIP3 licensed repository"
