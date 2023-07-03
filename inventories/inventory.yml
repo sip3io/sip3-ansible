@@ -143,7 +143,7 @@ all:
 
     # Persistence storage properties
     mongodb:
-      version: 4.4
+      version: 5.0
       # If you want to use for MongoDB exclusive ip address, you can set here. Otherwise will be use variable 'address'
       address: 127.0.0.1
       port: 27017
@@ -215,14 +215,47 @@ all:
     hoof:
       # Hostname of UI for access via browser
       server_name: _
-      listen_port: 80
       # Reconfigure /etc/nginx/nginx.conf for use :80 for SIP3 Hoof
+      listen_port: 80
       # Will recommend set to 'yes' if you use scratch install of NGINX
       reconfigure: yes
-      time_zones:
-        - label: "UTC"
-          name: "(UTC) Greenwich Mean Time"
-          value: "+00:00"
+      # config for Hoof UI
+      config:
+        name: hoof
+        type: hoof
+        time_zones:
+          - label: UTC
+            name: "(UTC) Greenwich Mean Time"
+            value: "+00:00"
+        winbox:
+          auto_close: true
+        sidebar:
+          dashboards:
+            - order: 0
+              name: Dashboards
+              type: external
+              url: "/grafana"
+          searches:
+            - order: 0
+              name: Simple Search
+              type: internal
+              url: "/search/simple"
+              icon: "/assets/page-icons/SimpleSearch.svg"
+            - order: 1
+              name: Advanced Search
+              type: internal
+              url: "/search/advanced"
+              icon: "/assets/page-icons/AdvancedSearch.svg"
+          links:
+            - order: 0
+              name: Documentation
+              type: external
+              url: https://sip3.io/documentation
+              icon: "/assets/page-icons/Documentation.svg"
+        root_path: ''
+        oauth2:
+          enabled: false
+          provider: sip3
 
     # Structure of hosts map for correlation legs in flow diagram
     hostmap:

@@ -18,12 +18,6 @@
         update_cache: yes
         state: latest
 
-    - name: "Restart NGINX"
-      systemd:
-        name: nginx
-        state: restarted
-        enabled: yes
-
   when: state == "started"
 
 - name: "Uninstalling"

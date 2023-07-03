@@ -29,9 +29,11 @@ server {
         try_files $uri $uri/ /index.html;
     }
 
+{% if edition == "ce" %}
     location /api/management/configuration/hoof {
         default_type application/json;
     }
+{% endif %}
 
     location ~* ^/(bundle|access/.+)\.(gif|ico|jpg|jpeg|jpe|png|svg|svgz|tif|tiff|ttf|woff|woff2|css|js)$ {
         expires 2592000;
