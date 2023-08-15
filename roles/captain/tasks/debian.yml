@@ -13,8 +13,7 @@
       set_fact:
         java:
           home: "/usr/lib/jvm/java-11-openjdk-amd64"
-  when: state == "started" and
-    (not without_java or without_java is not defined)
+  when: state == "started" and not without_java
 
 - name: "Installing"
   block:
@@ -31,7 +30,7 @@
       set_fact:
         java:
           home: "{{ java_home | default('/usr/lib/jvm/java-11-openjdk-amd64') }}"
-  when: state == "started" and without_java is defined
+  when: state == "started" and without_java
 
 - name: "Uninstalling"
   block:
