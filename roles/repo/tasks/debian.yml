@@ -1,4 +1,5 @@
 - name: "Installing"
+  when: state == "started"
   block:
     - name: "Install gnupg packages"
       apt:
@@ -10,13 +11,22 @@
         url: "https://repo.sip3.io/apt/keyFile"
         state: present
 
-    - name: "Add SIP3 ce repository"
-      apt_repository:
-        repo: deb [ arch=all ] https://repo.sip3.io/apt/ ce contrib
-        state: present
+    - name: "Add SIP3 ce repositores"
       when: edition == "ce"
+      block:
+
+        - name: "add SIP3 repo"
+          apt_repository:
+            repo: deb [ arch=all ] https://repo.sip3.io/apt/ ce contrib
+            state: present
+
+        - name: "add SIP3 Java repo"
+          apt_repository:
+            repo: deb https://repo.sip3.io/apt/java/ all contrib
+            state: present
 
     - name: "Add SIP3 licensed repository"
+      when: edition != "ce"
       block:
 
         - name: "Create license files directory"
@@ -45,6 +55,7 @@
             repo: deb [ arch=all ] https://repo.sip3.io/apt/{% if edition != "ee" %}private/{{ edition }}{% endif %} {{ edition }} contrib
             state: present
 
-      when: edition != "ce"
-
-  when: state == "started"
+        - name: "add SIP3 repo"
+          apt_repository:
+            repo: deb https://repo.sip3.io/apt/java/ all contrib
+            state: present

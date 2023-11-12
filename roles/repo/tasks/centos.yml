@@ -3,15 +3,6 @@
     - name: "Add SIP3 ce repository"
       block:
 
-        - name: Check that the repos exists
-          stat:
-            path: '/etc/yum.repos.d/sip3.repo'
-          register: stat_result
-
-        - name: Debug
-          debug:
-            msg: "{{ stat_result }}"
-
         - name: Add repo
           yum_repository:
             name: sip3
@@ -20,7 +11,15 @@
             gpgkey: https://repo.sip3.io/yum/keyFile
             gpgcheck: yes
             proxy: "{{ proxy | default('_none_') }}"
-          when: not stat_result.stat.exists
+
+        - name: Add Java repo
+          yum_repository:
+            name: sip3-java
+            description: "SIP3 Java repository"
+            baseurl: https://repo.sip3.io/yum/java/$basearch/
+            gpgkey: https://repo.sip3.io/yum/keyFile
+            gpgcheck: yes
+            proxy: "{{ proxy | default('_none_') }}"
 
       when: edition == "ce"
 
@@ -50,6 +49,15 @@
             gpgcheck: yes
             sslclientcert: "/etc/ssl/repo.sip3.io/{{ license.cert }}"
             sslclientkey: "/etc/ssl/repo.sip3.io/{{ license.key }}"
+            proxy: "{{ proxy | default('_none_') }}"
+
+        - name: Add Java repo
+          yum_repository:
+            name: sip3-java
+            description: "SIP3 Java repository"
+            baseurl: https://repo.sip3.io/yum/java/$basearch/
+            gpgkey: https://repo.sip3.io/yum/keyFile
+            gpgcheck: yes
             proxy: "{{ proxy | default('_none_') }}"
 
       when: edition != "ce"
