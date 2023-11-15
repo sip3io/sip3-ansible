@@ -1,11 +1,11 @@
 - name: "Install SIP3 Captain for CentOS"
-  include: centos.yml
+  ansible.builtin.include_tasks: centos.yml
   when:
     (ansible_facts['distribution'] | lower in ["centos", "sangoma", "oracle", "rocky"]) and
     (config_only is not defined or not config_only)
 
 - name: "Install SIP3 Captain for Debian"
-  include: debian.yml
+  ansible.builtin.include_tasks: debian.yml
   when:
     ((ansible_facts['distribution'] | lower == "debian" and
       ansible_facts['distribution_major_version'] | int >= 10) or
@@ -14,4 +14,4 @@
     (config_only is not defined or not config_only)
 
 - name: "Configure SIP3 Captain"
-  include: configure.yml
+  ansible.builtin.include_tasks: configure.yml

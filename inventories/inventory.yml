@@ -250,7 +250,7 @@ all:
             - order: 0
               name: Documentation
               type: external
-              url: https://sip3.io/documentation
+              url: https://sip3.io/docs
               icon: "/assets/page-icons/Documentation.svg"
         root_path: ''
         oauth2:

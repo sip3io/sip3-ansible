@@ -2,4 +2,5 @@ state: started
 hoof:
   reconfigure: true
 edition: ce
-
+hoof_class:
+  _class: "io.sip3.twig.ee.domain.configuration.HoofConfiguration"

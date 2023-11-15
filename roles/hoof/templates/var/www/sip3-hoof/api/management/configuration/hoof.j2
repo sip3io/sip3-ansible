@@ -1,1 +1,1 @@
-{{ hoof.config | to_json(ensure_ascii=False) }}
+{{ hoof.config | combine(hoof_class) | to_json(ensure_ascii=False) }}

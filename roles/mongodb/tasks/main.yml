@@ -1,10 +1,10 @@
 - name: "Install Storage for CentOS"
-  include: centos.yml
+  ansible.builtin.include_tasks: centos.yml
   when:
     - ansible_facts['distribution'] | lower in ["centos", "sangoma", "oracle", "rocky"]
 
 - name: "Install Storage for Debian"
-  include: debian.yml
+  ansible.builtin.include_tasks: debian.yml
   when:
     (ansible_facts['distribution'] | lower == "debian" and
       ansible_facts['distribution_major_version'] | int >= 10) or
@@ -12,4 +12,4 @@
       ansible_facts['distribution_version'] in ["20.04"])
 
 - name: "Configure MongoDB and collections"
-  include: configure.yml
+  ansible.builtin.include_tasks: configure.yml
