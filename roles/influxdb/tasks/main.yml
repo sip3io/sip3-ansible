@@ -1,10 +1,10 @@
 - name: "Install Statistics Storage for CentOS"
-  include: centos.yml
+  ansible.builtin.include_tasks: centos.yml
   when:
     - ansible_facts['distribution'] | lower in ["centos", "sangoma", "oracle", "rocky"]
 
 - name: "Install Statistics Storage for Debian"
-  include: debian.yml
+  ansible.builtin.include_tasks: debian.yml
   when:
     (ansible_facts['distribution'] | lower == "debian" and
       ansible_facts['distribution_major_version'] | int >= 10) or
