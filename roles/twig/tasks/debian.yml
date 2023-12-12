@@ -3,15 +3,9 @@
     - name: "Install packages"
       apt:
         pkg:
-           - openjdk-11-jre
            - sip3-twig-{{ edition }}
         update_cache: yes
         state: latest
-
-    - name: "Set Java home"
-      set_fact:
-        java:
-          home: "/usr/lib/jvm/java-11-openjdk-amd64"
   when: state == "started"
 
 - name: "Uninstalling"
