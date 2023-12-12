@@ -7,8 +7,7 @@
           - sip3-captain-{{ edition }}
         update_cache: yes
         state: latest
-  when: state == "started" and
-        (not without_java or without_java is not defined)
+  when: state == "started" and not without_java
 
 - name: "Installing"
   block:
@@ -20,6 +19,7 @@
         update_cache: yes
         dpkg_options: '-o "Dpkg::Options::=--ignore-depends=sip3-java" -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold"'
         state: latest
+      when: without_java
   when: state == "started" and without_java
 
 - name: "Uninstalling"
