@@ -10,7 +10,7 @@
 
         - name: "Add signing key for InfluxDB repository"
           apt_key:
-            url: "https://repos.influxdata.com/influxdb.key"
+            url: "https://repos.influxdata.com/influxdata-archive_compat.key"
             state: present
 
         - name: "Add InfluxDB repository"

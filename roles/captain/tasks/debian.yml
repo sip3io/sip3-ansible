@@ -1,4 +1,5 @@
 - name: "Installing"
+  when: state == "started"
   block:
     - name: "Install packages"
       apt:
@@ -7,10 +8,8 @@
           - sip3-captain-{{ edition }}
         update_cache: yes
         state: latest
-  when: state == "started" and not without_java
+      when: not without_java
 
-- name: "Installing"
-  block:
     - name: "Install packages without java"
       apt:
         pkg:
@@ -20,9 +19,10 @@
         dpkg_options: '-o "Dpkg::Options::=--ignore-depends=sip3-java" -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold"'
         state: latest
       when: without_java
-  when: state == "started" and without_java
+
 
 - name: "Uninstalling"
+  when: state == "absent"
   block:
 
     - name: collect facts about system services
@@ -48,4 +48,4 @@
       apt:
         name: sip3-captain-{{ edition }}
         state: absent
-  when: state == "absent"
+
