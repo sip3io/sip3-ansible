@@ -1,6 +1,7 @@
 #! Server
 server:
   port: {{ twig.server.port | default('8080') }}
+  forward_headers_strategy: framework
   servlet:
     context_path: {{ twig.server.servlet.context_path | default('/api') }}
     session:
