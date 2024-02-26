@@ -228,7 +228,7 @@ all:
             name: "(UTC) Greenwich Mean Time"
             value: "+00:00"
         winbox:
-          auto_close: true
+          auto_close: false
         sidebar:
           dashboards:
             - order: 0
