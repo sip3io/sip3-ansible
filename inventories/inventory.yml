@@ -26,7 +26,7 @@ all:
     mongodb:
       hosts:
         # Add MongoDB hosts here
-        #mongodb1:
+        mongodb1:
     influxdb:
       hosts:
         # Add influxdb hosts here
@@ -92,9 +92,9 @@ all:
   # Commons variables of SIP3 applications
   vars:
     # Username for ssh access. Auth should be done via ssh identity_file (private and public keys) or set option -K for ansible-playbook
-    ansible_user: root
+    ansible_user: life
     # Management ip address for SSH access
-    ansible_host: 127.0.0.1
+    ansible_host: 192.168.122.82
     # May be usefull for Non-SSH connection in case of localhost (127.0.0.1). Uncomment for use.
     # ansible_connection: local
     # SSH port for management access to hosts
@@ -143,7 +143,6 @@ all:
 
     # Persistence storage properties
     mongodb:
-      version: 5.0
       # If you want to use for MongoDB exclusive ip address, you can set here. Otherwise will be use variable 'address'
       address: 127.0.0.1
       port: 27017
@@ -172,17 +171,20 @@ all:
       # Salto ip address on which the Captain stream is listen. Otherwise will be use variable 'address'
       address: 127.0.0.1
       port: 15060
-      collections:
-        sip_index_index:
-          max_collections: 30
-        sip_index_raw:
-          max_collections: 30
-        sip_register_index:
-          max_collections: 10
-        sip_register_raw:
-          max_collections: 10
-        attributes:
-          max_collections: 30
+      mongodb:
+        bulk_size: 1
+        update_period: 300000        
+        collections:
+          sip_index_index:
+            max_collections: 30
+          sip_index_raw:
+            max_collections: 30
+          sip_register_index:
+            max_collections: 10
+          sip_register_raw:
+            max_collections: 10
+          attributes:
+            max_collections: 30
       attributes:
         record_ip_addresses: true
       udf:

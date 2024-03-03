@@ -13,9 +13,11 @@ systemLog:
 # Where and how to store data.
 storage:
   dbPath: {{ mongodb.path | default('/data/db') }}
+{% if version != 7.0 %}
   journal:
     enabled: true
   directoryPerDB: true
+{% endif %}
 
 #  engine:
 #  wiredTiger:
