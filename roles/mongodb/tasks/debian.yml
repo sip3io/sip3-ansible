@@ -9,28 +9,28 @@
 
         - name: "Add signing key for Mongo repository"
           apt_key:
-            url: "https://www.mongodb.org/static/pgp/server-{{ mongodb.version }}.asc"
+            url: "https://www.mongodb.org/static/pgp/server-{{ version }}.asc"
             state: present
 
         - name: "Add MongoDB repository debian"
           apt_repository:
-            repo: deb http://repo.mongodb.org/apt/{{ ansible_facts['distribution'] | lower }} {{ ansible_facts['lsb']['codename'] }}/mongodb-org/{{ mongodb.version }} main
+            repo: deb http://repo.mongodb.org/apt/{{ ansible_facts['distribution'] | lower }} {{ ansible_facts['lsb']['codename'] }}/mongodb-org/{{ version }} main
             state: present
-            filename: mongodb-org-{{ mongodb.version }}
+            filename: mongodb-org-{{ version }}
           when: ansible_facts['distribution'] | lower == "debian" and ansible_facts['distribution_major_version'] | int != 11
 
         - name: "Add MongoDB repository debian"
           apt_repository:
-            repo: deb http://repo.mongodb.org/apt/{{ ansible_facts['distribution'] | lower }} buster/mongodb-org/{{ mongodb.version }} main
+            repo: deb http://repo.mongodb.org/apt/{{ ansible_facts['distribution'] | lower }} buster/mongodb-org/{{ version }} main
             state: present
-            filename: mongodb-org-{{ mongodb.version }}
+            filename: mongodb-org-{{ version }}
           when: ansible_facts['distribution'] | lower == "debian" and ansible_facts['distribution_major_version'] | int == 11
 
         - name: "Add MongoDB repository ubuntu"
           apt_repository:
-            repo: deb http://repo.mongodb.org/apt/{{ ansible_facts['distribution'] | lower }} {{ ansible_facts['lsb']['codename'] }}/mongodb-org/{{ mongodb.version }} multiverse
+            repo: deb http://repo.mongodb.org/apt/{{ ansible_facts['distribution'] | lower }} {{ ansible_facts['lsb']['codename'] }}/mongodb-org/{{ version }} multiverse
             state: present
-            filename: mongodb-org-{{ mongodb.version }}
+            filename: mongodb-org-{{ version }}
           when: ansible_facts['distribution'] | lower == "ubuntu"
 
     - name: "Install the latest version of MongoDB"

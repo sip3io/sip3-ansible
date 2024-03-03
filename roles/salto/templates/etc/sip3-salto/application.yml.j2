@@ -121,6 +121,11 @@ mongo:
         ascending: {{ salto.mongodb.collections.rtpr_rtp_raw.indexes.ascending | default('[created_at]') }}
         hashed: {{ salto.mongodb.collections.rtpr_rtp_raw.indexes.hashed | default('[call_id]') }}
       max_collections: {{ salto.mongodb.collections.rtpr_rtp_raw.max_collections | default('30') }}
+    - prefix: dtmf_index
+      indexes:
+        ascending: {{ salto.mongodb.collections.dtmf_index.indexes.ascending | default('[created_at, terminated_at, src_addr, src_host, dst_addr, dst_host, tone]') }}
+        hashed: {{ salto.mongodb.collections.dtmf_index.indexes.hashed | default('[call_id]') }}
+      max_collections: {{ salto.mongodb.collections.rtpr_rtp_raw.max_collections | default('30') }}
     {% endif -%}
     {% if "rec" in features -%}
     - prefix: rec_raw

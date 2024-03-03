@@ -1,6 +1,5 @@
 state: started
 add_system_repo: false
-mongodb:
-  version: 5.0
+mongosh: mongosh
 hoof_class:
   _class: "io.sip3.twig.ee.domain.configuration.HoofConfiguration"

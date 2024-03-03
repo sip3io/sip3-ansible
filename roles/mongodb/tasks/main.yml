@@ -1,15 +1,67 @@
+- name: "Set mongodb version to 7.0"
+  ansible.builtin.set_fact:
+    version: 7.0
+  when:
+    (ansible_facts['distribution'] | lower == "debian" and
+      ansible_facts['distribution_major_version'] | int >= 11) or
+    (ansible_facts['distribution'] | lower == "ubuntu" and
+      ansible_facts['distribution_major_version'] | int >= 20) or
+    (ansible_facts['distribution'] | lower in ["centos", "sangoma", "oracle", "rocky"] and
+      ansible_facts['distribution_major_version'] | int >= 7)
+
+- name: "Set mongodb version to 6.0"
+  ansible.builtin.set_fact:
+    version: 6.0
+  when:
+    (ansible_facts['distribution'] | lower == "debian" and
+      ansible_facts['distribution_major_version'] | int == 10) or
+    (ansible_facts['distribution'] | lower == "ubuntu" and
+      ansible_facts['distribution_major_version'] | int >= 16 and
+      ansible_facts['distribution_major_version'] | int < 20)
+
+- name: "Set mongodb version to 5.0"
+  ansible.builtin.set_fact:
+    version: 5.0
+  when:
+    (ansible_facts['distribution'] | lower == "debian" and
+      ansible_facts['distribution_major_version'] | int == 9)
+
+- name: Get CPU info
+  ansible.builtin.command: cat /proc/cpuinfo
+  register: cpuinfo
+
+- name: "Set mongodb version to 4.4"
+  ansible.builtin.set_fact:
+    version: 4.4
+    mongo_shell: mongo
+  when: '"avx" not in cpuinfo.stdout'
+
+- name: "Mongo 4.4 Warning"
+  debug:
+    msg: "You CPU don't support AVX instructions. That instructions need for new versions mongodb. Mongodb 4.4 will be deprecated soon!"
+  when:
+   - version == 4.4
+
 - name: "Install Storage for CentOS"
   ansible.builtin.include_tasks: centos.yml
   when:
     - ansible_facts['distribution'] | lower in ["centos", "sangoma", "oracle", "rocky"]
+    - version is defined
 
 - name: "Install Storage for Debian"
   ansible.builtin.include_tasks: debian.yml
   when:
-    (ansible_facts['distribution'] | lower == "debian" and
-      ansible_facts['distribution_major_version'] | int >= 10) or
-    (ansible_facts['distribution'] | lower == "ubuntu" and
-      ansible_facts['distribution_version'] in ["20.04"])
+    (ansible_facts['distribution'] | lower == "debian" or
+     ansible_facts['distribution'] | lower == "ubuntu" ) and
+     version is defined
 
 - name: "Configure MongoDB and collections"
   ansible.builtin.include_tasks: configure.yml
+  when:
+    - version is defined
+
+- name: "Mongo don't support system"
+  debug:
+    msg: "You system don't support mongodb install. You need Ubuntu LTS 16.04 anf greater (22.04 recomended), debian 9+ (Debian 12 recomended) or RHEL-Based distro 7+ (9 recomended)."
+  when:
+    - version is not defined

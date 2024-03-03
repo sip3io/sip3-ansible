@@ -6,9 +6,9 @@
 
     - name: "Add MongoDB repository"
       yum_repository:
-        name: mongodb-org-{{ mongodb.version }}
+        name: mongodb-org-{{ version }}
         description: "MongoDB Repository"
-        baseurl: https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/{{ mongodb.version }}/x86_64/
+        baseurl: https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/{{ version }}/x86_64/
         gpgcheck: no
         proxy: "{{ proxy | default('_none_') }}"
 
