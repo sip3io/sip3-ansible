@@ -26,7 +26,7 @@ all:
     mongodb:
       hosts:
         # Add MongoDB hosts here
-        mongodb1:
+        #mongodb1:
     influxdb:
       hosts:
         # Add influxdb hosts here
@@ -92,13 +92,13 @@ all:
   # Commons variables of SIP3 applications
   vars:
     # Username for ssh access. Auth should be done via ssh identity_file (private and public keys) or set option -K for ansible-playbook
-    ansible_user: life
+    #ansible_user: root
     # Management ip address for SSH access
-    ansible_host: 192.168.122.82
+    #ansible_host: 127.0.0.1
     # May be usefull for Non-SSH connection in case of localhost (127.0.0.1). Uncomment for use.
     # ansible_connection: local
     # SSH port for management access to hosts
-    ansible_port: 22
+    #ansible_port: 22
     # Properties ansible_user, ansible_host and ansible_port can be individual for each hosts,
     # in this case you should copy these properties to each hosts variable section below.
     # ansible_user should have privileged access for create directory, install packages. We recommend use root.
@@ -106,7 +106,7 @@ all:
     #
     # Use property ansible_become for privilege escalation. If you don't use root in ansible_user property,
     # you should use ansible_become
-    ansible_become: true
+    #ansible_become: true
 
     # Common ip address for all hosts. If you want separate for each one, you can define it in group or host variable
     address: 127.0.0.1
