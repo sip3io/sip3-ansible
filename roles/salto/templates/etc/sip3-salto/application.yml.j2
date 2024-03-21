@@ -62,6 +62,11 @@ mongo:
         ascending: {{ salto.mongodb.collections.sip_call_raw.indexes.ascending | default('[created_at]') }}
         hashed: {{ salto.mongodb.collections.sip_call_raw.indexes.hashed | default('[call_id]') }}
       max_collections: {{ salto.mongodb.collections.sip_call_raw.max_collections | default('30') }}
+    - prefix: unknown_raw
+      indexes:
+        ascending: {{ salto.mongodb.collections.unknown_raw.indexes.ascending | default('[created_at]') }}
+        hashed: {{ salto.mongodb.collections.unknown_raw.indexes.hashed | default('[call_id]') }}
+      max_collections: {{ salto.mongodb.collections.unknown_raw.max_collections | default('30') }}
     {% if "register" in features -%}
     - prefix: sip_register_index
       indexes:

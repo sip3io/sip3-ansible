@@ -179,6 +179,8 @@ all:
             max_collections: 30
           sip_index_raw:
             max_collections: 30
+          unknown_raw:
+            max_collections: 30
           sip_register_index:
             max_collections: 10
           sip_register_raw:
