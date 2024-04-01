@@ -100,6 +100,34 @@ tzsp:
   enabled: true
 {% endif %}
 
+{% if "websocket" in features -%}
+websocket:
+  enabled: true
+  expiration_delay: {{ captain.websocket.expiration_delay | default('100') }}
+  aggregation_timeout: {{ captain.websocket.aggregation_timeout | default('60000') }}
+  idle_association_timeout: {{ captain.websocket.idle_connection_timeout | default('300000') }}
+{% endif %}
+
+{% if "hep" in features -%}
+hep:
+  uri: {{ captain.hep.uri | default('udp://127.0.0.1:9060') }}
+  reuse_port: {{ captain.hep.reuse_port | default('false') }}
+  buffer_size: {{ captain.hep.buffer_size | default('1024') }}
+  bulk_size: {{ captain.hep.collector.bulk_size | default('1') }}
+{% endif %}
+
+{% if "ipfix" in features -%}
+ipfix:
+  uri: {{ captain.ipfix.uri | default('tcp://127.0.0.1:4739') }}
+  reuse_port: {{ captain.ipfix.reuse_port | default('false') }}
+  buffer_size: {{ captain.ipfix.buffer_size | default('1024') }}
+  {% if "ipfix_ssl" in features -%}
+  ssl:
+    key_store: {{ captain.ipfix.ssl.key_store | default('') }}
+    key_store_password: {{ captain.ipfix.ssl.key_store | default('') }}
+  {% endif %}
+{% endif %}
+
 #! Sender
 sender:
   {% if captain.sender.uri is defined -%}
