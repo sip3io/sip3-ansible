@@ -231,6 +231,8 @@ all:
           - label: UTC
             name: "(UTC) Greenwich Mean Time"
             value: "+00:00"
+        media:
+          block_count: 28
         winbox:
           auto_close: false
         sidebar:
