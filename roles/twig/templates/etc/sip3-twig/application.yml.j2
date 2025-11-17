@@ -24,7 +24,6 @@ session:
     aggregation_timeout: {{ twig.session.register.aggregation_timeout | default('10000') }}
     duration_timeout: {{ twig.session.register.duration_timeout | default('900000') }}
   media:
-    block_count: {{ twig.session.media.block_count | default('28') }}
     termination_timeout: {{ twig.session.media.termination_timeout | default('120000') }}
 
 cache:

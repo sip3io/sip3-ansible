@@ -1,4 +1,4 @@
-- name: "Create SIP3 Hoof API direcotry"
+- name: "Create SIP3 Hoof API directory"
   file:
     path: /var/www/sip3-hoof/api/management/configuration
     state: directory

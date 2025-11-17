@@ -231,6 +231,8 @@ all:
           - label: UTC
             name: "(UTC) Greenwich Mean Time"
             value: "+00:00"
+        media:
+          block_count: 28
         winbox:
           auto_close: false
         sidebar:
@@ -256,6 +258,7 @@ all:
               type: external
               url: https://sip3.io/docs
               icon: "/assets/page-icons/Documentation.svg"
+        features: []
         root_path: ''
         oauth2:
           enabled: false
