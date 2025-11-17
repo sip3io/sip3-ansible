@@ -258,6 +258,7 @@ all:
               type: external
               url: https://sip3.io/docs
               icon: "/assets/page-icons/Documentation.svg"
+        features: []
         root_path: ''
         oauth2:
           enabled: false
