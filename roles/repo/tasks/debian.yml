@@ -1,61 +1,66 @@
-- name: "Installing"
-  when: state == "started"
+- name: "Gather the package facts"
+  ansible.builtin.package_facts:
+    manager: auto
+
+- name: "Install gnupg packages"
+  apt:
+    name: gnupg
+    update_cache: yes
+  when: ('gnupg' not in ansible_facts.packages)
+
+- name: "Check python packages"
+  debug:
+    msg: "Current system doesn't have necessary package. You should install python3-apt package. E.g. `sudo apt install python3-apt`"
+  when: ('python3-apt' not in ansible_facts.packages)
+
+- name: "Remove old repositories and key"
   block:
-    - name: "Install gnupg packages"
-      apt:
-        name: gnupg
-        update_cache: yes
+    - name: "Find old SIP3 repositories"
+      ansible.builtin.find:
+        paths: /etc/apt/sources.list.d/
+        patterns: '*_sip3_io_*.list'
+      register: repo_list
 
-    - name: "Add signing key for SIP3 repository"
-      apt_key:
-        url: "https://repo.sip3.io/apt/keyFile"
-        state: present
+    - name: "Remove SIP3 repositories"
+      ansible.builtin.file:
+        path: "{{ item.path }}"
+        state: absent
+      with_items:
+        - "{{ repo_list.files }}"
 
-    - name: "Add SIP3 ce repositores"
-      when: edition == "ce"
-      block:
+    - name: "Remove SIP3 signing key"
+      ansible.builtin.file:
+        path: "/etc/apt/keyrings/sip3.asc"
+        state: absent
 
-        - name: "add SIP3 repo"
-          apt_repository:
-            repo: deb [ arch=all ] https://repo.sip3.io/apt/ ce contrib
-            state: present
+    - name: "Remove SIP3 signing key (apt_key)"
+      ansible.builtin.apt_key:
+        id: 0x0D155F84A7168E7F4C7C26EE2EA1982E393A6C66
+        state: absent
+      when:
+        (ansible_facts['distribution'] | lower == "debian" and 
+          ansible_facts['distribution_major_version'] | int < 12) or
+        (ansible_facts['distribution'] | lower == "ubuntu" and
+          ansible_facts['distribution_major_version'] | int < 24)
 
-        - name: "add SIP3 Java repo"
-          apt_repository:
-            repo: deb https://repo.sip3.io/apt/java/ all contrib
-            state: present
+- name: "Create apt keyrings directory"
+  ansible.builtin.file:
+    path: /etc/apt/keyrings
+    state: directory
+    mode: '0755'
 
-    - name: "Add SIP3 licensed repository"
-      when: edition != "ce"
-      block:
+- name: "Add signing key for SIP3 repositories"
+  ansible.builtin.get_url:
+    url: "https://repo.sip3.io/apt/keyFile"
+    dest: /etc/apt/keyrings/sip3.asc
+    checksum: sha256:0f57044f622b3982dd4f680253fcd747da761d00ff64b0a4c2e22bab7cc5c046
 
-        - name: "Create license files directory"
-          ansible.builtin.file:
-            path: /etc/ssl/repo.sip3.io
-            state: directory
-            mode: '0755'
+- name: "Add SIP3 CE main repository"
+  apt_repository:
+    repo: deb [ arch=all signed-by=/etc/apt/keyrings/sip3.asc ] https://repo.sip3.io/apt/ ce contrib
+    state: present
 
-        - name: "Copy license files"
-          ansible.builtin.copy:
-            src: "{{ item }}"
-            dest: "/{{ item }}"
-          with_items:
-            - "etc/ssl/repo.sip3.io/{{ license.cert }}"
-            - "etc/ssl/repo.sip3.io/{{ license.key }}"
-
-        - name: "Create SIP3 repo apt configuration files"
-          template:
-            src: "{{ item }}.j2"
-            dest: "/{{ item }}"
-          with_items:
-            - "etc/apt/apt.conf.d/45sip3-io"
-
-        - name: "Add SIP3 ee repository"
-          apt_repository:
-            repo: deb [ arch=all ] https://repo.sip3.io/apt/{% if edition != "ee" %}private/{{ edition }}{% endif %} {{ edition }} contrib
-            state: present
-
-        - name: "add SIP3 repo"
-          apt_repository:
-            repo: deb https://repo.sip3.io/apt/java/ all contrib
-            state: present
+- name: "Add Java repo"
+  apt_repository:
+    repo: deb [ signed-by=/etc/apt/keyrings/sip3.asc ] https://repo.sip3.io/apt/java/ all contrib
+    state: present

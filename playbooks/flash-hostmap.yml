@@ -1,0 +1,65 @@
+# Usage: ansible-playbook playbook/flash-hostmap.yml
+-  name: "Clear Hostmap"
+   hosts:
+      - twig
+   become: yes
+   pre_tasks:
+      -  name: Verify Ansible version requirements.
+         assert:
+            that: "ansible_version.full is version_compare('2.10', '>=')"
+            msg: >
+               "You must update Ansible to at least 2.10+"
+   tasks:
+      -  name: "Config with user and password"
+         block:
+            -  name: "Wait until HTTP status is 200"
+               ansible.builtin.uri:
+                  url: "{{ sip3_api_uri | default('http://127.0.0.1:8080') }}/api/users/profile"
+                  method: GET
+                  force_basic_auth: true
+                  user: "{{ sip3_api_user }}"
+                  password: "{{ sip3_api_password }}"
+                  return_content: yes
+                  validate_certs: no
+                  status_code:
+                     - 200
+               until: uri_output.status == 200
+               retries: 24 # Retries for 24 * 5 seconds = 120 seconds = 2 minutes
+               delay: 5 # Every 5 seconds
+               register: uri_output
+
+            -  name: "Clear instance Hostmap"
+               ansible.builtin.uri:
+                  url: "{{ sip3_api_uri | default('http://127.0.0.1:8080') }}/api/hosts/{{ item['name'] }}"
+                  method: DELETE
+                  force_basic_auth: true
+                  user: "{{ sip3_api_user }}"
+                  password: "{{ sip3_api_password }}"
+                  status_code: [ 204 ]
+               loop: "{{ hostmap }}"
+         when:
+            sip3_api_user is defined and sip3_api_password is defined
+
+      -  name: "Config without auth"
+         block:
+            -  name: "Wait until HTTP status is 200"
+               ansible.builtin.uri:
+                  url: "{{ sip3_api_uri | default('http://127.0.0.1:8080') }}/api/users/profile"
+                  method: GET
+                  return_content: yes
+                  validate_certs: no
+                  status_code:
+                     - 200
+               until: uri_output.status == 200
+               retries: 24 # Retries for 24 * 5 seconds = 120 seconds = 2 minutes
+               delay: 5 # Every 5 seconds
+               register: uri_output
+
+            -  name: "Clear instance config and Hostmap"
+               ansible.builtin.uri:
+                  url: "{{ sip3_api_uri }}/api/hosts/{{ item['name'] }}"
+                  method: DELETE
+                  status_code: [ 204 ]
+               loop: "{{ hostmap }}"
+         when:
+            sip3_api_user is not defined and sip3_api_password is not defined

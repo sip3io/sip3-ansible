@@ -1,30 +1,18 @@
-- name: "Create SIP3 Salto configuration files"
-  template:
-    src: "{{ item.name }}.j2"
-    dest: "/{{ item.name }}"
-    mode: "{{ item.mode }}"
-    owner: "sip3"
-    group: "sip3"
-  loop:
-    - { name: "etc/sip3-salto/application.yml", mode: "0644" }
-    - { name: "etc/sip3-salto/codecs.yml", mode: "0644" }
-    - { name: "etc/sip3-salto/environment.conf", mode: "0644" }
-    - { name: "etc/sip3-salto/logback.xml", mode: "0644" }
-    - { name: "etc/sip3-salto/vertx-options.json", mode: "0644" }
-    - { name: "opt/sip3-salto/udf/sip3_message_udf.groovy", mode: "0644" }
-
-- name: "Copy license file"
+- name: "SIP3 Salto centralised config"
   ansible.builtin.copy:
-    src: "{{ item }}"
-    dest: "/{{ item }}"
-  with_items:
-    - "etc/sip3-salto/{{ license.file }}"
-  when: edition != "ce"
+    content: "{{ item['value'] }}"
+    dest: "{{ item['name'] }}"
+  loop:
+    - name: "/etc/sip3-salto/application.yml"
+      value: "{{ salto.application | to_nice_yaml }}"
+    - name: "/etc/sip3-salto/environment.conf"
+      value: "{{ salto.environment }}"
+    - name: "/etc/sip3-salto/logback.xml"
+      value: "{{ salto.logback }}"
 
-- name: restart sip3-salto
+- name: "Restart SIP3 Salto"
   systemd:
     name: sip3-salto
     daemon_reload: true
     state: restarted
     enabled: true
-  when: state == "started"

@@ -1,14 +1,16 @@
-- name: "Install SIP3 repo for CentOS"
-  ansible.builtin.include_tasks: centos.yml
-  when:
-    (ansible_facts['distribution'] | lower in ["centos", "sangoma", "oracle", "rocky"]) and
-    (config_only is not defined or not config_only)
+- name: "Role repo"
+  block:
+    - name: "Install SIP3 repo for CentOS"
+      ansible.builtin.include_tasks: centos.yml
+      when:
+        - ansible_facts['distribution'] | lower in ["redhat", "centos", "sangoma", "oracle", "rocky", "amazon"]
 
-- name: "Install SIP3 repo for Debian"
-  ansible.builtin.include_tasks: debian.yml
+    - name: "Install SIP3 repo for Debian"
+      ansible.builtin.include_tasks: debian.yml
+      when:
+        - ansible_facts['distribution'] | lower in ["debian", "ubuntu"]
   when:
-    ((ansible_facts['distribution'] | lower == "debian" and
-      ansible_facts['distribution_major_version'] | int >= 10) or
-    (ansible_facts['distribution'] | lower == "ubuntu" and
-      ansible_facts['distribution_version'] in ["20.04", "22.04", "22.10"])) and
-    (config_only is not defined or not config_only)
+    - salto.mode | lower in ["full", "repo", "package"]
+    - captain.mode | lower in ["full", "repo", "package"]
+    - twig.mode | lower in ["full", "repo", "package"]
+    - hoof.mode | lower in ["full", "repo", "package"]

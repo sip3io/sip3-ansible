@@ -1,17 +1,3 @@
 state: started
-features:
-  - call
-edition: ce
 salto:
-  tasks:
-    enabled: "true"
-  webhook:
-    body: |
-      {
-        "text": ":fire: Sip3 Salto :fire:",
-        "attachments": [
-          {
-            "text": "{message}"
-          }
-        ]
-      }
+  mode: full

@@ -1,0 +1,5 @@
+- name: "Deploy InfluxDB"
+  hosts: influxdb, backend
+  roles:
+    - role: ../roles/influxdb
+      tags: storage

@@ -1,51 +1,7 @@
-- name: "Installing"
-  when: state == "started"
-  block:
-    - name: "Install packages"
-      apt:
-        pkg:
-          - libpcap0.8
-          - sip3-captain-{{ edition }}
-        update_cache: yes
-        state: latest
-      when: not without_java
-
-    - name: "Install packages without java"
-      apt:
-        pkg:
-          - libpcap0.8
-          - sip3-captain-{{ edition }}
-        update_cache: yes
-        dpkg_options: '-o "Dpkg::Options::=--ignore-depends=sip3-java" -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confdef" -o "Dpkg::Options::=--force-confold"'
-        state: latest
-      when: without_java
-
-
-- name: "Uninstalling"
-  when: state == "absent"
-  block:
-
-    - name: collect facts about system services
-      ansible.builtin.service_facts:
-
-    - name: "Stop SIP3 Captain"
-      systemd:
-        name: sip3-captain
-        enabled: no
-        state: stopped
-      when: ansible_facts.services["sip3-captain.service"].state == "running"
-
-    - name: "Stop SIP3 Captain interface capture"
-      systemd:
-        name: "sip3-captain-interface@{{ captain.pcap.dev }}"
-        enabled: no
-        state: stopped
-      when:
-        - captain.pcap.dev is defined
-        - ansible_facts.services["sip3-captain-interface@{{ captain.pcap.dev }}.service"].state == "running"
-
-    - name: "Uninstall package"
-      apt:
-        name: sip3-captain-{{ edition }}
-        state: absent
-
+- name: "Install packages"
+  apt:
+    pkg:
+      - libpcap0.8
+      - sip3-captain-ce
+    update_cache: yes
+    state: latest

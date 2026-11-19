@@ -1,43 +1,24 @@
-- name: "Configure Hostmap"
-  block:
-    - name: "Wait for MongoDB service starts"
-      wait_for:
-        host: "{{ mongodb.address | default(address | default('127.0.0.1')) }}"
-        port: "{{ mongodb.port | default('27017') }}"
-        delay: 1
-        timeout: 15
+- name: "Create MongoDB config"
+  ansible.builtin.copy:
+    content: "{{ item['value'] }}"
+    dest: "{{ item['name'] }}"
+  loop:
+    - name: "/etc/mongod.conf"
+      value: "{{ mongodb.config }}"
 
-    - name: "Flush hostmap"
-      ansible.builtin.command: "{{ mongosh }} --host {{ mongodb.address | default(address | default('127.0.0.1')) }} {{ mongodb.db | default('sip3') }} --port {{ mongodb.port | default('27017') }} --eval 'db.hosts.drop()'"
+- name: "Restart MongoDB"
+  systemd:
+    name: mongod
+    daemon_reload: true
+    state: restarted
+    enabled: true
 
-    - name: "Insert hostmap into MongoDB"
-      ansible.builtin.command: "{{ mongosh }} --host {{ mongodb.address | default(address | default('127.0.0.1')) }} {{ mongodb.db | default('sip3') }} --port {{ mongodb.port | default('27017') }} --eval 'db.hosts.insert({{ item | to_json(ensure_ascii=False) }})'"
-      loop: "{{ hostmap }}"
+- name: "Wait for MongoDB service starts"
+  wait_for:
+    host: "127.0.0.1"
+    port: "{{ mongodb.config.net.port | default('27017') }}"
+    delay: 1
+    timeout: 15
 
-    - name: "Create index for hostmap"
-      ansible.builtin.command: "{{ mongosh }} --host {{ mongodb.address | default(address | default('127.0.0.1')) }} {{ mongodb.db | default('sip3') }} --port {{ mongodb.port | default('27017') }} --eval 'db.hosts.createIndex({ \"name\": 1 })'"
-  when: state == "started" and hostmap is defined
-
-- name: "Configure Hoof"
-  block:
-    - name: "Wait for MongoDB service starts"
-      wait_for:
-        host: "{{ mongodb.address | default(address | default('127.0.0.1')) }}"
-        port: "{{ mongodb.port | default('27017') }}"
-        delay: 1
-        timeout: 15
-
-    - name: "Flush hoof config"
-      ansible.builtin.command: "{{ mongosh }} --host {{ mongodb.address | default(address | default('127.0.0.1')) }} {{ mongodb.db | default('sip3') }} --port {{ mongodb.port | default('27017') }} --eval 'db.configurations.deleteMany({\"name\":\"hoof\"})'"
-
-    - name: "Create mongo data for insert"
-      set_fact:
-        mongojson: "{{ hoof.config | combine(hoof_class) }}"
-
-    - name: "Insert hoof into MongoDB"
-      ansible.builtin.command: "{{ mongosh }} --host {{ mongodb.address | default(address | default('127.0.0.1')) }} {{ mongodb.db | default('sip3') }} --port {{ mongodb.port | default('27017') }} --eval 'db.configurations.insert({{ mongojson | to_json(ensure_ascii=False) }})'"
- 
-  when:
-    - state == "started"
-    - hoof.config is defined
-    - edition != "ce"
+- name: "Create index for hostmap"
+  ansible.builtin.command: "{{ mongosh }} --host 127.0.0.1 {{ twig.application.mongo.management.db | default('sip3-mgmt') }} --port {{ mongodb.config.net.port | default('27017') }} --eval 'db.hosts.createIndex({ \"name\": 1 })'"

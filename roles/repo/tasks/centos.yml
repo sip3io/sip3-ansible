@@ -1,65 +1,24 @@
-- name: "Installing"
-  block:
-    - name: "Add SIP3 ce repository"
-      block:
+-  name: "Gather the package facts"
+   ansible.builtin.package_facts:
+     manager: auto
 
-        - name: Add repo
-          yum_repository:
-            name: sip3
-            description: "SIP3 repository"
-            baseurl: https://repo.sip3.io/yum/ce/
-            gpgkey: https://repo.sip3.io/yum/keyFile
-            gpgcheck: yes
-            proxy: "{{ proxy | default('_none_') }}"
+-  name: "Check necessary Python packages for Ansible"
+   debug:
+     msg: "Current system doesn't have necessary package. You should install python3-rpm or python3-dnf packages. E.g. `sudo yum install python3-rpm` or `sudo dnf install python3-dnf`"
+   when: ('python3-rpm' not in ansible_facts.packages and 'python3-dnf' not in ansible_facts.packages)
 
-        - name: Add Java repo
-          yum_repository:
-            name: sip3-java
-            description: "SIP3 Java repository"
-            baseurl: https://repo.sip3.io/yum/java/$basearch/
-            gpgkey: https://repo.sip3.io/yum/keyFile
-            gpgcheck: yes
-            proxy: "{{ proxy | default('_none_') }}"
+- name: "Add SIP3 CE repository"
+  yum_repository:
+    name: sip3-ce
+    description: "SIP3 Community repository"
+    baseurl: https://repo.sip3.io/yum/ce/
+    gpgkey: https://repo.sip3.io/yum/keyFile
+    gpgcheck: yes
 
-      when: edition == "ce"
-
-    - name: "Add SIP3 licensed repository"
-      block:
-
-        - name: "Create license files directory"
-          ansible.builtin.file:
-            path: /etc/ssl/repo.sip3.io
-            state: directory
-            mode: '0755'
-
-        - name: "Copy license files"
-          ansible.builtin.copy:
-            src: "{{ item }}"
-            dest: "/{{ item }}"
-          with_items:
-            - "etc/ssl/repo.sip3.io/{{ license.cert }}"
-            - "etc/ssl/repo.sip3.io/{{ license.key }}"
-
-        - name: "Add SIP3 ee repository"
-          yum_repository:
-            name: sip3
-            description: "SIP3 repository"
-            baseurl: https://repo.sip3.io/yum/{% if edition != "ee" %}private/{% endif %}{{ edition }}/
-            gpgkey: https://repo.sip3.io/yum/keyFile
-            gpgcheck: yes
-            sslclientcert: "/etc/ssl/repo.sip3.io/{{ license.cert }}"
-            sslclientkey: "/etc/ssl/repo.sip3.io/{{ license.key }}"
-            proxy: "{{ proxy | default('_none_') }}"
-
-        - name: Add Java repo
-          yum_repository:
-            name: sip3-java
-            description: "SIP3 Java repository"
-            baseurl: https://repo.sip3.io/yum/java/$basearch/
-            gpgkey: https://repo.sip3.io/yum/keyFile
-            gpgcheck: yes
-            proxy: "{{ proxy | default('_none_') }}"
-
-      when: edition != "ce"
-
-  when: state == "started"
+- name: "Add Java repo"
+  yum_repository:
+    name: sip3-java
+    description: "SIP3 Java repository"
+    baseurl: https://repo.sip3.io/yum/java/$basearch/
+    gpgkey: https://repo.sip3.io/yum/keyFile
+    gpgcheck: yes

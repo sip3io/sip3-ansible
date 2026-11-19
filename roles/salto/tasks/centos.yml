@@ -1,29 +1,5 @@
-- name: "Installing"
-  block:
-    - name: Disable SELinux
-      selinux:
-        state: disabled
-
-    - name: "Install packages"
-      yum:
-        name: "{{ packages }}"
-        update_cache: yes
-        state: latest
-      vars:
-        packages:
-          - sip3-salto-{{ edition }}
-  when: state == "started"
-
-- name: "Uninstalling"
-  block:
-    - name: "Stop SIP3 Salto"
-      systemd:
-        name: sip3-salto
-        enabled: no
-        state: stopped
-
-    - name: "Uninstall package"
-      yum:
-        name: sip3-salto-{{ edition }}
-        state: absent
-  when: state == "absent"
+- name: "Install packages"
+  yum:
+    name: sip3-salto-ce
+    update_cache: yes
+    state: latest

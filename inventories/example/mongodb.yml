@@ -1,0 +1,72 @@
+all:
+  vars:
+    mongodb:
+      mode: full # full/config/package
+      config: |
+        # mongod.conf
+
+        # for documentation of all options, see:
+        #   http://docs.mongodb.org/manual/reference/configuration-options/
+
+        # where to write logging data.
+        systemLog:
+          destination: file
+          logAppend: true
+          logRotate: reopen
+          path: /var/log/mongodb/mongod.log
+          quiet: true
+          component:
+            accessControl:
+              verbosity: -1
+            command:
+              verbosity: -1
+            # COMMENT some component verbosity settings omitted for brevity
+            replication:
+              verbosity: -1
+              election:
+                verbosity: -1
+              heartbeats:
+                verbosity: -1
+              initialSync:
+                verbosity: -1
+              rollback:
+                verbosity: -1
+            storage:
+              verbosity: -1
+              journal:
+                verbosity: -1
+              recovery:
+                verbosity: -1
+            write:
+              verbosity: -1
+
+        # Where and how to store data.
+        storage:
+          dbPath: /data/db
+          directoryPerDB: true
+        #  engine:
+        #  wiredTiger:
+
+        # how the process runs
+        processManagement:
+          fork: true  # fork and run in background
+          pidFilePath: /var/run/mongodb/mongod.pid  # location of pidfile
+          timeZoneInfo: /usr/share/zoneinfo
+
+        # network interfaces
+        net:
+          port: 27017
+          bindIp: 0.0.0.0
+
+
+        #security:
+
+        #operationProfiling:
+
+        #sharding:
+
+        ## Enterprise-Only Options
+
+        #auditLog:
+
+        #snmp:

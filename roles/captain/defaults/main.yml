@@ -1,5 +1,3 @@
 state: started
-edition: ce
-without_java: false
-features:
-  - call
+captain:
+  mode: full

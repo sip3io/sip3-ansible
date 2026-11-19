@@ -15,30 +15,24 @@
 
         - name: "Add NGINX repository"
           apt_repository:
-            repo: deb http://nginx.org/packages/{{ ansible_facts['distribution'] | lower }} {{ ansible_facts['lsb']['codename'] }} nginx
+            repo: deb http://nginx.org/packages/mainline/{{ ansible_facts['distribution'] | lower }} {{ ansible_facts['lsb']['codename'] }} nginx
             state: present
             filename: nginx
 
-    - name: "Install SIP3 Hoof"
-      apt:
-        name: "sip3-hoof-{{ edition }}"
-        update_cache: yes
-        state: latest
+        - name: "Install Nginx"
+          apt:
+            name:
+              - nginx
+            update_cache: yes
+            state: latest
+  when:
+    - state == "started"
+    - hoof.nginx is defined
 
-  when: state == "started"
+- name: "Install SIP3 Hoof"
+  apt:
+    name:
+      - "sip3-hoof-ce"
+    update_cache: yes
+    state: latest
 
-- name: "Uninstalling"
-  block:
-    - name: "Stop NGINX"
-      systemd:
-        name: nginx
-        enabled: no
-        state: stopped
-
-    - name: "Uninstall NGINX"
-      apt:
-        pkg:
-          - nginx
-          - sip3-hoof-{{ edition }}
-        state: absent
-  when: state == "absent"

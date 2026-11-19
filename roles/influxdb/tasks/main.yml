@@ -1,7 +1,7 @@
 - name: "Install Statistics Storage for CentOS"
   ansible.builtin.include_tasks: centos.yml
   when:
-    - ansible_facts['distribution'] | lower in ["centos", "sangoma", "oracle", "rocky"]
+    - ansible_facts['distribution'] | lower in ["redhat", "centos", "sangoma", "oracle", "rocky", "amazon"]
 
 - name: "Install Statistics Storage for Debian"
   ansible.builtin.include_tasks: debian.yml

@@ -1,0 +1,67 @@
+all:
+  vars:
+    udf: |
+      package io.sip3.udf.example
+  
+      import io.sip3.salto.ce.udf.UdfExecutor
+      import org.slf4j.LoggerFactory
+  
+      def logger = LoggerFactory.getLogger(UdfExecutor.class)
+  
+      def TO_FROM_PATTERN = ~/(?:"(?<displayInfo>.*)")?[ \t]?<(.*):(?<userPart>.*)@(?<domainPart>[^:]*):?(\d+)?>.*/
+  
+      static def normalize(String number) {
+        // Remove leading `+`
+        if (number.startsWith("+")) {
+          number = number.substring(1)
+        }
+  
+        return number
+      }
+  
+      vertx.eventBus().localConsumer("sip_message_udf", { event ->
+        try {
+          def packet = event.body()
+  
+          def sip_message = packet['payload']
+          def requestLine = sip_message['request-line']
+          if (requestLine != null && requestLine.startsWith("INVITE")) {
+            // Set `caller`
+            def from_matcher = TO_FROM_PATTERN.matcher(sip_message['from'])
+            if (from_matcher.matches()) {
+              try {
+                def user_part = from_matcher.group("userPart")
+                def user_part_matcher = user_part =~ NUMBER_PATTERN
+                if (user_part_matcher.matches()) {
+                  packet['attributes']['caller'] = normalize(user_part_matcher.group("msisdn"))
+                } else {
+                  packet['attributes']['caller'] = user_part
+                }
+              } catch (Exception e) {
+                logger.error("Failed to set caller from '{}'", sip_message['from'], e)
+              }
+            }
+  
+            // Set `callee`
+            def to_matcher = TO_FROM_PATTERN.matcher(sip_message['to'])
+            if (to_matcher.matches()) {
+              try {
+                def user_part = to_matcher.group("userPart")
+                def user_part_matcher = user_part =~ NUMBER_PATTERN
+                if (user_part_matcher.matches()) {
+                  packet['attributes']['callee'] = normalize(user_part_matcher.group("msisdn"))
+                }
+              } catch (Exception e) {
+                logger.error("Failed to set caller from '{}'", sip_message['to'], e)
+              }
+            }
+  
+          }
+  
+        } catch (Exception e) {
+          logger.error("UDF failed.", e)
+        }
+  
+        event.reply(true)
+      })
+  

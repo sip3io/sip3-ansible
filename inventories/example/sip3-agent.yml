@@ -1,0 +1,11 @@
+all:
+  children:
+    captain:
+      hosts:
+        'sip3-captain-instance':
+          ansible_ssh_host: 1.1.1.1
+  vars:
+    ansible_user: user
+    ansible_port: 22
+    ansible_become: true
+    ansible_ssh_private_key_file: ~/.ssh/id_ed25519-user

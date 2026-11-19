@@ -1,0 +1,142 @@
+all:
+  vars:
+    hoof:
+      mode: full # full/config/package
+
+      nginx: |
+        user www-data;
+        worker_processes auto;
+        pid /run/nginx.pid;
+        error_log /var/log/nginx/error.log;
+        include /etc/nginx/modules-enabled/*.conf;
+        
+        events {
+          worker_connections 768;
+          # multi_accept on;
+        }
+          
+        http {
+        
+          ##
+          # Basic Settings
+          ##
+          
+          sendfile on;
+          tcp_nopush on;
+          types_hash_max_size 2048;
+          # server_tokens off;
+          
+          # server_names_hash_bucket_size 64;
+          # server_name_in_redirect off;
+          
+          include /etc/nginx/mime.types;
+          default_type application/octet-stream;
+          
+          ##
+          # SSL Settings
+          ##
+          
+          ssl_protocols TLSv1.2 TLSv1.3; # Dropping SSLv3, ref: POODLE
+          ssl_prefer_server_ciphers on;
+          
+          ##
+          # Logging Settings
+          ##
+          
+          access_log /var/log/nginx/access.log;
+                    
+          ##
+          # Virtual Host Configs
+          ##
+          
+          include /etc/nginx/conf.d/*.conf;
+          include /etc/nginx/sites-enabled/*;
+        }
+
+      sip3_hoof: |
+        map $http_upgrade $connection_upgrade {
+          default upgrade;
+          ''      close;
+        }
+        
+        server {
+          listen       80;
+          server_name  sip3.localhost;
+        
+          access_log  /var/log/nginx/sip3-hoof.access.log  main;
+        
+          client_max_body_size       64m;
+        
+          gzip on;
+          gzip_min_length 1024;
+          gzip_proxied expired no-cache no-store private auth;
+          gzip_buffers 32 4k;
+          gzip_comp_level 9;
+          gzip_disable "msie6";
+          gzip_http_version 1.1;
+          gzip_static on;
+          gzip_vary on;
+          gzip_types text/css text/javascript text/xml text/plain text/x-component application/javascript application/x-javascript application/json application/xml application/rss+xml font/truetype application/x-font-ttf font/opentype application/vnd.ms-fontobject image/svg+xml;
+        
+          root  /var/www/sip3-hoof;
+          index index.html index.htm;
+        
+          location ~* ^/(bundle|access/.+)\.(gif|ico|jpg|jpeg|jpe|png|svg|svgz|tif|tiff|ttf|woff|woff2|css|js)$ {
+            expires 2592000;
+            add_header Cache-Control private;
+            add_header Cache-Control must-revalidate;
+            add_header Pragma private;
+            access_log off;
+            log_not_found off;
+          }
+        
+          location / {
+            if ($http_user_agent ~* "^ELB-HealthChecker") {
+              access_log off;
+              return 200 "SIP3 is alive";
+            }
+        
+            proxy_http_version 1.1;
+            proxy_set_header   Host               $host;
+            proxy_set_header   X-Real-IP          $remote_addr;
+            proxy_set_header   X-Forwarded-For    $proxy_add_x_forwarded_for;
+            proxy_set_header   X-Forwarded-Host   $host;
+            proxy_set_header   X-Forwarded-Proto  $scheme;
+        
+            proxy_busy_buffers_size   512k;
+            proxy_buffers           4 512k;
+            proxy_buffer_size         256k;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection $connection_upgrade;
+        
+            try_files $uri $uri/ /index.html;
+          }
+        
+          location /api/logout {
+            return 302 https://$http_host/logout;
+          }
+        
+          location /api/login {
+            return 302 https://$http_host/;
+          }
+        
+          location /api/ {
+            rewrite ^/api/swagger-ui/?$ /api/swagger-ui/index.html permanent;
+        
+            proxy_pass http://127.0.0.1:8080/api/;
+        
+            proxy_set_header   Host               $host;
+            proxy_set_header   X-Real-IP          $remote_addr;
+            proxy_set_header   X-Forwarded-For    $proxy_add_x_forwarded_for;
+            proxy_set_header   X-Forwarded-Host   $host;
+            proxy_set_header   X-Forwarded-Proto  $scheme;
+          }
+        
+          location /dashboard/technical {
+            return 302 https://localhost/sip-metrics;
+          }
+        
+          location /dashboard/quality {
+            return 302 https://localhost/media-qos;
+          }
+        }

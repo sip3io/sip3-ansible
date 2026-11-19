@@ -1,29 +1,8 @@
-- name: "Installing"
-  block:
-    - name: Disable SELinux
-      selinux:
-        state: disabled
+- name: "Install packages"
+  yum:
+    name: sip3-twig-ce
+    update_cache: yes
+    state: latest
+  vars:
+    packages:
 
-    - name: "Install packages"
-      yum:
-        name: "{{ packages }}"
-        update_cache: yes
-        state: latest
-      vars:
-        packages:
-          - sip3-twig-{{ edition }}
-  when: state == "started"
-
-- name: "Uninstalling"
-  block:
-    - name: "Stop SIP3 Twig"
-      systemd:
-        name: sip3-twig
-        enabled: no
-        state: stopped
-
-    - name: "Uninstall package"
-      yum:
-        name: sip3-twig-{{ edition }}
-        state: absent
-  when: state == "absent"

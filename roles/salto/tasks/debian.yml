@@ -1,23 +1,6 @@
-- name: "Installing"
-  block:
-    - name: "Install packages"
-      apt:
-        pkg:
-          - sip3-salto-{{ edition }}
-        update_cache: yes
-        state: latest
-  when: state == "started"
-
-- name: "Uninstalling"
-  block:
-    - name: "Stop SIP3 Salto"
-      systemd:
-        name: sip3-salto
-        enabled: no
-        state: stopped
-
-    - name: "Uninstall package"
-      apt:
-        name: sip3-salto-{{ edition }}
-        state: absent
-  when: state == "absent"
+- name: "Install packages"
+  apt:
+    pkg:
+      - sip3-salto-ce
+    update_cache: yes
+    state: latest

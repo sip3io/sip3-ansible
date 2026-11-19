@@ -6,23 +6,31 @@
           apt:
             pkg:
               - gnupg
+              - curl
             update_cache: yes
 
+        - name: "Create apt keyrings directory"
+          ansible.builtin.file:
+            path: /etc/apt/keyrings
+            state: directory
+            mode: '0755'
+
         - name: "Add signing key for InfluxDB repository"
-          apt_key:
-            url: "https://repos.influxdata.com/influxdata-archive_compat.key"
-            state: present
+          ansible.builtin.get_url:
+            url: "https://repos.influxdata.com/influxdata-archive.key"
+            dest: "/etc/apt/keyrings/influxdata-archive_compat.key"
+            mode: '0644'
+            force: true
 
         - name: "Add InfluxDB repository"
           apt_repository:
-            repo: deb https://repos.influxdata.com/debian {{ ansible_facts['lsb']['codename'] }} stable
+            repo: "deb [signed-by=/etc/apt/keyrings/influxdata-archive_compat.key] https://repos.influxdata.com/debian stable main"
             state: present
             filename: influxdb
 
     - name: "Install the latest version of InfluxDB"
       apt:
         pkg:
-          - curl
           - influxdb
         update_cache: yes
       notify:

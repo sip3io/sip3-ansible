@@ -1,0 +1,153 @@
+all:
+  vars:
+    captain:
+      mode: full # full/config/package
+      application:
+        #! Name
+        name: captain_name
+        
+        #! Vert.x
+        vertx:
+          instances: 1
+        
+        #! Pcap (libpcap, WinPcap, Npcap)
+        pcap:
+          dev: eth0
+          sll: false
+          bpf_filter: not port 53 and ((ip[6:2] & 0x3fff != 0) or ((udp or tcp) and (port 5060 or port 5080)) or udp portrange 16384-32768)
+          bulk_size: 256
+          snaplen: 65535
+          buffer_size: 8388608
+          timeout_millis: 1
+        
+        #! VXLAN 
+        vxlan:
+          enabled: false
+        
+        #! TZSP 
+        tzsp:
+          enabled: false
+        
+        #! TCP
+        tcp:
+          expiration_delay: 100
+          aggregation_timeout: 200
+          idle_connection_timeout: 300000
+        
+        #! WebSocket
+        websocket:
+          enabled: false
+          expiration_delay: 100
+          aggregation_timeout: 200
+          idle_connection_timeout: 30000
+        
+        #! SCTP
+        sctp:
+          expiration_delay: 100
+          aggregation_timeout: 60000
+          idle_association_timeout: 300000
+        
+        #! RTCP
+        rtcp:
+          enabled: false
+          bulk_size: 1
+        
+        #! RTP
+        rtp:
+          enabled: true
+          bulk_size: 1
+          payload-types: [0..10, 100]
+          collector:
+            enabled: true
+            bulk_size: 1
+            report_size: 256
+            recovery_size: 16
+            expiration_delay: 1000
+            aggregation_timeout: 15000
+          events:
+            enabled: true
+            mode: 1
+        
+        #! Recording
+        recording:
+          expiration_delay: 4000
+          aggregation_timeout: 30000
+          duration_timeout: 300000
+        
+        #! Encoder
+        encoder:
+          mtu_size: 9000
+        
+        #! Sender
+        sender:
+          uri: tcp://127.0.0.1:15060
+          reconnection_timeout: 1000
+          reuse_port: true
+        
+        #! ManagementSocket
+        management:
+          uri: tcp://127.0.0.1:15090
+          register_delay: 60000
+          reconnection_timeout: 1000
+        
+        #! Metrics
+        metrics:
+          logging:
+            step: 1000
+
+      vertx_options: |
+        {
+          "preferNativeTransport": true,
+            "metricsOptions": {
+              "enabled": false,
+              "jvmMetricsEnabled": false,
+              "disabledMetricsCategories": ["net.server", "net.client", "http.server", "http.client", "datagram", "eventbus", "pool", "verticle"]
+            }
+        }
+
+      environment: |
+        JAVA_HOME=/opt/sip3-java
+        JAVA_XMS=-Xms128M
+        JAVA_XMX=-Xmx256M
+        JAVA_GC=-XX:+UseG1GC
+        JAVA_OTHER=""
+        APP_OPTS="-options /etc/sip3-captain/vertx-options.json"
+        LD_LIBRARY_PATH=/opt/sip3-captain/lib:$LD_LIBRARY_PATH
+
+      logback: |
+        <?xml version="1.0" encoding="UTF-8"?>
+        <configuration scan="true" scanPeriod="60 seconds">
+            <appender name="DEFAULT" class="ch.qos.logback.core.rolling.RollingFileAppender">
+                <file>/var/log/sip3-captain/default.log</file>
+                <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                    <fileNamePattern>/var/log/sip3-captain/%d{yyyy-MM-dd}.default.log</fileNamePattern>
+                    <maxHistory>15</maxHistory>
+                </rollingPolicy>
+                <encoder>
+                    <pattern>%d{dd-MM-yyyy HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+                </encoder>
+            </appender>
+
+            <appender name="METRICS" class="ch.qos.logback.core.rolling.RollingFileAppender">
+                <file>/var/log/sip3-captain/metrics.log</file>
+                <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                    <fileNamePattern>/var/log/sip3-captain/%d{yyyy-MM-dd}.metrics.log</fileNamePattern>
+                    <maxHistory>15</maxHistory>
+                </rollingPolicy>
+                <encoder>
+                    <pattern>%d{dd-MM-yyyy HH:mm:ss.SSS} - %msg%n</pattern>
+                </encoder>
+            </appender>
+
+            <logger name="io.micrometer.core.instrument.logging.LoggingMeterRegistry" level="INFO" additivity="false">
+                <appender-ref ref="METRICS"/>
+            </logger>
+
+            <logger name="io.sip3" level="INFO" additivity="false">
+                <appender-ref ref="DEFAULT"/>
+            </logger>
+
+            <root level="ERROR">
+                <appender-ref ref="DEFAULT"/>
+            </root>
+        </configuration>

@@ -1,0 +1,24 @@
+all:
+  vars:
+    sip3_api_uri: http://127.0.0.1:8080
+    sip3_api_user: user
+    sip3_api_password: password
+
+    hostmap:
+      - name: Node1
+        addr:
+          - 1.1.1.1
+        mapping: []
+      - name: Node2
+        addr:
+          - 2.2.2.2
+          - 2.2.2.22
+        mapping: []
+      - name: Node3
+        addr:
+          - 3.3.3.3
+        mapping: []
+      - name: Node4
+        addr:
+          - 4.4.4.4
+        mapping: []

@@ -1,2 +1,9 @@
 state: started
-edition: ce
+salto:
+  mode: full
+captain:
+  mode: full
+twig:
+  mode: full
+hoof:
+  mode: full
