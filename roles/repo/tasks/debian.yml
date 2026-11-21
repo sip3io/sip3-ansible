@@ -54,6 +54,8 @@
     url: "https://repo.sip3.io/apt/keyFile"
     dest: /etc/apt/keyrings/sip3.asc
     checksum: sha256:0f57044f622b3982dd4f680253fcd747da761d00ff64b0a4c2e22bab7cc5c046
+    mode: '0644'
+    force: true
 
 - name: "Add SIP3 CE main repository"
   apt_repository:

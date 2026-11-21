@@ -8,10 +8,18 @@
               - gnupg
             update_cache: yes
 
+        - name: "Create apt keyrings directory"
+          ansible.builtin.file:
+            path: /etc/apt/keyrings
+            state: directory
+            mode: '0755'
+
         - name: "Add signing key for NGINX repository"
-          apt_key:
+          ansible.builtin.get_url:
             url: "https://nginx.org/keys/nginx_signing.key"
-            state: present
+            dest: /etc/apt/keyrings/nginx_signing.asc
+          mode: '0644'
+          force: true
 
         - name: "Add NGINX repository"
           apt_repository:
