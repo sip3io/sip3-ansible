@@ -2,7 +2,10 @@ PB_PATH=/home/user/sip3-ansible-ce/playbooks
 INV_PATH=/home/user/sip3-ansible-ce/inventories/example
 
 # install MongoDB
-ansible-playbook -i $INV_PATH/sip3-backend.yml -i $INV_PATH/mongodb.yml -i $INV_PATH/twig.yml $PB_PATH/mongodb.yml
+ansible-playbook -i $INV_PATH/sip3-backend.yml -i $INV_PATH/mongodb.yml $PB_PATH/mongodb.yml
+
+# install Influx
+ansible-playbook -i $INV_PATH/sip3-backend.yml $PB_PATH/influxdb.yml
 
 # install Salto
 ansible-playbook -i $INV_PATH/sip3-backend.yml -i $INV_PATH/salto.yml -i $INV_PATH/codecs.yml -i $INV_PATH/udf.yml $PB_PATH/salto.yml
@@ -17,7 +20,10 @@ ansible-playbook -i $INV_PATH/sip3-backend.yml -i $INV_PATH/hoof.yml -i $INV_PAT
 ansible-playbook -i $INV_PATH/sip3-backend.yml  -i $INV_PATH/hoof-config.yml -i $INV_PATH/twig.yml $PB_PATH/hoof-configuration.yml
 
 # install Captain configuration
-ansible-playbook -i $INV_PATH/sip3-agent.yml -i $INV_PATH/captain.yml$PB_PATH/captain.yml
+ansible-playbook -i $INV_PATH/sip3-agent.yml -i $INV_PATH/captain.yml $PB_PATH/captain.yml
 
 # update Hostmap to backend
 ansible-playbook -i $INV_PATH/sip3-backend.yml -i $INV_PATH/hostmap-config.yml $PB_PATH/hostmap.yml
+
+# install Grafana
+ansible-playbook -i $INV_PATH/sip3-backend.yml $PB_PATH/grafana.yml

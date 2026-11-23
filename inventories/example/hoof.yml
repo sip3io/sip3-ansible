@@ -90,6 +90,10 @@ all:
             log_not_found off;
           }
         
+          location /api/management/configuration/hoof {
+            default_type application/json;
+          }
+        
           location / {
             if ($http_user_agent ~* "^ELB-HealthChecker") {
               access_log off;
@@ -112,14 +116,6 @@ all:
             try_files $uri $uri/ /index.html;
           }
         
-          location /api/logout {
-            return 302 https://$http_host/logout;
-          }
-        
-          location /api/login {
-            return 302 https://$http_host/;
-          }
-        
           location /api/ {
             rewrite ^/api/swagger-ui/?$ /api/swagger-ui/index.html permanent;
         
@@ -133,10 +129,20 @@ all:
           }
         
           location /dashboard/technical {
-            return 302 https://localhost/sip-metrics;
+            return 302 https://localhost/grafana/d/tech-dashboard/technical-dashboard;
           }
         
-          location /dashboard/quality {
-            return 302 https://localhost/media-qos;
+          location /dashboard/sip-metrics {
+            return 302 https://localhost/grafana/d/sip-metrics/sip-metrics;
+          }
+        
+          location /grafana {
+            proxy_http_version 1.1;
+            proxy_set_header X-Real-IP $remote_addr;
+            proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+            proxy_set_header Upgrade $http_upgrade;
+            proxy_set_header Connection $connection_upgrade;
+            proxy_set_header Host $http_host;
+            proxy_pass http://localhost:3000;
           }
         }

@@ -1,5 +1,5 @@
 - name: "Install Grafana"
-  hosts: grafana, backend
+  hosts: grafana
   roles:
     - role: ../roles/grafana
-      tags: frontend, grafana
+      tags: grafana

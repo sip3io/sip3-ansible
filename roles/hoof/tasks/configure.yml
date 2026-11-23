@@ -29,6 +29,26 @@
         - name: "/etc/nginx/nginx.conf"
           value: "{{ hoof.nginx }}"
 
+    - name: "Check default.conf file"
+      ansible.builtin.stat:
+        path: "/etc/nginx/conf.d/default.conf"
+      register: src
+
+    - name: "Backup Nginx original default.conf"
+      block:
+        - name: "Backup default.conf"
+          ansible.builtin.copy:
+            src: "/etc/nginx/conf.d/default.conf"
+            dest: "/etc/nginx/conf.d/default.conf_sip3.{{ ansible_date_time.epoch }}"
+            remote_src: true
+            mode: preserve
+
+        - name: "Remove the original"
+          ansible.builtin.file:
+            path: "/etc/nginx/conf.d/default.conf"
+            state: absent
+      when: src.stat.exists and src.stat.isreg
+
     - name: "Nginx config for SIP3 Hoof"
       ansible.builtin.copy:
         content: "{{ item['value'] }}"

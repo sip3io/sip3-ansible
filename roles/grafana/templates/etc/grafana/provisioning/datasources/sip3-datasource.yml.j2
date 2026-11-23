@@ -21,7 +21,7 @@ datasources:
    {% if grafana.datasources.url is defined -%}
    url: {{ grafana.datasources.url }}
    {% else -%}
-   url: http://{{ influxdb.address | default(address | default('127.0.0.1')) }}:{{ influxdb.port | default('8086') }}
+   url: http://{{ grafana.influxdb.address | default(address | default('127.0.0.1')) }}:{{ grafana.influxdb.port | default('8086') }}
    {% endif -%}
 
 #   # <string> database password, if used
@@ -32,7 +32,7 @@ datasources:
    {% if grafana.datasources.database is defined -%}
    database: {{ grafana.datasources.database }}
    {% else -%}
-   database: {{ influxdb.db | default('sip3') }}
+   database: {{ grafana.influxdb.db | default('sip3') }}
    {% endif -%}
 
 #   # <bool> enable/disable basic auth
