@@ -1,23 +1,6 @@
-- name: "Installing"
-  block:
-    - name: "Install packages"
-      apt:
-        pkg:
-           - sip3-twig-{{ edition }}
-        update_cache: yes
-        state: latest
-  when: state == "started"
-
-- name: "Uninstalling"
-  block:
-    - name: "Stop SIP3 Twig"
-      systemd:
-        name: sip3-twig
-        enabled: no
-        state: stopped
-
-    - name: "Uninstall package"
-      apt:
-        name: sip3-twig-{{ edition }}
-        state: absent
-  when: state == "absent"
+- name: "Install packages"
+  apt:
+    pkg:
+       - sip3-twig-ce
+    update_cache: yes
+    state: latest

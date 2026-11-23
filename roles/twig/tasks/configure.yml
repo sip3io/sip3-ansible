@@ -1,19 +1,18 @@
-- name: "Create SIP3 Twig configuration files"
-  template:
-    src: "{{ item.name }}.j2"
-    dest: "/{{ item.name }}"
-    mode: "{{ item.mode }}"
-    owner: "sip3"
-    group: "sip3"
+- name: "SIP3 Twig config"
+  ansible.builtin.copy:
+    content: "{{ item['value'] }}"
+    dest: "{{ item['name'] }}"
   loop:
-    - { name: "etc/sip3-twig/application.yml", mode: "0644" }
-    - { name: "etc/sip3-twig/environment.conf", mode: "0644" }
-    - { name: "etc/sip3-twig/logback.xml", mode: "0644" }
+    - name: "/etc/sip3-twig/application.yml"
+      value: "{{ twig.application | to_nice_yaml }}"
+    - name: "/etc/sip3-twig/environment.conf"
+      value: "{{ twig.environment }}"
+    - name: "/etc/sip3-twig/logback.xml"
+      value: "{{ twig.logback }}"
 
-- name: restart sip3-twig
+- name: "Restart SIP3 Twig"
   systemd:
     name: sip3-twig
     daemon_reload: true
     state: restarted
     enabled: true
-  when: state == "started"

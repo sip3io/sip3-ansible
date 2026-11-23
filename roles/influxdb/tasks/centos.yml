@@ -10,7 +10,7 @@
           yum_repository:
             name: influxdb
             description: InfluxDB Repository
-            baseurl: https://repos.influxdata.com/rhel/$releasever/$basearch/stable
+            baseurl: https://repos.influxdata.com/stable/\$basearch/main
             gpgcheck: no
             proxy: "{{ proxy | default('_none_') }}"
 

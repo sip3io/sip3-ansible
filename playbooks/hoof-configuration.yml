@@ -1,0 +1,27 @@
+# Usage: ansible-playbook playbook/hoof-configuration.yml
+-  name: "Update Hoof config"
+   hosts:
+      - hoof
+   become: yes
+   pre_tasks:
+      -  name: "Verify Ansible version requirements"
+         assert:
+            that: "ansible_version.full is version_compare('2.10', '>=')"
+            msg: >
+               "You must update Ansible to at least 2.10+"
+   tasks:
+      - name: "Create SIP3 Hoof API directory"
+        file:
+           path: /var/www/sip3-hoof/api/management/configuration
+           state: directory
+           owner: "root"
+           group: "root"
+           recurse: yes
+
+      - name: "Create SIP3 Hoof config file"
+        ansible.builtin.copy:
+           content: "{{ hoof.config | to_nice_json(ensure_ascii=False) }}\n"
+           dest: /var/www/sip3-hoof/api/management/configuration/hoof
+           owner: root
+           group: root
+           mode: "0644"

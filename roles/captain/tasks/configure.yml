@@ -1,100 +1,14 @@
-- name: "Create SIP3 Captain basic configuration files"
-  template:
-    src: "{{ item.name }}.j2"
-    dest: "/{{ item.name }}"
-    mode: "{{ item.mode }}"
-    owner: "sip3"
-    group: "sip3"
+- name: "SIP3 Captain config"
+  ansible.builtin.copy:
+    content: "{{ item['value'] }}"
+    dest: "{{ item['name'] }}"
   loop:
-    - { name: "etc/sip3-captain/environment.conf", mode: "0644" }
-    - { name: "etc/sip3-captain/vertx-options.json", mode: "0644" }
-
-- name: "Create SIP3 Captain interface configuration files"
-  template:
-    src: "{{ item.name }}.j2"
-    dest: "/{{ item.name.split('.')[0] }}-{{ captain.pcap.dev }}.{{ item.name.split('.')[1] }}"
-    mode: "{{ item.mode }}"
-    owner: "sip3"
-    group: "sip3"
-  loop:
-    - { name: "etc/sip3-captain/application.yml", mode: "0644" }
-    - { name: "etc/sip3-captain/logback.xml", mode: "0644" }
-  when: captain.pcap.dev is defined
-
-- name: "Create SIP3 Captain configuration files"
-  template:
-    src: "{{ item.name }}.j2"
-    dest: "/{{ item.name }}"
-    mode: "{{ item.mode }}"
-    owner: "sip3"
-    group: "sip3"
-  loop:
-    - { name: "etc/sip3-captain/application.yml", mode: "0644" }
-    - { name: "etc/sip3-captain/logback.xml", mode: "0644" }
-  when: captain.pcap.dev is not defined
-
-- name: "Install EE libs"
-  block:
-    - name: Download SIP3 EE libs for CentOS
-      ansible.builtin.get_url:
-        url: "https://repo.sip3.io/libs/releases-ee/sip3-libpcap/{{ ansible_distribution_major_version }}/libsip3-libpcap.so"
-        dest: "/opt/sip3-captain/lib/"
-        client_cert: "/etc/ssl/repo.sip3.io/{{ license.cert }}"
-        client_key: "/etc/ssl/repo.sip3.io/{{ license.key }}"
-      when:
-        - (ansible_facts['distribution'] | lower in ["centos", "sangoma", "oracle", "rocky"])
-
-    - name: Download SIP3 EE libs for CentOS
-      ansible.builtin.get_url:
-        url: "https://repo.sip3.io/libs/releases-ee/sip3-libpcap/{{ ansible_distribution_major_version }}/libpcap.so.1"
-        dest: "/opt/sip3-captain/lib/"
-        client_cert: "/etc/ssl/repo.sip3.io/{{ license.cert }}"
-        client_key: "/etc/ssl/repo.sip3.io/{{ license.key }}"
-      when:
-        - (ansible_facts['distribution'] | lower in ["centos", "sangoma", "oracle", "rocky"])
-        - (ansible_facts['distribution_major_version'] | lower in ["7", "8"])
-
-    - name: Download SIP3 EE libs for Debian
-      ansible.builtin.get_url:
-        url: "https://repo.sip3.io/libs/releases-ee/sip3-libpcap/{{ ansible_distribution_release }}/libsip3-libpcap.so"
-        dest: "/opt/sip3-captain/lib/"
-        client_cert: "/etc/ssl/repo.sip3.io/{{ license.cert }}"
-        client_key: "/etc/ssl/repo.sip3.io/{{ license.key }}"
-      when:
-        - (ansible_facts['distribution'] | lower in ["debian", "ubuntu"])
-
-    - name: Download custom libpcap libs for Debian
-      ansible.builtin.get_url:
-        url: "https://repo.sip3.io/libs/releases-ee/sip3-libpcap/{{ ansible_distribution_release }}/libpcap.so.1"
-        dest: "/opt/sip3-captain/lib/"
-        client_cert: "/etc/ssl/repo.sip3.io/{{ license.cert }}"
-        client_key: "/etc/ssl/repo.sip3.io/{{ license.key }}"
-      when:
-        - (ansible_facts['distribution'] | lower in ["debian", "ubuntu"])
-        - (ansible_facts['distribution_release'] | lower in ["bionic", "buster", "focal", "stretch"])
-
-  when: edition != "ce"
-
-- name: "Stop and disable old SIP3 Captain interface capture"
-  service:
-    name: sip3-captain@{{ captain.pcap.dev }}
-    enabled: no
-    state: stopped
-  register: sip3_captain_result
-  failed_when: "sip3_captain_result is failed and 'Could not find the requested service' not in sip3_captain_result.msg"
-  when:
-    - captain.pcap.dev is defined
-    - state == "started"
-
-- name: "Restart SIP3 Captain interface capture"
-  systemd:
-    name: "sip3-captain-interface@{{ captain.pcap.dev }}"
-    daemon_reload: true
-    state: restarted
-    enabled: true
-  when:
-    - captain.pcap.dev is defined
-    - state == "started"
+    - name: "/etc/sip3-captain/application.yml"
+      value: "{{ captain.application | to_nice_yaml }}"
+    - name: "/etc/sip3-captain/environment.conf"
+      value: "{{ captain.environment }}"
+    - name: "/etc/sip3-captain/logback.xml"
+      value: "{{ captain.logback }}"
 
 - name: "Restart SIP3 Captain"
   systemd:
@@ -102,6 +16,3 @@
     daemon_reload: true
     state: restarted
     enabled: true
-  when:
-    - captain.pcap.dev is not defined
-    - state == "started"

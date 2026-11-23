@@ -1,0 +1,17 @@
+# Before run the playbook, please check inventory file
+# You should setup properties for correct installation
+#
+# To run playbook, please use:
+# ansible-playbook -i inventories/backend.yml -i inventories/sip3-agent.yml -i inventories/captain.yml playbooks/captain.yml
+
+- name: "Install SIP3 repos"
+  hosts: captain
+  roles:
+    - role: ../roles/repo
+      tags: captain
+
+- name: "Install SIP3 Captain"
+  hosts: captain
+  roles:
+    - role: ../roles/captain
+      tags: captain

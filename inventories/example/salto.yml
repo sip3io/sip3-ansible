@@ -1,0 +1,227 @@
+all:
+  vars:
+    salto:
+      mode: full # full/config/package
+      application:
+        name: sip3-salto
+
+        server:
+          udp:
+            uri: udp://0.0.0.0:15060
+            buffer_size: 65535
+          tcp:
+            uri: tcp://0.0.0.0:15060
+            buffer_size: 65535
+        management:
+          udp:
+            uri: udp://0.0.0.0:15090
+            expiration_delay: 60000
+            expiration_timeout: 120000
+            publish_media_control_mode: 0
+          tcp:
+            uri: tcp://0.0.0.0:15090
+            expiration_delay: 60000
+            expiration_timeout: 120000
+            publish_media_control_mode: 0
+
+        time_suffix: yyyyMMdd
+
+        attributes:
+          record_ip_addresses: false
+
+        udf:
+          check_period: 1000
+          execution_timeout: 200
+
+        sip:
+          message:
+            exclusions:
+              - REGISTER
+              - OPTIONS
+              #- MESSAGE
+              #- SUBSCRIBE
+              #- NOTIFY
+            #x_correlation_header: X-Call-ID
+            parser:
+              mode: 1
+              extension_headers: []
+
+          transaction:
+            expiration_delay: 1000
+            response_timeout: 3000
+            aggregation_timeout: 90000
+            termination_timeout: 5000
+            save_sip_message_payload_mode: 0
+            #TODO: excluded_attributes: [ ]
+          call:
+            expiration_delay: 1000
+            aggregation_timeout: 120000
+            termination_timeout: 2000
+            duration_timeout: 7200000
+            #TODO: excluded_attributes: [ ]
+            duration_distributions: [ 3s, 30s, 5m, 10m, 60m, 120m, 130m ]
+          register:
+            expiration_delay: 1000
+            aggregation_timeout: 10000
+            update_period: 120000
+            duration_timeout: 3600000
+
+        media:
+          rtcp:
+            expiration_delay: 1000
+            aggregation_timeout: 30000
+          rtp_r:
+            expiration_delay: 1000
+            aggregation_timeout: 40000
+            bulk_packet_limit: 1024
+            cumulative_metrics: true
+            min_expected_packets: 100
+            r_factor_threshold: 85.0
+            r_factor_distributions: [ 30, 50, 70, 90, 100 ]
+            duration_distributions: [ 10s, 30s, 5m, 1h ]
+
+        recording:
+          enabled: true
+          expiration_delay: 4000
+          aggregation_timeout: 30000
+          bulk_size: 64
+
+        tasks:
+          enabled: true
+          update_period: 30000
+
+        mongo:
+          uri: mongodb://127.0.0.1:27017/?w=0&j=false
+          db: sip3
+          management:
+            uri: mongodb://127.0.0.1:27017/?w=0&j=false
+            db: sip3-mgmt
+          bulk_size: 1
+          write_option: 1
+          update_period: 300000
+          collections:
+            - prefix: attributes
+              indexes:
+                ascending: [ name ]
+              max_collections: 30
+            - prefix: sip_call_index
+              indexes:
+                ascending: [ created_at, terminated_at, src_addr, src_host, dst_addr, dst_host, caller, callee, state, error_code, duration, trying_delay, setup_time, establish_time, disconnect_time, transactions, retransmits, debug, prefix ]
+                hashed: [ call_id, x_call_id ]
+              max_collections: 30
+            - prefix: sip_call_raw
+              indexes:
+                ascending: [ created_at ]
+                hashed: [ call_id ]
+              max_collections: 30
+            - prefix: sip_register_index
+              indexes:
+                ascending: [ created_at, terminated_at, src_addr, src_host, dst_addr, dst_host, caller, callee, state, error_code, error_type, transactions, retransmits, debug ]
+                hashed: [ call_id ]
+              max_collections: 30
+            - prefix: sip_register_raw
+              indexes:
+                ascending: [ created_at ]
+                hashed: [ call_id ]
+              max_collections: 30
+            - prefix: rtpr_rtp_index
+              indexes:
+                ascending: [ created_at, src_addr, src_host, dst_addr, dst_host, caller, callee, mos, r_factor, codec, one_way, duration, bad_report_fraction, recorded ]
+                hashed: [ call_id ]
+              max_collections: 30
+            - prefix: rtpr_rtp_raw
+              indexes:
+                ascending: [ created_at ]
+                hashed: [ call_id ]
+              max_collections: 30
+            - prefix: rtpr_rtcp_index
+              indexes:
+                ascending: [ created_at, src_addr, src_host, dst_addr, dst_host, mos, r_factor, codec, duration, bad_report_fraction ]
+                hashed: [ call_id ]
+              max_collections: 30
+            - prefix: rtpr_rtcp_raw
+              indexes:
+                ascending: [ created_at ]
+                hashed: [ call_id ]
+              max_collections: 30
+            - prefix: dtmf_index
+              indexes:
+                ascending: [created_at, terminated_at, src_addr, src_host, dst_addr, dst_host, tone]
+                hashed: [call_id]
+              max_collections: 30
+            - prefix: rec_raw
+              indexes:
+                ascending: [ created_at ]
+                hashed: [ call_id ]
+              max_collections: 30
+            - prefix: unknown_raw
+              indexes:
+                ascending: [ created_at ]
+                hashed: [ call_id ]
+              max_collections: 30
+
+        metrics:
+          logging:
+            step: 1000
+          influxdb:
+            step: 1000
+            uri: http://127.0.0.1:8086
+            db: sip3
+            retention_duration: 7d
+
+      vertx_options: |
+        {
+          "preferNativeTransport": true,
+            "metricsOptions": {
+              "enabled": false,
+              "jvmMetricsEnabled": false,
+              "disabledMetricsCategories": ["net.server", "net.client", "http.server", "http.client", "datagram", "eventbus", "pool", "verticle"]
+            }
+        }
+
+      environment: |
+        JAVA_HOME=/opt/sip3-java
+        JAVA_XMS=-Xms128M
+        JAVA_XMX=-Xmx256M
+        JAVA_GC=-XX:+UseG1GC
+        JAVA_OTHER=""
+        APP_OPTS="-Dcodecs.location=/etc/sip3-salto/codecs.yml -Dudf.location=/opt/sip3-salto/udf"
+        VERTX_OPTS="-options /etc/sip3-salto/vertx-options.json"
+
+      logback: |
+        <?xml version="1.0" encoding="UTF-8"?>
+        <configuration scan="true" scanPeriod="60 seconds">
+            <appender name="DEFAULT" class="ch.qos.logback.core.rolling.RollingFileAppender">
+                <file>/var/log/sip3-salto/default.log</file>
+                <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                    <fileNamePattern>/var/log/sip3-salto/%d{yyyy-MM-dd}.default.log.gz</fileNamePattern>
+                    <maxHistory>15</maxHistory>
+                </rollingPolicy>
+                <encoder>
+                    <pattern>%d{dd-MM-yyyy HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+                </encoder>
+            </appender>
+
+            <appender name="METRICS" class="ch.qos.logback.core.rolling.RollingFileAppender">
+                <file>/var/log/sip3-salto/metrics.log</file>
+                <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                    <fileNamePattern>/var/log/sip3-salto/%d{yyyy-MM-dd}.metrics.log.gz</fileNamePattern>
+                    <maxHistory>15</maxHistory>
+                </rollingPolicy>
+                <encoder>
+                    <pattern>%d{dd-MM-yyyy HH:mm:ss.SSS} - %msg%n</pattern>
+                </encoder>
+            </appender>
+
+            <logger name="io.micrometer.core.instrument.logging.LoggingMeterRegistry" level="INFO" additivity="false">
+                <appender-ref ref="METRICS"/>
+            </logger>
+
+            <logger name="io.sip3" level="INFO" additivity="false">
+                <appender-ref ref="DEFAULT"/>
+            </logger>
+
+            <root level="ERROR">
+                <appender-ref ref="DEFAULT"/>
+            </root>
+        </configuration>

@@ -1,41 +1,7 @@
-- name: "Installing"
-  block:
-    - name: "Disable SELinux"
-      selinux:
-        state: disabled
-
-    - name: "Install packages"
-      yum:
-        name: "{{ packages }}"
-        update_cache: yes
-        state: latest
-      vars:
-        packages:
-          - libpcap
-          - sip3-captain-{{ edition }}
-  when: state == "started"
-
-- name: "Uninstalling"
-  block:
-
-    - name: "Stop SIP3 Captain"
-      systemd:
-        name: sip3-captain
-        enabled: no
-        state: stopped
-      when:
-        - captain.pcap.dev is not defined
-
-    - name: "Stop SIP3 Captain interface capture"
-      systemd:
-        name: "sip3-captain-interface@{{ captain.pcap.dev }}"
-        enabled: no
-        state: stopped
-      when:
-        - captain.pcap.dev is defined
-
-    - name: "Uninstall package"
-      yum:
-        name: sip3-captain-{{ edition }}
-        state: absent
-  when: state == "absent"
+- name: "Install packages"
+  yum:
+    name:
+      - libpcap
+      - sip3-captain-ce
+    update_cache: yes
+    state: latest

@@ -1,0 +1,119 @@
+all:
+  vars:
+    twig:
+      mode: full # full/config/package
+      application:
+        spring:
+          jackson:
+            property-naming-strategy: SNAKE_CASE
+          cache:
+            cache-names: listAttributes, listCollectionNames, listCollectionNamesByPrefix
+            caffeine:
+              spec: expireAfterWrite=10m
+          data:
+            mongodb:
+              uri: ${mongo.management.uri}
+              database: ${mongo.management.db}
+              field_naming_strategy: org.springframework.data.mapping.model.SnakeCaseFieldNamingStrategy
+
+        #! Server
+        server:
+          port: 8080
+          forward_headers_strategy: framework
+          servlet:
+            context_path: /api
+            session:
+              timeout: 180m
+
+        #! Security
+        security:
+          enabled: false
+          grafana:
+            url: http://sip3-hoof/grafana/api/user
+          #grafana:
+          #  url: http://127.0.0.1/grafana/api/user
+          #file:
+          #  path: ./credentials.cfg
+
+        #! Mongo
+        mongo:
+          uri: mongodb://localhost:27017
+          db: sip3
+          management:
+            uri: mongodb://localhost:27017
+            db: sip3-mgmt
+          max_execution_time: 10000
+          batch_size: 128
+
+        #! Application
+        time_suffix: yyyyMMdd
+
+        session:
+          default_limit: 30
+          use_x_correlation_header: false
+          show_retransmits: true
+          ignore_nanos: false
+          call:
+            max_legs: 10
+            aggregation_timeout: 30000
+            termination_timeout: 5000
+          register:
+            max_legs: 5
+            aggregation_timeout: 10000
+            duration_timeout: 900000
+          media:
+            block_count: 28
+            termination_timeout: 120000
+
+        cache:
+          refresh_rate: 55000
+
+        springdoc:
+          swagger_ui:
+            path: /
+
+      environment: |
+        JAVA_HOME=/opt/sip3-java
+        JAVA_XMS=-Xms128M
+        JAVA_XMX=-Xmx256M
+        JAVA_GC=-XX:+UseG1GC
+        JAVA_OTHER=""
+        APP_OPTS=""
+
+      logback: |
+        <?xml version="1.0" encoding="UTF-8"?>
+        <configuration scan="true" scanPeriod="60 seconds">
+            <appender name="DEFAULT" class="ch.qos.logback.core.rolling.RollingFileAppender">
+                <file>/var/log/sip3-twig/default.log</file>
+                <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                    <fileNamePattern>/var/log/sip3-twig/%d{yyyy-MM-dd}.default.log</fileNamePattern>
+                    <maxHistory>15</maxHistory>
+                </rollingPolicy>
+                <encoder>
+                    <pattern>%d{dd-MM-yyyy HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
+                </encoder>
+            </appender>
+  
+            <appender name="METRICS" class="ch.qos.logback.core.rolling.RollingFileAppender">
+                <file>/var/log/sip3-twig/metrics.log</file>
+                <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
+                    <fileNamePattern>/var/log/sip3-twig/%d{yyyy-MM-dd}.metrics.log</fileNamePattern>
+                    <maxHistory>15</maxHistory>
+                </rollingPolicy>
+                <encoder>
+                    <pattern>%d{dd-MM-yyyy HH:mm:ss.SSS} - %msg%n</pattern>
+                </encoder>
+            </appender>
+  
+            <logger name="io.micrometer.core.instrument.logging.LoggingMeterRegistry" level="INFO" additivity="false">
+                <appender-ref ref="METRICS"/>
+            </logger>
+  
+            <logger name="io.sip3" level="INFO" additivity="false">
+                <appender-ref ref="DEFAULT"/>
+            </logger>
+  
+            <root level="ERROR">
+                <appender-ref ref="DEFAULT"/>
+            </root>
+        </configuration>

@@ -1,139 +1,64 @@
-- name: "Installing"
-  block:
-    - name: Disable SELinux
-      selinux:
-        state: disabled
+- name: Disable SELinux
+  selinux:
+    state: disabled
 
-    - name: "Add MongoDB repository"
-      yum_repository:
-        name: mongodb-org-{{ version }}
-        description: "MongoDB Repository"
-        baseurl: https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/{{ version }}/x86_64/
-        gpgcheck: no
-        proxy: "{{ proxy | default('_none_') }}"
+- name: "Add MongoDB repository"
+  yum_repository:
+    name: mongodb-org-{{ version }}
+    description: "MongoDB Repository"
+    baseurl: https://repo.mongodb.org/yum/redhat/$releasever/mongodb-org/{{ version }}/x86_64/
+    gpgcheck: no
+    proxy: "{{ proxy | default('_none_') }}"
 
-    - name: "Install the latest version of MongoDB"
-      yum:
-        name: "{{ packages }}"
-        update_cache: yes
-      vars:
-        packages:
-          - mongodb-org-server
-          - mongodb-org-shell
-      notify:
-        - restart mongod
+- name: "Install the latest version of MongoDB"
+  yum:
+    name: "{{ packages }}"
+    update_cache: yes
+  vars:
+    packages:
+      - mongodb-org-server
+      - mongodb-mongosh
 
-    - name: Get mongodb user info, no error if missing
-      getent:
-        database: passwd
-        key: mongodb
-        fail_key: False
+- name: Get mongodb user info, no error if missing
+  getent:
+    database: passwd
+    key: mongodb
+    fail_key: False
 
-    - name: use mongodb
-      set_fact:
-        mongo_user: "mongodb"
-      when: getent_passwd.mongodb[0] is defined
+- name: use mongodb
+  set_fact:
+    mongo_user: "mongodb"
+  when: getent_passwd.mongodb[0] is defined
 
-    - name: use mongodb
-      set_fact:
-        mongo_user: "mongod"
-      when: getent_passwd.mongodb[0] is not defined
+- name: use mongodb
+  set_fact:
+    mongo_user: "mongod"
+  when: getent_passwd.mongodb[0] is not defined
 
-    - name: "Creates directory {{ mongodb.path | default('/data/db') }} for MongoDB"
-      file:
-        path: "{{ mongodb.path | default('/data/db') }}"
-        state: directory
-        mode: 0755
-        group: "{{ mongo_user }}"
-        owner: "{{ mongo_user }}"
-      notify:
-        - restart mongod
+- name: "Creates directory {{ mongodb.config.path | default('/data/db') }} for MongoDB"
+  file:
+    path: "{{ mongodb.config.path | default('/data/db') }}"
+    state: directory
+    mode: 0755
+    group: "{{ mongo_user }}"
+    owner: "{{ mongo_user }}"
 
-    - name: "Create directory '/var/run/mongodb' for MongoDB"
-      file:
-        path: "/var/run/mongodb"
-        state: directory
-        mode: 0755
-        group: "{{ mongo_user }}"
-        owner: "{{ mongo_user }}"
-      notify:
-        - restart mongod
+- name: "Create directory '/var/run/mongodb' for MongoDB"
+  file:
+    path: "/var/run/mongodb"
+    state: directory
+    mode: 0755
+    group: "{{ mongo_user }}"
+    owner: "{{ mongo_user }}"
 
-    - name: "Create MongoDB config"
-      template:
-        src: "{{ item.name }}.j2"
-        dest: "/{{ item.name }}"
-        mode: "{{ item.mode }}"
-        owner: "root"
-        group: "root"
-      loop:
-        - { name: "etc/mongod.conf", mode: "0644" }
-      notify:
-        - restart mongod
-
-    - name: "Deploying MongoDB tmpfs and logrotate configs"
-      copy:
-        src: "{{ item.name }}"
-        dest: "/{{ item.name }}"
-        owner: "{{ item.ownership }}"
-        group: "{{ item.ownership }}"
-        mode: "0644"
-        backup: "{{ item.backup }}"
-      loop:
-        - { name: "usr/lib/tmpfiles.d/mongodb.conf", ownership: "root", backup: "no" }
-        - { name: "etc/logrotate.d/mongod", ownership: "root", backup: "no" }
-      notify:
-        - restart mongod
-
-    - name: "Start service MongoDB"
-      systemd:
-        name: mongod
-        state: started
-        daemon_reload: yes
-        enabled: yes
-  when: state == "started"
-
-- name: "Uninstalling"
-  block:
-    - name: "Stop MongoDB"
-      systemd:
-        name: mongod
-        state: stopped
-        enabled: no
-
-    - name: "Uninstall MongoDB"
-      yum:
-        name:  "{{ packages }}"
-        autoremove: yes
-        state: absent
-      vars:
-        packages:
-          - mongodb-org-server
-          - mongodb-org-shell
-
-    - name: "Purge project files"
-      block:
-        - name: "Collecting project files"
-          stat:
-            path: "{{item}}"
-          register: folder_stats
-          with_items:
-            - "{{ mongodb.path | default('/data/db') }}/"
-        - name: "Delete project files"
-          file:
-            path: "{{ item.item }}"
-            force: true
-            state: absent
-          when: item.stat.exists == true and item.stat.isdir == false
-          with_items:
-            - "{{folder_stats.results}}"
-        - name: "Delete project folders"
-          file:
-            path: "{{ item.item }}"
-            force: true
-            state: absent
-          when: item.stat.exists == true and item.stat.isdir == true
-          with_items:
-            - "{{folder_stats.results}}"
-      ignore_errors: yes
-  when: state == "absent"
+- name: "Deploying MongoDB tmpfs and logrotate configs"
+  copy:
+    src: "{{ item.name }}"
+    dest: "/{{ item.name }}"
+    owner: "{{ item.ownership }}"
+    group: "{{ item.ownership }}"
+    mode: "0644"
+    backup: "{{ item.backup }}"
+  loop:
+    - { name: "usr/lib/tmpfiles.d/mongodb.conf", ownership: "root", backup: "no" }
+    - { name: "etc/logrotate.d/mongod", ownership: "root", backup: "no" }

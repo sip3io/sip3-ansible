@@ -8,7 +8,7 @@
       yum_repository:
         name: grafana
         description: Grafana Repository
-        baseurl: https://packages.grafana.com/oss/rpm
+        baseurl: https://rpm.grafana.com
         gpgcheck: no
         proxy: "{{ proxy | default('_none_') }}"
 

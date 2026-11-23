@@ -1,4 +1,3 @@
 state: started
-edition: ce
-security:
-  enabled: true
+twig:
+  mode: full

@@ -1,40 +1,27 @@
 - name: "Installing"
   block:
-    - name: Disable SELinux
-      selinux:
-        state: disabled
-
     - name: "Add NGINX repository"
       yum_repository:
         name: nginx
         description: NGINX Repository
-        baseurl: http://nginx.org/packages/centos/$releasever/$basearch/
+        baseurl: http://nginx.org/packages/mainline/rhel/$releasever/$basearch/
         gpgcheck: no
         proxy: "{{ proxy | default('_none_') }}"
 
-    - name: "Install SIP3 Hoof"
+    - name: "Install Nginx"
       yum:
-        name: "sip3-hoof-{{ edition }}"
+        name:
+          - nginx
         update_cache: yes
         state: latest
+  when:
+    - state == "started"
+    - hoof.nginx is defined
 
-  when: state == "started"
+- name: "Install SIP3 Hoof"
+  yum:
+    name:
+      - "sip3-hoof-ce"
+    update_cache: yes
+    state: latest
 
-- name: "Uninstalling"
-  block:
-    - name: "Stop NGINX"
-      systemd:
-        name: nginx
-        state: stopped
-        enabled: no
-
-    - name: "Uninstall NGINX"
-      yum:
-        name: "{{ packages }}"
-        autoremove: yes
-        state: absent
-      vars:
-        packages:
-          - sip3-hoof-{{ edition }}
-          - nginx
-  when: state == "absent"

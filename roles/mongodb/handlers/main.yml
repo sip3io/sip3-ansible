@@ -1,6 +1,0 @@
-- name: restart mongod
-  systemd:
-    name: mongod
-    daemon_reload: true
-    state: restarted
-    enabled: true

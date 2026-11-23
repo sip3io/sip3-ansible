@@ -1,0 +1,5 @@
+- name: "Deploy InfluxDB"
+  hosts: influxdb
+  roles:
+    - role: ../roles/influxdb
+      tags: influxdb

@@ -1,0 +1,11 @@
+- name: "Install SIP3 repos"
+  hosts: salto
+  roles:
+    - role: ../roles/repo
+      tags: salto
+
+- name: "Install SIP3 Salto"
+  hosts: salto
+  roles:
+    - role: ../roles/salto
+      tags: salto

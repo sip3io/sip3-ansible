@@ -1,46 +1,66 @@
-- name: "Create SIP3 Hoof API directory"
-  file:
-    path: /var/www/sip3-hoof/api/management/configuration
-    state: directory
-    owner: "root"
-    group: "root"
-    recurse: yes
+- name: "Don't configure Nginx. Only add example"
+  block:
+    - name: "Create SIP3 Hoof directory"
+      ansible.builtin.file:
+        path: /etc/sip3-hoof
+        state: directory
+        mode: '0755'
 
-- name: "Create SIP3 Hoof configuration files"
-  template:
-    src: "{{ item.name }}.j2"
-    dest: "/{{ item.name }}"
-    mode: "{{ item.mode }}"
-    owner: "root"
-    group: "root"
-  loop:
-    - { name: "etc/nginx/nginx.conf", mode: "0644" }
-    - { name: "etc/nginx/conf.d/sip3-hoof.conf", mode: "0644" }
+    - name: "Nginx config for SIP3 Hoof"
+      ansible.builtin.copy:
+        content: "{{ item['value'] }}"
+        dest: "{{ item['name'] }}"
+      loop:
+        - name: "/etc/sip3-hoof/sip3-hoof.conf"
+          value: "{{ hoof.sip3_hoof }}"
 
-- name: "Create SIP3 Hoof timezone file"
-  template:
-    src: "{{ item.name }}.j2"
-    dest: "/{{ item.name }}"
-    mode: "{{ item.mode }}"
-    owner: "root"
-    group: "root"
-  loop:
-    - { name: "var/www/sip3-hoof/api/management/configuration/hoof", mode: "0644" }
-  when: 
-    - hoof.config is defined 
-    - edition == "ce"
+    - name: "Attention to Nginx configuration"
+      debug:
+        msg: "Example of SIP3 Nginx configuration is located in /etc/sip3-hoof/sip3-hoof.conf. Please check it and add to Nginx manually"
+  when: hoof.nginx is not defined
 
-- name: "Show alarm in log"
-  ansible.builtin.debug:
-    msg: "hoof.config variable don't find in your inventory. Please add config variable to inventory. https://github.com/sip3io/sip3-ansible/blob/release/2023.1.2/inventories/inventory.yml for example. Or you can write config in /var/www/sip3-hoof/api/management/configuration/hoof on you sip3-hoof host."
-  when: 
-    - hoof.config is not defined 
-    - edition == "ce"
+- name: "Scratch Nginx configure"
+  block:
+    - name: "Configure Nginx for SIP3"
+      ansible.builtin.copy:
+        content: "{{ item['value'] }}"
+        dest: "{{ item['name'] }}"
+      loop:
+        - name: "/etc/nginx/nginx.conf"
+          value: "{{ hoof.nginx }}"
 
-- name: restart nginx
-  systemd:
-    name: nginx
-    daemon_reload: true
-    state: restarted
-    enabled: true
-  when: state == "started"
+    - name: "Check default.conf file"
+      ansible.builtin.stat:
+        path: "/etc/nginx/conf.d/default.conf"
+      register: src
+
+    - name: "Backup Nginx original default.conf"
+      block:
+        - name: "Backup default.conf"
+          ansible.builtin.copy:
+            src: "/etc/nginx/conf.d/default.conf"
+            dest: "/etc/nginx/conf.d/default.conf_sip3.{{ ansible_date_time.epoch }}"
+            remote_src: true
+            mode: preserve
+
+        - name: "Remove the original"
+          ansible.builtin.file:
+            path: "/etc/nginx/conf.d/default.conf"
+            state: absent
+      when: src.stat.exists and src.stat.isreg
+
+    - name: "Nginx config for SIP3 Hoof"
+      ansible.builtin.copy:
+        content: "{{ item['value'] }}"
+        dest: "{{ item['name'] }}"
+      loop:
+        - name: "/etc/nginx/conf.d/sip3-hoof.conf"
+          value: "{{ hoof.sip3_hoof }}"
+
+    - name: "Restart NGINX"
+      systemd:
+        name: nginx
+        daemon_reload: true
+        state: restarted
+        enabled: true
+  when: hoof.nginx is defined

@@ -1,15 +1,15 @@
 - name: "Install Grafana for CentOS"
   ansible.builtin.include_tasks: centos.yml
   when:
-    - ansible_facts['distribution'] | lower in ["centos", "sangoma", "oracle", "rocky"]
+    - ansible_facts['distribution'] | lower in ["redhat", "centos", "sangoma", "oracle", "rocky", "amazon"]
 
 - name: "Install Grafana for Debian"
   ansible.builtin.include_tasks: debian.yml
   when:
     (ansible_facts['distribution'] | lower == "debian" and
-      ansible_facts['distribution_major_version'] | int >= 10) or
+      ansible_facts['distribution_major_version'] | int >= 12) or
     (ansible_facts['distribution'] | lower == "ubuntu" and
-      ansible_facts['distribution_version'] in ["20.04", "22.04", "22.10"])
+      ansible_facts['distribution_version'] in ["20.04", "22.04", "22.04", "24.04", "26.04"])
 
 - name: "Configure Grafana"
   ansible.builtin.include_tasks: configure.yml

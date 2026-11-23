@@ -1,0 +1,5 @@
+- name: "Install Grafana"
+  hosts: grafana
+  roles:
+    - role: ../roles/grafana
+      tags: grafana

@@ -1,0 +1,11 @@
+- name: "Install SIP3 repos"
+  hosts: twig
+  roles:
+    - role: ../roles/repo
+      tags: twig
+
+- name: "Install SIP3 Twig"
+  hosts: twig
+  roles:
+    - role: ../roles/twig
+      tags: twig

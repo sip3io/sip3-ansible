@@ -1,5 +1,4 @@
 state: started
-add_system_repo: false
 mongosh: mongosh
-hoof_class:
-  _class: "io.sip3.twig.ee.domain.configuration.HoofConfiguration"
+mongodb:
+  only_configure: true

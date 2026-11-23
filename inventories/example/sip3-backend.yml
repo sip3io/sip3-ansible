@@ -1,0 +1,31 @@
+all:
+  children:
+    salto:
+      hosts:
+        'sip3-engine':
+          ansible_ssh_host: 127.0.0.1
+    mongodb:
+      hosts:
+        'sip3-storage':
+          ansible_ssh_host: 127.0.0.1
+    influxdb:
+      hosts:
+        'sip3-storage':
+          ansible_ssh_host: 127.0.0.1
+    twig:
+      hosts:
+        'sip3-api':
+          ansible_ssh_host: 127.0.0.11
+    hoof:
+      hosts:
+        'sip3-front':
+          ansible_ssh_host: 127.0.0.1
+    grafana:
+      hosts:
+        'sip3-front':
+          ansible_ssh_host: 127.0.0.1
+  vars:
+    ansible_user: user
+    ansible_port: 22
+    ansible_become: true
+    ansible_ssh_private_key_file: ~/.ssh/id_ed25519-user
