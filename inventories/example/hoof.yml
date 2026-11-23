@@ -63,7 +63,7 @@ all:
           listen       80;
           server_name  sip3.localhost;
         
-          access_log  /var/log/nginx/sip3-hoof.access.log  main;
+          access_log  /var/log/nginx/sip3-hoof.access.log combined;
         
           client_max_body_size       64m;
         

@@ -14,10 +14,10 @@ ansible-playbook -i $INV_PATH/sip3-backend.yml -i $INV_PATH/twig.yml -i $INV_PAT
 ansible-playbook -i $INV_PATH/sip3-backend.yml -i $INV_PATH/hoof.yml -i $INV_PATH/twig.yml $PB_PATH/hoof.yml
 
 # update Hoof configuration
-ansible-playbook -i $INV_PATH/sip3-backend.yml  -i $INV_PATH/hoof.yml -i $INV_PATH/twig.yml $PB_PATH/hoof-configuration.yml
+ansible-playbook -i $INV_PATH/sip3-backend.yml  -i $INV_PATH/hoof-config.yml -i $INV_PATH/twig.yml $PB_PATH/hoof-configuration.yml
 
 # install Captain configuration
 ansible-playbook -i $INV_PATH/sip3-agent.yml -i $INV_PATH/captain.yml$PB_PATH/captain.yml
 
 # update Hostmap to backend
-ansible-playbook -i $INV_PATH/sip3-backend.yml -i $INV_PATH/hostmap.yml $PB_PATH/hostmap.yml
+ansible-playbook -i $INV_PATH/sip3-backend.yml -i $INV_PATH/hostmap-config.yml $PB_PATH/hostmap.yml
