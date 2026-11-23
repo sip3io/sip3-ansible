@@ -4,7 +4,7 @@ all:
       mode: full # full/config/package
 
       nginx: |
-        user www-data;
+        user nginx;
         worker_processes auto;
         pid /run/nginx.pid;
         error_log /var/log/nginx/error.log;
@@ -126,14 +126,6 @@ all:
             proxy_set_header   X-Forwarded-For    $proxy_add_x_forwarded_for;
             proxy_set_header   X-Forwarded-Host   $host;
             proxy_set_header   X-Forwarded-Proto  $scheme;
-          }
-        
-          location /dashboard/technical {
-            return 302 https://localhost/grafana/d/tech-dashboard/technical-dashboard;
-          }
-        
-          location /dashboard/sip-metrics {
-            return 302 https://localhost/grafana/d/sip-metrics/sip-metrics;
           }
         
           location /grafana {

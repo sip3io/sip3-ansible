@@ -19,12 +19,12 @@ all:
             - order: 0
               name: Technical Dashboard
               type: external
-              url: '/dashboard/technical'
+              url: '/grafana/d/tech-dashboard/technical-dashboard'
               icon: /assets/page-icons/TechnicalDashboard.svg
             - order: 1
               name: SIP Metrics
               type: external
-              url: '/dashboard/sip-metrics'
+              url: '/grafana/d/sip-metrics/sip-metrics'
               icon: /assets/page-icons/CustomDashboard.svg
           searches:
             - order: 0

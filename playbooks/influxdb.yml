@@ -2,4 +2,4 @@
   hosts: influxdb
   roles:
     - role: ../roles/influxdb
-      tags: storage
+      tags: influxdb

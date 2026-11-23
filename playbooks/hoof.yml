@@ -2,7 +2,7 @@
   hosts: hoof
   roles:
     - role: ../roles/repo
-      tags: backend, sip3, salto, twig, hoof
+      tags: hoof
 
 - name: "Install SIP3 Hoof"
   hosts: hoof
