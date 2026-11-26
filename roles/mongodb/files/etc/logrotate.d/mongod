@@ -4,7 +4,7 @@
      daily
      missingok
      notifempty
-     create 0600 mongod mongod
+     create 0600 mongodb mongodb
      delaycompress
      compress
      sharedscripts
